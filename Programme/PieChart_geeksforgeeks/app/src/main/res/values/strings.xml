@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">PieChart_geeksforgeeks</string>
+    <string name="Kat_Lebensmittel">Lebensmittel</string>
+    <string name="Kat_Wohnen">Wohnen</string>
+    <string name="Kat_Verkehrsmittel">Verkehrsmittel</string>
+    <string name="Kat_Gesundheit">Gesundheit</string>
+    <string name="Kat_Freizeit">Freizeit</string>
+    <string name="Kat_Sonstiges">Sonstiges</string>
+</resources>
