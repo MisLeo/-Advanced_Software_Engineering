@@ -56,25 +56,34 @@
                         >
 
                         <org.eazegraph.lib.charts.PieChart xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/piechart"
-                        android:layout_width="300dp"
-                        android:layout_height="300dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginBottom="15dp"
-                        android:layout_weight="1"
-                        android:padding="6dp" />
+                            android:id="@+id/piechart"
+                            android:layout_width="300dp"
+                            android:layout_height="300dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp"
+                            android:layout_weight="1"
+                            android:padding="6dp" />
 
                         <org.eazegraph.lib.charts.BarChart
-                        android:id="@+id/barchart"
-                        android:layout_width="350dp"
-                        android:layout_height="300dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="15dp"
-                        android:padding="6dp"
-                        app:egFixedBarWidth="true"
-                        app:egBarWidth="20dp"
-                        app:egLegendHeight="40dp"/>
+                            android:id="@+id/barchart"
+                            android:layout_width="300dp"
+                            android:layout_height="300dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="15dp"
+                            android:padding="6dp"
+                            app:egFixedBarWidth="true"
+                            app:egBarWidth="20dp"
+                            app:egLegendHeight="40dp"/>
+
+                        <org.eazegraph.lib.charts.ValueLineChart
+                            android:layout_width="350dp"
+                            android:layout_height="300dp"
+                            android:id="@+id/linechart"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginTop="15dp"
+                            android:padding="6dp"
+                            />
 
                     </LinearLayout>
                 </HorizontalScrollView>
