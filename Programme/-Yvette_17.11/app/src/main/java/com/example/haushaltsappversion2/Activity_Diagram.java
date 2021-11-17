@@ -1,11 +1,7 @@
-// mit ScollView
-//https://www.geeksforgeeks.org/how-to-add-a-pie-chart-into-an-android-application/
-//https://github.com/blackfizz/EazeGraph
+package com.example.haushaltsappversion2;
 
-package com.example.piechart_geeksforgeeks;
-
-// Import the required libraries
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -18,9 +14,7 @@ import org.eazegraph.lib.models.PieModel;
 import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
 
-import android.os.Bundle;
-
-public class MainActivity extends AppCompatActivity {
+public class Activity_Diagram extends AppCompatActivity {
 
     // Create the object of TextView
     // and PieChart class
@@ -32,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_diagram);
         // Link those objects with their
         // respective id's that
         // we have given in .XML file
