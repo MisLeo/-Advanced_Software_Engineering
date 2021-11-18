@@ -23,6 +23,12 @@ public class Activity_Diagram extends AppCompatActivity {
     BarChart mBarChart;
     ValueLineChart LineChart;
 
+    //Datenbank
+    MySQLiteCategory dbcategory = new MySQLiteCategory(this, null, null, 0);
+    MySQLiteIntake dbintake = new MySQLiteIntake(this, null, null, 0);
+    MySQLiteOutgo dboutgo = new MySQLiteOutgo(this, null, null, 0);
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,14 +56,22 @@ public class Activity_Diagram extends AppCompatActivity {
     {
         //Daten aus Datenbank:
         //die Daten müssen hier später aus der Datenbank geholt werden als float
-        //Datenbank werte sind double als casten
-        float Kosten_Wohnen = (float) 500.99;
+        //Datum muss noch als zeitraum und nicht als Datum angegeben werden, sonst kann nur ein Tag geholt werden
+        float Kosten_Wohnen = dboutgo.getValuesOutgosCategory(1,11,2021,"Wohnen"); //Hier noch zugriff auf Kategorie über sting realisieren
+        float Kosten_Lebensmittel = dboutgo.getValuesOutgosCategory(1,11,2021,  "Lebensmittel");
+        float Kosten_Verkehrsmittel = dboutgo.getValuesOutgosCategory(1,11,2021,  "Verkehrsmittel");
+        float Kosten_Gesundheit = dboutgo.getValuesOutgosCategory(1,11,2021,  "Gesundheit");
+        float Kosten_Freizeit = dboutgo.getValuesOutgosCategory(1,11,2021,  "Freizeit");
+        float Kosten_Sonstiges = dboutgo.getValuesOutgosCategory(1,11,2021,  "Sonstiges");
+
+        //Testdaten
+       /* float Kosten_Wohnen = (float) 500.99;
         float Kosten_Lebensmittel = 150;
         float Kosten_Verkehrsmittel = 120;
         float Kosten_Gesundheit = 30;
         float Kosten_Freizeit = 75;
         float Kosten_Sonstiges = 50;
-
+        */
         //Geldwert muss als Sting übergeben werden, da in Textview dargestellt wird
         //Direktes Einbinden von Geldwert in TV
         tvWohnen.setText(Float.toString(Kosten_Wohnen));

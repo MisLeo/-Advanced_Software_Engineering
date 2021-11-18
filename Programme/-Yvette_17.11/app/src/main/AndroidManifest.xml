@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HaushaltsappVersion2">
         <activity
+            android:name=".Activity_Tabelle"
+            android:exported="false" />
+        <activity
             android:name=".Activity_Diagram"
             android:exported="false" />
         <activity

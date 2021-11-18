@@ -22,7 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUESTCODE = 10;
 
+    //Um zu Diagramen zu kommen
     public Button buttonDiagram;
+    public Button buttonTabelle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +39,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        buttonTabelle = (Button) findViewById(R.id.ButtonTabelle);
+        buttonTabelle.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick (View V){
+                openActivity_Tabelle();
+            }
+        });
+        //Testdaten anlegen
+        //(String name, double value, int day, int month, int year, String cycle, String category)
+        Outgo T1 = new Outgo("Miete", 500, 1,11,2021,"0","Wohnen");
+        Outgo T2 = new Outgo("Essen 1", 50, 1,11,2021,"0",categoryList.get(2));
+        Outgo T3 = new Outgo("Essen2", 20, 1,11,2021,"0","Lebensmittel");
+        Outgo T4 = new Outgo("Verkehrsmittel", 70, 1,11,2021,"0","Verkehrsmittel");
+        Outgo T5 = new Outgo("Sonstiges1", 100, 1,11,2021,"0",categoryList.get(5));
+        dboutgo.addOutgo(T1);
+        dboutgo.addOutgo(T2);
+        dboutgo.addOutgo(T3);
+        dboutgo.addOutgo(T4);
+        dboutgo.addOutgo(T5);
+
+
         if(dbcategory.getAllCategory().size() == 0) {
             setCategory();
         }
     }
+    //Rufe des Windows Diagrame auf
     public void openActivity_diagram()
     {
-        Intent intent =new Intent(this, Activity_Diagram.class);
-        startActivity(intent);
+        Intent intentDiagram =new Intent(this, Activity_Diagram.class);
+        startActivity(intentDiagram);
     }
-
-
+    //Rufe des Windows Tabelle auf
+    public void openActivity_Tabelle()
+    {
+        Intent intentTabelle =new Intent(this, Activity_Tabelle.class);
+        startActivity(intentTabelle);
+    }
 
     //Ruft anderen View auf
     public void addButton(View view){
@@ -87,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     //wie kommt man an die Werte der Intakes:
     private void showIntakes(){
-        float value = dbintake.getValueIntakesMonth(11,8,2021);
+        float value = dbintake.getValueIntakesMonth(1,11,2021);
         TextView ansicht = (TextView) findViewById(R.id.textViewKat);
         String text = "Einnahmen des 8 Monats : "+String.valueOf(value);
         ansicht.setText(text.toCharArray(), 0, text.length());
@@ -96,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     //wie kommt man an die Werte der Outgos:
     private void showOutgos(){
-        float value = dboutgo.getValueOutgosMonth(11,12,2021);
+        float value = dboutgo.getValueOutgosMonth(1,11,2021);
         TextView ansicht = (TextView) findViewById(R.id.textViewKat);
         String text = "Alle Ausgaben des 8 Monats : "+String.valueOf(value);
 
