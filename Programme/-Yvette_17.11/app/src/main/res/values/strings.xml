@@ -21,10 +21,10 @@
     <string name="Kat_Freizeit">Freizeit</string>
     <string name="Kat_Sonstiges">Sonstiges</string>
 
-    <string name="col0Text">col0</string>
-    <string name="col1Text">col1</string>
-    <string name="col2Text">col2</string>
-    <string name="col3Text">col3</string>
+    <string name="col0Text">Ausgabe</string>
+    <string name="col1Text">Wert</string>
+    <string name="col2Text">Datum</string>
+    <string name="col3Text">Kategorie</string>
     <string name="col4Text">col4</string>
     <string name="col5Text">col5</string>
 </resources>

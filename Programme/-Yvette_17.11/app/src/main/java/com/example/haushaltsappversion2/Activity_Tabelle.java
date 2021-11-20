@@ -19,7 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 //Einteilung von Spalten noch vornehmen
 public class Activity_Tabelle extends AppCompatActivity {
 
-    private final static int[] COLUMN_WIDTHS = new int[]{40, 40, 40, 40, 40, 200};
+    private final static int[] COLUMN_WIDTHS = new int[]{30, 20, 20, 20, 10, 10};//Spaltenbreite
+    //private final static float[] COLUMN_WIDTHS = new float[][]{30, 20, 20, 20, 10, 10};//Spaltenbreite
     private final static int CONTENT_ROW_HEIGHT = 80;
     private final static int FIXED_HEADER_HEIGHT = 60;
 
@@ -77,7 +78,7 @@ public class Activity_Tabelle extends AppCompatActivity {
     private void fillTable() {
         Context ctx = getApplicationContext();
         for (int i = 1; i <= 100; i++) {
-            fixedTableLayout.addView(createTextView(String.valueOf(i), COLUMN_WIDTHS[0], i));
+            fixedTableLayout.addView(createTextView(String.valueOf(i), COLUMN_WIDTHS[1], i));
             TableRow row = new TableRow(ctx);
             for (int col = 1; col <= 5; col++) {
                 row.addView(createTextView(String.valueOf(col), COLUMN_WIDTHS[col], i));
