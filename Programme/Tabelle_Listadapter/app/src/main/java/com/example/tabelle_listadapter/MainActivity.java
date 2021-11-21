@@ -1,3 +1,5 @@
+//https://github.com/mitchtabian/ListViews
+
 package com.example.tabelle_listadapter;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -5,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -18,12 +21,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate: Started.");
         ListView mListView = (ListView) findViewById(R.id.listView);
 
-        //Create die Person objects
+        //Erzeugen die AUsgabe objects
         //Hier die Daten später aus Datenbank holen
+        //hier alle Daten als String
         Ausgabe T1 = new Ausgabe("Tanken","54","11.11.2021");
         Ausgabe T2 = new Ausgabe("Einkaufen Lidl","24","13.11.2021");
         Ausgabe T3 = new Ausgabe("Handy","3.99","01.11.2021");
@@ -32,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Add the Person objects to an ArrayList
+        //kann hier die Liste vielleicht gleich aus der Datenbank geholt werden???
         ArrayList<Ausgabe> AusgabeList = new ArrayList<>();
         AusgabeList.add(T1);
         AusgabeList.add(T2);
@@ -49,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
         AusgabeList.add(T4);
         AusgabeList.add(T2);
 
-        AusgabeListAdapter adapter = new AusgabeListAdapter(this, R.layout.adapter_view_layout, AusgabeList);
+        AusListAdapter adapter = new AusListAdapter(this, R.layout.adapter_view_layout, AusgabeList);
+        //mListView.setAdapter((ListAdapter) adapter);
         mListView.setAdapter(adapter);
     }
 }

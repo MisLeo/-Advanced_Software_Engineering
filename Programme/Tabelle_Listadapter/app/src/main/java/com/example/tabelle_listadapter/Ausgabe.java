@@ -7,8 +7,8 @@ private String wert;
 private String datum;
 
 public Ausgabe(String Ausgabe, String Wert,  String Datum) {
-        this.wert = Wert;
         this.name_Ausgabe = Ausgabe;
+        this.wert = Wert;
         this.datum = Datum;
         }
 
