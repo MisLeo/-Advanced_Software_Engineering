@@ -1,8 +1,5 @@
 package com.example.haushaltsplaner;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
+//https://github.com/mitchtabian/ListViews
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,11 +7,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import java.util.ArrayList;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class ToDoList extends AppCompatActivity {
+//AUfruf funktioniert noch nicht
+//AUfruf in Klasse to do realisiert, dort funktioniert es
+public class Tabelle extends  AppCompatActivity {
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -22,13 +22,12 @@ public class ToDoList extends AppCompatActivity {
         inflater.inflate(R.menu.tabelle_menu, menu);
         return true;
     }
-
     private static final String TAG = "ActivityTabelle";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_to_do_list); //noch umbenennen zu activity_Tabelle
+        setContentView(R.layout.activity_tabelle);
 
         Log.d(TAG, "onCreate: Started.");
         ListView mListView = (ListView) findViewById(R.id.listView);
@@ -46,30 +45,26 @@ public class ToDoList extends AppCompatActivity {
         //Add the Person objects to an ArrayList
         //kann hier die Liste vielleicht gleich aus der Datenbank geholt werden???
         ArrayList<class_Ausgabe> AusgabeList = new ArrayList<>();
-            AusgabeList.add(T1);
-            AusgabeList.add(T2);
-            AusgabeList.add(T3);
-            AusgabeList.add(T4);
-            AusgabeList.add(T5);
-            AusgabeList.add(T1);
-            AusgabeList.add(T2);
-            AusgabeList.add(T4);
-            AusgabeList.add(T3);
-            AusgabeList.add(T5);
-            AusgabeList.add(T1);
-            AusgabeList.add(T1);
-            AusgabeList.add(T3);
-            AusgabeList.add(T4);
-            AusgabeList.add(T2);
+        AusgabeList.add(T1);
+        AusgabeList.add(T2);
+        AusgabeList.add(T3);
+        AusgabeList.add(T4);
+        AusgabeList.add(T5);
+        AusgabeList.add(T1);
+        AusgabeList.add(T2);
+        AusgabeList.add(T4);
+        AusgabeList.add(T3);
+        AusgabeList.add(T5);
+        AusgabeList.add(T1);
+        AusgabeList.add(T1);
+        AusgabeList.add(T3);
+        AusgabeList.add(T4);
+        AusgabeList.add(T2);
 
         AusgabeListAdapter adapter = new AusgabeListAdapter(this, R.layout.activity_adapter_list_view, AusgabeList);
         //mListView.setAdapter((ListAdapter) adapter);
-            mListView.setAdapter(adapter);
-}
-
-
-
-
+        mListView.setAdapter(adapter);
+    }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
@@ -99,13 +94,29 @@ public class ToDoList extends AppCompatActivity {
                 startActivity(switchToCalander);
                 return true;
 
-            case R.id.itemTabelle:
-                Intent switchTabelle = new Intent(this, Tabelle.class);
-                startActivity(switchTabelle);
+            case R.id.itemTodoListe:
+                Intent switchToDoList = new Intent(this, ToDoList.class);
+                startActivity(switchToDoList);
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
 }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

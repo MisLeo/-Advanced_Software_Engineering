@@ -90,6 +90,12 @@ public class ShowOutgosActivity extends AppCompatActivity {
                 Intent switchToDoList = new Intent(this, ToDoList.class);
                 startActivity(switchToDoList);
                 return true;
+
+            case R.id.itemTabelle:
+                Intent switchTabelle = new Intent(this, Tabelle.class);
+                startActivity(switchTabelle);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

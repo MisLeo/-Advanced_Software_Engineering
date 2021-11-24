@@ -12,7 +12,6 @@ import android.widget.Toast;
 import java.io.Serializable;
 import java.util.ArrayList;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.widget.TextView;
 import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.charts.PieChart;
@@ -21,8 +20,6 @@ import org.eazegraph.lib.models.BarModel;
 import org.eazegraph.lib.models.PieModel;
 import org.eazegraph.lib.models.ValueLinePoint;
 import org.eazegraph.lib.models.ValueLineSeries;
-
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         tvEinnahmen=findViewById(R.id.tvEinnahmen);
         tvAusgaben=findViewById(R.id.tvAusgaben);
         tvRestbudget=findViewById(R.id.tvRestbudget);
+
         pieChart = findViewById(R.id.piechart);
         mBarChart = findViewById(R.id.barchart);
         LineChart= findViewById(R.id.linechart);
@@ -65,14 +63,10 @@ public class MainActivity extends AppCompatActivity {
         //Daten aus Datenbank:
         //Datum muss noch als zeitraum und nicht als Datum angegeben werden, sonst kann nur ein Tag geholt werden
 
-        //MEthode noch alte Methode von Kategorie, neue noch ergänzen
-        //float Ausgaben =dboutgo.getValuesOutgosCategory(1,11,2021,  "Sonstiges");
-        //float Einnahmen =dboutgo.getValuesOutgosCategory(1,11,2021,  "Sonstiges");
+        float Ausgaben = outgoDB.getValueOutgosMonth(30,11,2021);
+        float Einnahmen = intakeDB.getValueIntakesMonth(30,11,2021);
         //Testdaten
         //float Ausgaben =888.0f;
-        float Ausgaben = outgoDB.getValueOutgosMonth(22,11,2021);
-        float Einnahmen = intakeDB.getValueIntakesMonth(22,11,2021);
-
         //float Einnahmen =1000.0f;
 
         //Eventuell noch differenz für Restbudget
@@ -100,8 +94,12 @@ public class MainActivity extends AppCompatActivity {
                         "Ausgaben",
                         Float.parseFloat(tvAusgaben.getText().toString()),
                         Color.parseColor("#EF5350")));
+        pieChart.addPieSlice(
+                new PieModel(
+                        "Restbudget",
+                        Float.parseFloat(tvRestbudget.getText().toString()),
+                        Color.parseColor("#FFA726")));
 
-        pieChart.setInnerPaddingOutline(5);
         pieChart.setInnerPaddingOutline(5);
 
         // To animate the pie chart
@@ -207,6 +205,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.itemTodoListe:
                 Intent switchToDoList = new Intent(this, ToDoList.class);
                 startActivity(switchToDoList);
+                return true;
+
+            case R.id.itemTabelle:
+                Intent switchTabelle = new Intent(this, Tabelle.class);
+                startActivity(switchTabelle);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -362,7 +365,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-        setData();
+        //onCreate();
+        //setData();
     }
 
 }

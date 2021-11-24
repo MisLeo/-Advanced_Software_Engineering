@@ -167,6 +167,11 @@ import java.util.Calendar;
                     startActivity(switchToDoList);
                     return true;
 
+                case R.id.itemTabelle:
+                    Intent switchTabelle = new Intent(this, Tabelle.class);
+                    startActivity(switchTabelle);
+                    return true;
+
                 default:
                     return super.onOptionsItemSelected(item);
             }
