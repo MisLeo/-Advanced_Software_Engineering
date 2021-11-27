@@ -7,17 +7,13 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,9 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Calendar extends AppCompatActivity {
-
-
-    private static final int MY_CAL_WRITE_REQ = 1;
+    private static final int MY_CAL_WRITE_REQ = 1; //Wird nie verwendet
     private int Storage_Permission_Code = 1;
     TextView dateSelect;
     ImageView calenderView;
@@ -47,15 +41,6 @@ public class Calendar extends AppCompatActivity {
     long enddateInMilliSec;
     Button addEvent;
     Switch dailySwitch;
-    ContentResolver contenRes;
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.calendar_menu, menu);
-        return true;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +54,8 @@ public class Calendar extends AppCompatActivity {
         addEvent    = findViewById(R.id.createEvent);
         dailySwitch = findViewById(R.id.switch1);
 
-        // Hier Code für CalenderView, kein erstellen von Events, nur Auslesen von Tag,Monat,Jahr
+        //java.util notwendig, da Klasse selbst Calendar heißt und somit kein import java.util.Calendar angewendet werden kann
         java.util.Calendar calendar = java.util.Calendar.getInstance();
-
-        //Standard: akutelles Datum übergeben
         year = calendar.get(java.util.Calendar.YEAR);
         month = calendar.get(java.util.Calendar.MONTH);
         day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
@@ -81,17 +64,13 @@ public class Calendar extends AppCompatActivity {
         calenderView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                year = calendar.get(java.util.Calendar.YEAR);
-                month = calendar.get(java.util.Calendar.MONTH);
-                day = calendar.get(java.util.Calendar.DAY_OF_MONTH);
                 DatePickerDialog dateDialog = new DatePickerDialog(Calendar.this, new DatePickerDialog.OnDateSetListener() {
                     @Override
-
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
                         day = selectedDay;
                         month = selectedMonth;
                         year = selectedYear;
-                        dateSelect.setText(selectedYear + "/" + (selectedMonth + 1) + "/" + selectedDay);              //mont +1, starts with index 0
+                        dateSelect.setText(selectedYear + "/" + (selectedMonth + 1) + "/" + selectedDay);   //month +1, starts with index 0
                         calendar.set(year,month,day,8,0,0);
                         startdateInMilliSec = calendar.getTimeInMillis();
                         calendar.set(year,month,day,9,0,0);
@@ -101,6 +80,7 @@ public class Calendar extends AppCompatActivity {
                 dateDialog.show();
             }
         });
+
         addEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,7 +99,7 @@ public class Calendar extends AppCompatActivity {
         });
     }
 
-    //Ab hier: Erstellung von Events in Kalender
+    //Intent zum Einfügen von Events in eine Kalender Applikation
     public void insertEvent(String title, String location, String description, boolean value, long begin, long end) {
         Intent intent = new Intent(Intent.ACTION_INSERT)
                 .setData(CalendarContract.Events.CONTENT_URI)
@@ -139,11 +119,12 @@ public class Calendar extends AppCompatActivity {
         }
     }
 
+    //Intent zur Ansicht von Events in eine Kalender Applikation
     public void viewEvent(View view) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-            }else{
-            requestReadPermission();
-        }
+             }else{
+                   requestReadPermission();
+             }
 
         long startMillis = System.currentTimeMillis();
         Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
@@ -151,10 +132,15 @@ public class Calendar extends AppCompatActivity {
         ContentUris.appendId(builder, startMillis);
         Intent intent = new Intent(Intent.ACTION_VIEW).setData(builder.build());
         startActivity(intent);
-
     }
 
-    //Methode zum Aufrufen des Calendar-Menus
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.calendar_menu, menu);
+        return true;
+    }
+
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
 
@@ -166,7 +152,7 @@ public class Calendar extends AppCompatActivity {
             case R.id.itemEinnahmenAusgaben:
                 Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
                 startActivity(switchToAddEntry);
-                 return true;
+                return true;
 
             case R.id.itemBudgetLimit:
                 Intent switchToBudgetLimit = new Intent(this, BudgetLimit.class);
@@ -176,16 +162,16 @@ public class Calendar extends AppCompatActivity {
             case R.id.itemDiagrammansicht:
                 Intent switchToEditDiagramView = new Intent(this, EditDiagramView.class);
                 startActivity(switchToEditDiagramView);
-
-                return true;
-            case R.id.itemTodoListe:
-                Intent switchToDoList = new Intent(this, ToDoList.class);
-                startActivity(switchToDoList);
                 return true;
 
             case R.id.itemTabelle:
-                Intent switchTabelle = new Intent(this, Tabelle.class);
-                startActivity(switchTabelle);
+                Intent switchToChart = new Intent(this, Tabelle.class);
+                startActivity(switchToChart);
+                return true;
+
+            case R.id.itemTodoListe:
+                Intent switchToToDoList = new Intent(this, ToDoList.class);
+                startActivity(switchToToDoList);
                 return true;
 
             default:
@@ -197,7 +183,7 @@ public class Calendar extends AppCompatActivity {
         if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_CALENDAR)){
             new AlertDialog.Builder(this)
                     .setTitle("Permission needed")
-                    .setMessage("This permission is needed to use calendar interface")
+                    .setMessage("This permission is needed to insert events to your calendar")
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -220,7 +206,7 @@ public class Calendar extends AppCompatActivity {
         if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_CALENDAR)){
             new AlertDialog.Builder(this)
                     .setTitle("Permission needed")
-                    .setMessage("This permission is needed to use calendar interface")
+                    .setMessage("This permission is needed to view your calendar")
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -250,4 +236,5 @@ public class Calendar extends AppCompatActivity {
             }
         }
     }
+
 }

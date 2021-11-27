@@ -1,49 +1,49 @@
 package com.example.haushaltsplaner;
-//https://github.com/mitchtabian/ListViews
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebHistoryItem;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import java.io.Serializable;
+import java.time.Year;
 import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-//AUfruf funktioniert noch nicht
-//AUfruf in Klasse to do realisiert, dort funktioniert es
 public class Tabelle extends  AppCompatActivity {
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.tabelle_menu, menu);
-        return true;
-    }
-    private static final String TAG = "ActivityTabelle";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabelle);
 
-        Log.d(TAG, "onCreate: Started.");
         ListView mListView = (ListView) findViewById(R.id.listView);
 
+        Intent intent = getIntent();
+        ArrayList<Outgo> ListeOut = (ArrayList<Outgo>) intent.getSerializableExtra("list");
+        //zum TEsten ohne Datenbankzugriff
         //Erzeugen die AUsgabe objects
-        //Hier die Daten später aus Datenbank holen
-        //hier alle Daten als String
-        class_Ausgabe T1 = new class_Ausgabe("Tanken","54","11.11.2021");
-        class_Ausgabe T2 = new class_Ausgabe("Einkaufen Lidl","24","13.11.2021");
-        class_Ausgabe T3 = new class_Ausgabe("Handy","3.99","01.11.2021");
-        class_Ausgabe T4 = new class_Ausgabe("Penny","10","20.11.2021");
-        class_Ausgabe T5 = new class_Ausgabe("Penny EInk.","34.87","21.11.2021");
+        class_Ausgabe T1 = new class_Ausgabe("Tanken", "54", "11.11.2021");
+        class_Ausgabe T2 = new class_Ausgabe("Einkaufen Lidl", "24", "13.11.2021");
+        class_Ausgabe T3 = new class_Ausgabe("Handy", "3.99", "01.11.2021");
+        class_Ausgabe T4 = new class_Ausgabe("Penny", "10", "20.11.2021");
+        class_Ausgabe T5 = new class_Ausgabe("Penny EInk.", "34.87", "21.11.2021");
 
-
-        //Add the Person objects to an ArrayList
-        //kann hier die Liste vielleicht gleich aus der Datenbank geholt werden???
+        //füllen der Array List
         ArrayList<class_Ausgabe> AusgabeList = new ArrayList<>();
         AusgabeList.add(T1);
         AusgabeList.add(T2);
@@ -61,9 +61,24 @@ public class Tabelle extends  AppCompatActivity {
         AusgabeList.add(T4);
         AusgabeList.add(T2);
 
+        //Zum Test ohne Datenbank
         AusgabeListAdapter adapter = new AusgabeListAdapter(this, R.layout.activity_adapter_list_view, AusgabeList);
-        //mListView.setAdapter((ListAdapter) adapter);
         mListView.setAdapter(adapter);
+
+        /*OutgoListAdapter adapter = new OutgoListAdapter(this,R.layout.activity_adapter_list_view,ListeOut);
+        mListView.setAdapter(adapter);
+
+        Intent switchOutgoListAdapter =new Intent(this, OutgoListAdapter.A.class);
+        ArrayList<Outgo> outgoes1 = ListeOut;
+        switchOutgoListAdapter.putExtra("list",(Serializable) outgoes1);*/
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tabelle_menu, menu);
+        return true;
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -90,8 +105,8 @@ public class Tabelle extends  AppCompatActivity {
                 return true;
 
             case R.id.itemKalender:
-                Intent switchToCalander = new Intent(this, Calendar.class);
-                startActivity(switchToCalander);
+                Intent switchToCalendar = new Intent(this, Calendar.class);
+                startActivity(switchToCalendar);
                 return true;
 
             case R.id.itemTodoListe:
@@ -102,21 +117,5 @@ public class Tabelle extends  AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
 }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
