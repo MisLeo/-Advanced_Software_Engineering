@@ -51,16 +51,16 @@ public class ChartViewActivity extends  AppCompatActivity {
         AusgabeList.add(T2);
 
         //Zum Test ohne Datenbank
-       /* ExpendituresListAdapter adapter = new ExpendituresListAdapter(this, R.layout.activity_adapter_list_view, AusgabeList);
-        mListView.setAdapter(adapter);*/
+        ExpendituresListAdapter adapter = new ExpendituresListAdapter(this, R.layout.activity_adapter_list_view, AusgabeList);
+        mListView.setAdapter(adapter);
 
-        Intent switchOutgoListAdapter =new Intent(this, OutgoListAdapter.A.class);
+       /* Intent switchOutgoListAdapter =new Intent(this, OutgoListAdapter.A.class);
         ArrayList<Outgo> outgoes1 = ListeOut;
         switchOutgoListAdapter.putExtra("list",(Serializable) outgoes1);
 
         OutgoListAdapter adapter = new OutgoListAdapter(this,R.layout.activity_adapter_list_view,ListeOut);
         mListView.setAdapter(adapter);
-
+*/
 
     }
 
