@@ -259,10 +259,9 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.itemTabelle:
                 Intent switchToChartView = new Intent(this, ChartViewActivity.class);
-                //Intent switchToAdapter = new Intent(this,OutgoListAdapter.A.class);
+                //Hier alle Werte und nicht nur die von Monat übergeben
                 ArrayList<Outgo> outgoesT = outgoDB.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("list",(Serializable) outgoesT);
-                //switchToAdapter.putExtra("list", (Serializable) outgoesT);
                 startActivity(switchToChartView);
                 return true;
 

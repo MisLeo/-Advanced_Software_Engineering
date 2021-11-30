@@ -85,7 +85,7 @@ public class MySQLiteOutgo extends SQLiteOpenHelper{
                     outgo.setValue(Double.parseDouble(cursor.getString(2)));
                     outgo.setDay(Integer.parseInt(cursor.getString(3)));
                     outgo.setMonth(Integer.parseInt(cursor.getString(4)));
-                    outgo.setMonth(Integer.parseInt(cursor.getString(5)));
+                    outgo.setYear(Integer.parseInt(cursor.getString(5)));
                     outgo.setCycle(cursor.getString(6));
 
                     outgos.add(outgo);
@@ -187,7 +187,7 @@ public class MySQLiteOutgo extends SQLiteOpenHelper{
                         outgo.setValue(Double.parseDouble(cursor.getString(2)));
                         outgo.setDay(Integer.parseInt(cursor.getString(3)));
                         outgo.setMonth(Integer.parseInt(cursor.getString(4)));
-                        outgo.setMonth(Integer.parseInt(cursor.getString(5)));
+                        outgo.setYear(Integer.parseInt(cursor.getString(5)));
 
                         outgos.add(outgo);
                     }

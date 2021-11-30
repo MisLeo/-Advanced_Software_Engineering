@@ -1,11 +1,18 @@
 package com.example.haushaltsplaner;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,11 +22,122 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ChartViewActivity extends  AppCompatActivity {
 
-    @Override
+    private final static int[] COLUMN_WIDTHS = new int[]{40, 20, 40}; //Fensterbreite der einzelnen Spalten
+    private final static int CONTENT_ROW_HEIGHT = 80;
+    private final static int FIXED_HEADER_HEIGHT = 60;
+
+    //Textgröße noch ändern und Button zum bearbeiten der Einträge anlegen
+
+    private TableLayout fixedTableLayout;
+    private TableLayout scrollableTableLayout;
+
+
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_chart_view);
+
+            Intent intent = getIntent();
+            ArrayList<Outgo> ListeOut = (ArrayList<Outgo>) intent.getSerializableExtra("list");
+
+
+            final HorizontalScrollView tblHeaderhorzScrollView = (HorizontalScrollView) findViewById(R.id.tblHeaderhorzScrollView);
+            tblHeaderhorzScrollView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+            tblHeaderhorzScrollView.setHorizontalScrollBarEnabled(false);
+
+            final HorizontalScrollView horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
+            horizontalScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+
+                @Override
+                public void onScrollChanged() {
+                    tblHeaderhorzScrollView.setScrollX(horizontalScrollView.getScrollX());
+                }
+            });
+
+
+            //zeile
+            this.fixedTableLayout = (TableLayout) findViewById(R.id.fixed_column);
+            //SPalten die zu jeweiligen Zeile gehören
+            this.scrollableTableLayout = (TableLayout) findViewById(R.id.scrollable_part);
+            //Setzt die Spaltenbreite für die Tabelle.
+            setTableHeaderWidth();
+            //Befüllt die Tabelle mit Beispieldaten.
+            fillTable();
+        }
+
+        private void setTableHeaderWidth() {
+            TextView textView;
+            textView = (TextView) findViewById(R.id.Ausgabe);
+            setHeaderWidth(textView, COLUMN_WIDTHS[0]);
+            textView = (TextView) findViewById(R.id.Wert);
+            setHeaderWidth(textView, COLUMN_WIDTHS[1]);
+            textView = (TextView) findViewById(R.id.Datum);
+            setHeaderWidth(textView, COLUMN_WIDTHS[2]);
+            /*textView = (TextView) findViewById(R.id.Kategorie);
+            setHeaderWidth(textView, COLUMN_WIDTHS[3]);
+            textView = (TextView) findViewById(R.id.Sonstiges);
+            setHeaderWidth(textView, COLUMN_WIDTHS[4]);*/
+        }
+
+        private void setHeaderWidth(TextView textView, int width) {
+            textView.setWidth(width * getScreenWidth() / 100);
+            textView.setHeight(FIXED_HEADER_HEIGHT);
+        }
+
+        private void fillTable() {
+
+            Intent intent = getIntent();
+            ArrayList<Outgo> ListeOut = (ArrayList<Outgo>) intent.getSerializableExtra("list");
+
+            Context ctx = getApplicationContext();
+            int lenghtOutgos = ListeOut.size();
+            //begrenzung der ABfrage durch lenghte von Datenbank noch einfügen.
+            for (int position = 1; position < lenghtOutgos; position++) {
+                //Daten aus Datenbank holen
+                String outgo = ListeOut.get(position).getName();
+                String value = Double.toString(ListeOut.get(position).getValue());
+                Integer day = ListeOut.get(position).getDay();
+                //hier sind die vergabe von monat und Jahr verdreht
+                Integer month =ListeOut.get(position).getMonth();
+                Integer year = ListeOut.get(position).getYear();
+                String date = day+"."+month+"."+year;
+
+                fixedTableLayout.addView(createTextView(outgo, COLUMN_WIDTHS[0], position));
+                TableRow row = new TableRow(ctx);
+
+                for (int col = 1; col < 2; col++) //1=Wert, 2=Datum , 3=Kategorie, 4=Sonstiges
+                {
+                    //Wert
+                    row.addView(createTextView(value, COLUMN_WIDTHS[col], position));
+                    //Datum
+                    row.addView(createTextView(date, COLUMN_WIDTHS[col], position));
+                    //Kategorie
+                    //String Kategorie ="alles";
+                    //row.addView(createTextView(Kategorie, COLUMN_WIDTHS[col], position));
+                }
+               scrollableTableLayout.addView(row);
+            }
+        }
+
+        private TextView createTextView(String text, int width, int index) {
+            TextView textView = new TextView(getApplicationContext());
+            textView.setText(text);
+            textView.setWidth(width * getScreenWidth() / 100);
+            textView.setHeight(CONTENT_ROW_HEIGHT);
+            return textView;
+        }
+
+        private int getScreenWidth() {
+            return getResources().getDisplayMetrics().widthPixels;
+        }
+
+
+
+/* @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_view);
-
         ListView mListView = (ListView) findViewById(R.id.listView);
 
         Intent intent = getIntent();
@@ -54,15 +172,15 @@ public class ChartViewActivity extends  AppCompatActivity {
         ExpendituresListAdapter adapter = new ExpendituresListAdapter(this, R.layout.activity_adapter_list_view, AusgabeList);
         mListView.setAdapter(adapter);
 
-       /* Intent switchOutgoListAdapter =new Intent(this, OutgoListAdapter.A.class);
-        ArrayList<Outgo> outgoes1 = ListeOut;
-        switchOutgoListAdapter.putExtra("list",(Serializable) outgoes1);
+        //Intent switchOutgoListAdapter =new Intent(this, OutgoListAdapter.A.class);
+        //ArrayList<Outgo> outgoes1 = ListeOut;
+        //switchOutgoListAdapter.putExtra("list",(Serializable) outgoes1);
 
-        OutgoListAdapter adapter = new OutgoListAdapter(this,R.layout.activity_adapter_list_view,ListeOut);
-        mListView.setAdapter(adapter);
-*/
+        //OutgoListAdapter adapter = new OutgoListAdapter(this,R.layout.activity_adapter_list_view,ListeOut);
+        //mListView.setAdapter(adapter);
 
-    }
+
+    }*/
 
 
     @Override
