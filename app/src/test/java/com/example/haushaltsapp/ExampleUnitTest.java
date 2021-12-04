@@ -1,4 +1,4 @@
-package com.example.haushaltsplaner;
+package com.example.haushaltsapp;
 
 import org.junit.Test;
 

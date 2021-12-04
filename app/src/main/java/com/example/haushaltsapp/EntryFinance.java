@@ -1,24 +1,19 @@
-package com.example.haushaltsplaner;
-
+package com.example.haushaltsapp;
 
 import java.io.Serializable;
 
-/*
-Repräsentation einer Einnahme
-id, name, value, day, month, ywar, cyclus
- */
-public class Intake implements Serializable {
-    private int id;
-    private String name;
-    private double value;
-    private int day;
-    private int month;
-    private int year;
-    private String cycle;
+public class EntryFinance implements Serializable {
+    int id_PK;
+    String name;
+    double value;
+    int day, month, year;
+    String cycle;
 
-    public Intake(){}
+    public EntryFinance() {
+        super();
+    }
 
-    public Intake(String name, double value, int day, int month, int year, String cycle){
+    public EntryFinance(String name, double value, int day, int month, int year, String cycle) {
         super();
         this.name = name;
         this.value = value;
@@ -28,16 +23,13 @@ public class Intake implements Serializable {
         this.cycle = cycle;
     }
 
-    public String toString(){
-        return "'\n' "+" id:"+id+"Einnahme "+name+ " ,Wert = "+value +" datum:"+day+"."+month+"."+year;
+
+    public int getId_PK() {
+        return id_PK;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public void setId_PK(int id_PK) {
+        this.id_PK = id_PK;
     }
 
     public String getName() {
@@ -47,6 +39,7 @@ public class Intake implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
 
     public double getValue() {
         return value;

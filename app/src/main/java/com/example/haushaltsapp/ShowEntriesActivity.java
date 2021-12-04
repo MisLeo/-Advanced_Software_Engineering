@@ -1,6 +1,8 @@
-package com.example.haushaltsplaner;
+package com.example.haushaltsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
 
 import android.content.Intent;
 import android.os.Bundle;

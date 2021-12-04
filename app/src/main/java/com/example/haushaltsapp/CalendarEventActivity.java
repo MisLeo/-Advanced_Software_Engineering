@@ -1,6 +1,9 @@
-package com.example.haushaltsplaner;
+package com.example.haushaltsapp;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.os.Bundle;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.ContentUris;
@@ -48,7 +51,7 @@ public class CalendarEventActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_calendar);
+        setContentView(R.layout.activity_calender);
         dateSelect = findViewById(R.id.dateSelect);
         calenderView = findViewById(R.id.calenderView);
         titleSelect = findViewById(R.id.titleSelect);
@@ -136,9 +139,9 @@ public class CalendarEventActivity extends AppCompatActivity {
     //Intent zur Ansicht einer Kalender Applikation
     public void viewEvent(View eventView) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-             }else{
-                   requestReadPermission();
-             }
+        }else{
+            requestReadPermission();
+        }
 
         //
         long timeInMilliSec = System.currentTimeMillis();
@@ -251,5 +254,4 @@ public class CalendarEventActivity extends AppCompatActivity {
             }
         }
     }
-
 }
