@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
-import com.example.haushaltsapp.MySQLite;
+import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 

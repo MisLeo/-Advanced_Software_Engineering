@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.haushaltsapp.MySQLite;
+import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.R;
 import com.example.haushaltsapp.ToDoListActivity;
 

@@ -1,24 +1,30 @@
 package com.example.haushaltsapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import top.defaults.colorpicker.ColorPickerPopup;
 
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
-public class BudgetLimitActivity extends AppCompatActivity {
+public class AddCategoryActivity extends AppCompatActivity {
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
@@ -26,15 +32,87 @@ public class BudgetLimitActivity extends AppCompatActivity {
     private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
     private final int REQUESTCODE_EDIT = 14; //EditEntryActivity
     private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
+
     private int day;
     private int month;
     private int year;
     ///////////////////////////////
 
+    private Button pickColorButton;
+    private View mColorPreview;
+
+    private int mDefaultColor;
+    private String name;
+    private double border;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_budget_limit);
+        setContentView(R.layout.activity_add_category);
+
+
+        //Kasten der später die Farbe anzeigt
+        mColorPreview = findViewById(R.id.preview_selected_color);
+        mDefaultColor = 0;
+
+        TextView viewText = findViewById(R.id.textView3);
+        String text = "";
+        Intent intent = getIntent();
+        ArrayList<Category> list = (ArrayList<Category>) intent.getSerializableExtra("list");
+        for(int i = 0; i < list.size(); i++){
+            text = text + list.get(i).toString()+"\n";
+        }
+        viewText.setText(text);
+    }
+
+
+
+    public void pickColor(View view){
+        new ColorPickerPopup.Builder(AddCategoryActivity.this).initialColor(
+                Color.RED).enableBrightness(true)
+                .enableAlpha(true)
+                .okTitle( "Bestätigen")
+                .cancelTitle("Abbrechen")
+                .showIndicator(true)
+                .showValue(true)
+                .build()
+                .show(view,
+                        new ColorPickerPopup.ColorPickerObserver() {
+                            @Override
+                            public void
+                            onColorPicked(int color) {
+                                mDefaultColor = color;
+                                mColorPreview.setBackgroundColor(mDefaultColor);
+                            }
+                        });
+    }
+
+    public void onClickOk(View view){
+        getValues();
+        Category category = new Category(name, mDefaultColor, border);
+
+        Intent i = new Intent();
+        i.putExtra("category", category);
+        i.putExtra("selection","ok");
+        setResult(RESULT_OK, i);
+        super.finish();
+    }
+
+    public void onClickBreak(View view){
+        Intent i = new Intent();
+        i.putExtra("selection","break");
+        setResult(RESULT_OK, i);
+        super.finish();
+    }
+
+    private void getValues() {
+        EditText editTextName = (EditText) findViewById(R.id.Bezeichnung);
+        name = editTextName.getText().toString();
+
+        EditText editTextValue = (EditText) findViewById(R.id.editTextLimit);
+        String valueString = editTextValue.getText().toString();
+        border = Double.parseDouble(valueString);
     }
 
 
@@ -44,7 +122,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
         inflater.inflate(R.menu.navigation_menu, menu);
 
         //Die aktuelle Activity im Menü ausblenden
-        MenuItem item = menu.findItem(R.id.itemBudgetLimit);
+        MenuItem item = menu.findItem(R.id.itemAddCategory);
         item.setEnabled(false);
         return true;
     }
@@ -150,5 +228,6 @@ public class BudgetLimitActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
 }

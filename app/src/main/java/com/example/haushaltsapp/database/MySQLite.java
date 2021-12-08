@@ -1,4 +1,4 @@
-package com.example.haushaltsapp;
+package com.example.haushaltsapp.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,6 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.example.haushaltsapp.ToDoListPackage.TaskModel;
+import com.example.haushaltsapp.database.Category;
+import com.example.haushaltsapp.database.Intake;
+import com.example.haushaltsapp.database.Outgo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,9 +78,12 @@ public class MySQLite extends SQLiteOpenHelper {
         db = this.getWritableDatabase();
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    // Tabelle intake: id, name, calue, day, month, year, cycle
+    //////////////////////////////////////////////////////////////////////////////////////////
 
     /*
-    Tabelle intake: id, name, calue, day, month, year, cycle
+    Funtkion um eine Einnahme in die Datenbank hinzuzufügen
      */
     public void addIntake(Intake intake){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -95,28 +102,25 @@ public class MySQLite extends SQLiteOpenHelper {
     /*
        Funktion gibt eine ArrayList zurück, welche alle Einnahmen der Datenbank
        beinhaltet
-        */
+    */
     public ArrayList<Intake> getAllIntakes(){
         ArrayList<Intake> intakes = new ArrayList<Intake>();
 
         String query = "SELECT * FROM "+TABLE_INTAKE;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-
-
         if(cursor != null){
             Intake intake = null;
             if(cursor.moveToFirst()){
                 do{
                     intake = new Intake();
-
-                    intake.setId_PK(Integer.parseInt(cursor.getString(0)));
-                    intake.setName(cursor.getString(1));
-                    intake.setValue(Double.parseDouble(cursor.getString(2)));
-                    intake.setDay(Integer.parseInt(cursor.getString(3)));
-                    intake.setMonth(Integer.parseInt(cursor.getString(4)));
-                    intake.setYear(Integer.parseInt(cursor.getString(5)));
-                    intake.setCycle(cursor.getString(6));
+                    intake.setId_PK(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                    intake.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                    intake.setValue(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE)));
+                    intake.setDay(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)));
+                    intake.setMonth(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)));
+                    intake.setYear(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_YEAR)));
+                    intake.setCycle(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CYCLE)));
 
                     intakes.add(intake);
                 }while(cursor.moveToNext());
@@ -141,13 +145,13 @@ public class MySQLite extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
-            intake.setId_PK(cursor.getInt(0));
-            intake.setName(cursor.getString(1));
-            intake.setValue(cursor.getDouble(2));
-            intake.setDay(cursor.getInt(3));
-            intake.setMonth(cursor.getInt(4));
-            intake.setYear(cursor.getInt(5));
-            intake.setCycle(cursor.getString(6));
+            intake.setId_PK(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+            intake.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+            intake.setValue(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE)));
+            intake.setDay(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)));
+            intake.setMonth(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)));
+            intake.setYear(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_YEAR)));
+            intake.setCycle(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CYCLE)));
         }
         db.close();
 
@@ -164,9 +168,8 @@ public class MySQLite extends SQLiteOpenHelper {
         String query = "SELECT * FROM "+TABLE_INTAKE+" WHERE "+KEY_ID+" = "+id;
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
-            String idOutgo = cursor.getString(0);
-            db.delete(TABLE_INTAKE, KEY_ID+" = ?", new String[]{idOutgo});
-
+            String idIntake = cursor.getString(0);
+            db.delete(TABLE_INTAKE, KEY_ID+" = ?", new String[]{idIntake});
         }
         db.close();
     }
@@ -211,7 +214,12 @@ public class MySQLite extends SQLiteOpenHelper {
     public ArrayList<Intake> getMonthIntakes(int day, int month, int year) {
         ArrayList<Intake> intakes = new ArrayList<Intake>();
 
-        String query = "SELECT * FROM " + TABLE_INTAKE + " WHERE (" + KEY_CYCLE + " = \"monatlich\") OR (" + KEY_YEAR + " = \"" + String.valueOf(year) + "\" AND " + KEY_MONTH + " = \"" + String.valueOf(month) + "\")";
+        // Einträge der vergangenen Monate mit dem zyklus monatlich
+        String condition1 = "(" + KEY_CYCLE + " = \"monatlich\" AND "+KEY_YEAR + " <= \"" + String.valueOf(year)+"\" AND "+KEY_MONTH+"< \""+ String.valueOf(month) +"\" )";
+        // Einträge des aktuellen Monats
+        String condition2 = "("+ KEY_YEAR + " = \"" + String.valueOf(year) + "\" AND " + KEY_MONTH + " = \"" + String.valueOf(month) +"\" AND "+KEY_DAY+" <= \""+String.valueOf(day) +"\")";
+        String query = "SELECT * FROM " + TABLE_INTAKE + " WHERE "+condition1+" OR " +condition2;
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
@@ -219,23 +227,17 @@ public class MySQLite extends SQLiteOpenHelper {
         if (cursor != null) {
             Intake intake = null;
             if (cursor.moveToFirst()) {
-
                 do {
-
                     intake = new Intake();
-                    String cycle = cursor.getString(6);
 
-                    if (( "monatlich".equals(cycle) && (Integer.parseInt(cursor.getString(4)) < month) && (Integer.parseInt(cursor.getString(5)) <= year)) || (Integer.parseInt(cursor.getString(3)) <= day)) {
-
-                        intake.setId_PK(Integer.parseInt(cursor.getString(0)));
-                        intake.setName(cursor.getString(1));
-                        intake.setValue(Double.parseDouble(cursor.getString(2)));
-                        intake.setDay(Integer.parseInt(cursor.getString(3)));
-                        intake.setMonth(Integer.parseInt(cursor.getString(4)));
-                        intake.setYear(Integer.parseInt(cursor.getString(5)));
-                        intake.setCycle(cursor.getString(6));
-                        intakes.add(intake);
-                    }
+                    intake.setId_PK(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                    intake.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                    intake.setValue(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE)));
+                    intake.setDay(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)));
+                    intake.setMonth(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)));
+                    intake.setYear(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_YEAR)));
+                    intake.setCycle(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CYCLE)));
+                    intakes.add(intake);
                 }while (cursor.moveToNext()) ;
             }
         }
@@ -246,10 +248,9 @@ public class MySQLite extends SQLiteOpenHelper {
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
+    // Tabelle outgo: id, name, calue, day, month, year, cycle, category
+    //////////////////////////////////////////////////////////////////////////////////////////
 
-    /*
-  Tabelle outgo: id, name, calue, day, month, year, cycle, category
-   */
    /*
     Funktion dient dazu, die übergebene Ausgabe in die Datenbank einzutragen
      */
@@ -275,36 +276,32 @@ public class MySQLite extends SQLiteOpenHelper {
     beinhaltet
      */
     public ArrayList<Outgo> getAllOutgo(){
-        ArrayList<Outgo> outgos = new ArrayList<Outgo>();
+        ArrayList<Outgo> outgoes = new ArrayList<Outgo>();
 
         String query = "SELECT * FROM "+TABLE_OUTGO;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-
 
         if(cursor != null){
             Outgo outgo = null;
             if(cursor.moveToFirst()){
                 do{
                     outgo = new Outgo();
-
-                    outgo.setId_PK(Integer.parseInt(cursor.getString(0)));
-                    outgo.setName(cursor.getString(1));
-                    outgo.setValue(Double.parseDouble(cursor.getString(2)));
-                    outgo.setDay(Integer.parseInt(cursor.getString(3)));
-                    outgo.setMonth(Integer.parseInt(cursor.getString(4)));
-                    outgo.setYear(Integer.parseInt(cursor.getString(5)));
-                    outgo.setCycle(cursor.getString(6));
-                    outgo.setCategory(cursor.getString(7));
-
-                    outgos.add(outgo);
+                    outgo.setId_PK(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                    outgo.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                    outgo.setValue(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE)));
+                    outgo.setDay(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)));
+                    outgo.setMonth(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)));
+                    outgo.setYear(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_YEAR)));
+                    outgo.setCycle(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CYCLE)));
+                    outgo.setCategory(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CATEGORY)));
+                    outgoes.add(outgo);
                 }while(cursor.moveToNext());
             }
-
         }
         db.close();
-        Log.d("getAllOutgos", outgos.toString());
-        return outgos;
+        Log.d("getAllOutgos", outgoes.toString());
+        return outgoes;
     }
 
 
@@ -320,15 +317,14 @@ public class MySQLite extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
-
-            outgo.setId_PK(cursor.getInt(0));
-            outgo.setName(cursor.getString(1));
-            outgo.setValue(cursor.getDouble(2));
-            outgo.setDay(cursor.getInt(3));
-            outgo.setMonth(cursor.getInt(4));
-            outgo.setYear(cursor.getInt(5));
-            outgo.setCycle(cursor.getString(6));
-            outgo.setCategory(cursor.getString(7));
+            outgo.setId_PK(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+            outgo.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+            outgo.setValue(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE)));
+            outgo.setDay(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)));
+            outgo.setMonth(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)));
+            outgo.setYear(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_YEAR)));
+            outgo.setCycle(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CYCLE)));
+            outgo.setCategory(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CATEGORY)));
         }
         db.close();
 
@@ -378,7 +374,12 @@ public class MySQLite extends SQLiteOpenHelper {
     public ArrayList<Outgo> getMonthOutgos(int day, int month, int year) {
         ArrayList<Outgo> outgos = new ArrayList<Outgo>();
 
-        String query = "SELECT * FROM " + TABLE_OUTGO + " WHERE (" + KEY_CYCLE + " = \"monatlich\") OR (" + KEY_YEAR + " = \"" + String.valueOf(year) + "\" AND " + KEY_MONTH + " = \"" + String.valueOf(month) + "\")";
+        // Einträge der vergangenen Monate mit dem zyklus monatlich
+        String condition1 = "(" + KEY_CYCLE + " = \"monatlich\" AND "+KEY_YEAR + " <= \"" + String.valueOf(year)+"\" AND "+KEY_MONTH+"< \""+ String.valueOf(month) +"\" )";
+        // Einträge des aktuellen Monats
+        String condition2 = "("+ KEY_YEAR + " = \"" + String.valueOf(year) + "\" AND " + KEY_MONTH + " = \"" + String.valueOf(month) +"\" AND "+KEY_DAY+" <= \""+String.valueOf(day) +"\")";
+        String query = "SELECT * FROM " + TABLE_OUTGO + " WHERE "+condition1+" OR " +condition2;
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
@@ -388,21 +389,17 @@ public class MySQLite extends SQLiteOpenHelper {
             if (cursor.moveToFirst()) {
                 do {
                     outgo = new Outgo();
-                    String cycle = cursor.getString(6);
 
-                    if (( "monatlich".equals(cycle) && (Integer.parseInt(cursor.getString(4)) < month) && (Integer.parseInt(cursor.getString(5)) <= year)) || Integer.parseInt(cursor.getString(3)) <= day) {
+                    outgo.setId_PK(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                    outgo.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                    outgo.setValue(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE)));
+                    outgo.setDay(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)));
+                    outgo.setMonth(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)));
+                    outgo.setYear(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_YEAR)));
+                    outgo.setCycle(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CYCLE)));
+                    outgo.setCategory(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CATEGORY)));
 
-                        outgo.setId_PK(Integer.parseInt(cursor.getString(0)));
-                        outgo.setName(cursor.getString(1));
-                        outgo.setValue(Double.parseDouble(cursor.getString(2)));
-                        outgo.setDay(Integer.parseInt(cursor.getString(3)));
-                        outgo.setMonth(Integer.parseInt(cursor.getString(4)));
-                        outgo.setYear(Integer.parseInt(cursor.getString(5)));
-                        outgo.setCycle(cursor.getString(6));
-                        outgo.setCategory(cursor.getString(7));
-
-                        outgos.add(outgo);
-                    }
+                    outgos.add(outgo);
                 }
                 while (cursor.moveToNext()) ;
             }
@@ -427,6 +424,28 @@ public class MySQLite extends SQLiteOpenHelper {
         return value;
     }
 
+    public float getCategorieOutgosMonth(int day,int month, int year, String categorie)
+    {
+        List<Outgo> outgos = getMonthOutgos( day, month, year);
+        int lenght = outgos.size();
+        int i = 0;
+        float monthOutgo = 0;
+        double outvalue = 0;
+        String cat;
+
+        while (i < lenght) {
+            cat = outgos.get(i).getCategory();
+             if (categorie.equals(cat)) {
+                 outvalue = outgos.get(i).getValue();
+                 monthOutgo = monthOutgo +(float) outvalue;
+             }
+            i++;
+        }
+        return monthOutgo;
+    }
+
+
+
     //////////////////////////////////////////////////////////////////////////////////////////
 
       /*
@@ -448,6 +467,29 @@ public class MySQLite extends SQLiteOpenHelper {
         Log.d("addCategory", category.toString());
     }
 
+    // Lösche Kategorie mit id
+    public void deleteCategoryById(int id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM "+TABLE_CATEGORY+" WHERE "+KEY_ID+" = "+id;
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.moveToFirst()){
+            String idcategory = cursor.getString(0);
+            db.delete(TABLE_CATEGORY, KEY_ID+" = ?", new String[]{idcategory});
+        }
+        db.close();
+    }
+
+    // Lösche Kategorie mit namen
+    public void deleteCategoryByName(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM "+TABLE_CATEGORY+" WHERE "+KEY_NAME+" = \""+name+"\"";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.moveToFirst()){
+            String idcategory = cursor.getString(0);
+            db.delete(TABLE_CATEGORY, KEY_ID+" = ?", new String[]{idcategory});
+        }
+        db.close();
+    }
 
     /*
     Alle Categorien bekommen
@@ -459,18 +501,16 @@ public class MySQLite extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
-
         if(cursor != null){
             Category category = null;
             if(cursor.moveToFirst()){
                 do{
                     category = new Category();
 
-                    category.setId(Integer.parseInt(cursor.getString(0)));
-                    category.setName_PK(cursor.getString(1));
-                    category.setColor(Integer.parseInt(cursor.getString(2)));
-                    category.setBorder(Double.parseDouble(cursor.getString(3)));
-
+                    category.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                    category.setName_PK(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                    category.setColor(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_COLOR)));
+                    category.setBorder(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_BORDER)));
 
                     categories.add(category);
                 }while(cursor.moveToNext());
@@ -482,19 +522,22 @@ public class MySQLite extends SQLiteOpenHelper {
         return categories;
     }
 
+    /*
+    Erhalte das Object Category mit dem namen
+     */
     public Category getCategory(String name){
         Category category = new Category();
 
         SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM "+TABLE_CATEGORY+" WHERE "+KEY_NAME+" = "+name;
+        String query = "SELECT * FROM "+TABLE_CATEGORY+" WHERE "+KEY_NAME+" = \""+name+"\"";
 
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
 
-            category.setId(cursor.getInt(0));
-            category.setName_PK(cursor.getString(1));
-            category.setColor(cursor.getInt(2));
-            category.setBorder(cursor.getDouble(3));
+            category.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+            category.setName_PK(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+            category.setColor(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_COLOR)));
+            category.setBorder(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_BORDER)));
         }
         db.close();
 
@@ -515,7 +558,6 @@ public class MySQLite extends SQLiteOpenHelper {
         db.insert(TABLE_TODO, null, value);
         db.close();
     }
-
 
     public List<TaskModel> getAllTasks(){
         List<TaskModel> taskList = new ArrayList<>();
@@ -554,7 +596,6 @@ public class MySQLite extends SQLiteOpenHelper {
         cv.put(STATUS, status);
         db.update(TABLE_TODO, cv, KEY_ID + "= ?", new String[] {String.valueOf(id)});
     }
-
 
     //Löschen der Task
     public void deleteTask(int id){

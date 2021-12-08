@@ -6,17 +6,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import android.graphics.Color;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.haushaltsapp.database.Category;
+import com.example.haushaltsapp.database.Intake;
+import com.example.haushaltsapp.database.MySQLite;
+import com.example.haushaltsapp.database.Outgo;
 
 import org.eazegraph.lib.charts.BarChart;
 import org.eazegraph.lib.charts.PieChart;
@@ -37,21 +41,41 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvOutgo, tvIntake, tvResidualbudget;
     private PieChart pieChart;
     private BarChart mBarChart;
-    private ValueLineChart LineChart;
 
     //beide Datanbanken anlegen für die Einnahmen und Ausgaben
     private MySQLite mySQLite = new MySQLite(this, null, null, 0);
- //   private MySQLiteOutgo outgoDB = new MySQLiteOutgo(this, null, null, 0);
 
     //REQUESTCODES
     private final int REQUESTCODE_ADD = 12; //AddEntryActivity
     private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
     private final int REQUESTCODE_EDIT = 14; //EditEntryActivity
+    private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
 
     //aktuelles Datum
     private int day;
     private int month;
     private int year;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mySQLite.deleteCategoryById(7);
+
+        //Erhalte das aktuelle Datum
+        getDate();
+
+        //Kategorien setzen
+        setCategories();
+
+        //Restbudget in den neuen Monat übernehmen
+        setLastBudget();
+
+        //Daten anzeigen
+        setData();
+    }
 
     // Setzt die Variablen day, month, year
     private void getDate(){
@@ -61,30 +85,6 @@ public class MainActivity extends AppCompatActivity {
         day = Integer.parseInt(dates.substring(0,2));
         month = Integer.parseInt(dates.substring(3,5));
         year = Integer.parseInt(dates.substring(6,10));
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        //Erhalte das aktuelle Datum
-        getDate();
-
-        //Kategorien setzen
-        setCategories();
-
-        //Setzen der Texte im textview und pie Chart und Barchart
-        tvIntake = findViewById(R.id.tvEinnahmen); //warum hier?
-        tvOutgo = findViewById(R.id.tvAusgaben);
-        tvResidualbudget = findViewById(R.id.tvRestbudget);
-
-        pieChart = findViewById(R.id.piechart);
-       mBarChart = findViewById(R.id.barchart);
-        LineChart = findViewById(R.id.linechart);
-
-        //Daten anzeigen
-        setData();
     }
 
     //Kategorien anlegen
@@ -106,11 +106,73 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
+    //Übertrage das Budget des letzten Monats
+    private void setLastBudget(){
+
+        //Prüfen ob es einen solchen Eintrag gibt
+        //Dazu erst den gewünschten Titel generieren
+        String titel = "Restbudget vom ";
+        if(month > 1){
+            titel = titel+(month-1)+"."+year;
+        }else{
+            titel = titel+12+"."+(year-1);
+        }
+
+
+        //Testen, ob es einen solchen Eintrag gibt. Später
+        //mit Methode in der DB ersetzen -> Laufzeit
+        ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day, month, year);
+        ArrayList<Outgo> outgoes = mySQLite.getMonthOutgos(day, month, year);
+
+        boolean existsIntake = false;
+        boolean existsOutgo = false;
+        for (int i = 0; i < intakes.size(); i++){
+            if(intakes.get(i).getName().equals(titel)){
+                existsIntake = true;
+            }
+        }
+
+        if(!existsIntake){ //Laufzeit
+            for (int i = 0; i < outgoes.size(); i++){
+                if(outgoes.get(i).getName().equals(titel)){
+                    existsOutgo = true;
+                }
+            }
+        }
+
+        //falls nicht -> Eintrag erstellen
+        //wenn value negaitv -> Outgo wenn positiv Intake
+        if(!(existsIntake || existsOutgo)) {
+            double value = 0.0;
+            if (month > 1) {
+                value = mySQLite.getValueIntakesMonth(31, month - 1, year) - mySQLite.getValueOutgosMonth(31, month - 1, year);
+            } else {
+                value = mySQLite.getValueIntakesMonth(31, 1, year - 1) - mySQLite.getValueOutgosMonth(31, 1, year - 1);
+            }
+            if(value >= 0) { //Einnahme
+                Intake intake = new Intake(titel, value, 1, month, year, "einmalig");
+                mySQLite.addIntake(intake);
+            }else{ //Ausgabe
+                value = value * (-1);
+                Outgo outgo = new Outgo(titel, value, 1, month, year, "einmalig","Sonstiges");
+                mySQLite.addOutgo(outgo);
+            }
+        }
+    }
+
     //Werte aus der Datenbank
     private void setData()
     {
-        //Daten aus Datenbank:
-        //später noch Fester zur Datumsauswahl einfügen
+        //Setzen der textview
+        tvIntake = findViewById(R.id.tvEinnahmen);
+        tvOutgo = findViewById(R.id.tvAusgaben);
+        tvResidualbudget = findViewById(R.id.tvRestbudget);
+
+        pieChart = findViewById(R.id.piechart);
+        mBarChart = findViewById(R.id.barchart);
+        //Daten von Monat aus Datenbank:
         float outgo = mySQLite.getValueOutgosMonth(day,month,year);
         float intake = mySQLite.getValueIntakesMonth(day,month,year);
         float residualBudget = intake-outgo;
@@ -123,25 +185,17 @@ public class MainActivity extends AppCompatActivity {
         //Diagramme zurücksetzten
         pieChart.clearChart();
         mBarChart.clearChart();
-        //LineChart.clearChart();
         //Diagram Methoden aufrufen
         PieChart(intake,outgo,residualBudget);
         BarGraph(intake,outgo,residualBudget);
-        //LineGraphMonth();
-
     }
+
 
 
     public void PieChart (float Einnahmen,float Ausgaben, float Restbudget)
     {
         //Daten und Farben zuordnen
         //es geht noch nicht die Farbe aus colors.xml zu übernehmen
-       /* pieChart.addPieSlice(new PieModel(
-                "Einnahmen",
-                Einnahmen,
-                Color.parseColor("#66BB6A")));
-
-        */
         pieChart.addPieSlice(new PieModel(
                 "Ausgaben",
                 Ausgaben,
@@ -151,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
                 Restbudget,
                 Color.parseColor("#FFA726")));
 
-        //Darstellungsoptionen
         pieChart.setInnerPaddingOutline(5);
         pieChart.startAnimation();
         pieChart.setBackgroundColor(0);
@@ -169,85 +222,22 @@ public class MainActivity extends AppCompatActivity {
         mBarChart.addBar(new BarModel(
                 Restbudget,
                 Color.parseColor("#FFA726")));
-        //Darstellungsoptionen
+
         mBarChart.startAnimation();
-        mBarChart.setShowValues(true);  //werte Aus Balken
+        mBarChart.setShowValues(true);  //werte auf Balken
         mBarChart.setActivated(false);
 
-    }
-
-    public void LineGraphMonth()
-    {
-        //Benötigt Monat als Sting und Geldwert als Float
-        //für Monatsvergleich der Ausgaben
-        ValueLineSeries series = new ValueLineSeries();
-        series.setColor(0xFF56B7F1);
-        int i =1; //monate hochzählen
-
-        //aktuelles Datum abfragen über month
-        //letzer Monata wird die Achse nicht beschriftet
-        while (i<=(month+1))
-        {
-            //Für Achsenbeschriftung
-            String monatJahresansicht ="leer";
-
-            switch(i) {
-                case 1:
-                    monatJahresansicht = "Jan";
-                    break;
-                case 2:
-                    monatJahresansicht = "Feb";
-                    break;
-                case 3:
-                    monatJahresansicht = "Mar";
-                    break;
-                case 4:
-                    monatJahresansicht = "Apr";
-                    break;
-                case 5:
-                    monatJahresansicht = "Mai";
-                    break;
-                case 6:
-                    monatJahresansicht = "Jun";
-                    break;
-                case 7:
-                    monatJahresansicht = "Jul";
-                    break;
-                case 8:
-                    monatJahresansicht = "Aug";
-                    break;
-                case 9:
-                    monatJahresansicht = "Sep";
-                    break;
-                case 10:
-                    monatJahresansicht = "Okt";
-                    break;
-                case 11:
-                    monatJahresansicht = "Nov";
-                    break;
-                case 12:
-                    monatJahresansicht = "Dez";
-                    break;
-            }
-            //Datnbankzugriff:
-            float AusgabeMonateX = mySQLite.getValueOutgosMonth(31, i, year);
-            series.addPoint(new ValueLinePoint(monatJahresansicht, AusgabeMonateX));
-
-            i++;
-        }
-        //Noch Jahresübergang einbringen
-        //prüfen bis wann Ausgabe vorhaneden sind
-
-        //Darstellungsoptionen
-        LineChart.addSeries(series);
-        LineChart.startAnimation();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.navigation_menu, menu);
+
+        //Die aktuelle Activity im Menü ausblenden
+        MenuItem item = menu.findItem(R.id.itemMainPage);
+        item.setEnabled(false);
         return true;
     }
 
@@ -256,27 +246,37 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()){
+            case R.id.itemMainPage:
+                Intent switchToMain = new Intent(this, MainActivity.class);
+                startActivity(switchToMain);
+                return true;
 
-            case R.id.itemEinnahmenAusgaben:
+            case R.id.itemAddIntakesOutgoes:
+                mySQLite = new MySQLite(this);
                 ArrayList<Category> categories = mySQLite.getAllCategory();
                 Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
                 switchToAddEntry.putExtra("list",categories);
+                mySQLite.close();
                 startActivityForResult(switchToAddEntry,REQUESTCODE_ADD);
                 return true;
 
-            case R.id.subitemEinnahmen:
+            case R.id.subitemIntakes:
+                mySQLite = new MySQLite(this);
                 ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day,month,year);
                 Intent getIntakes = new Intent(this, ShowEntriesActivity.class);
                 getIntakes.putExtra("list",(Serializable) intakes);
                 getIntakes.putExtra("entry","Intake");
+                mySQLite.close();
                 startActivityForResult(getIntakes, REQUESTCODE_SHOW);
                 return true;
 
-            case R.id.subitemAusgaben:
+            case R.id.subitemOutgoes:
+                mySQLite = new MySQLite(this);
                 ArrayList<Outgo> outgoes = mySQLite.getMonthOutgos(day, month, year);
                 Intent getOutgoes = new Intent(this, ShowEntriesActivity.class);
                 getOutgoes.putExtra("list",(Serializable) outgoes);
                 getOutgoes.putExtra("entry","Outgo");
+                mySQLite.close();
                 startActivityForResult(getOutgoes, REQUESTCODE_SHOW);
                 return true;
 
@@ -285,7 +285,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(switchToBudgetLimit);
                 return true;
 
-            case R.id.itemDiagrammansicht:
+            case R.id.itemDiagramView:
+                mySQLite = new MySQLite(this);
                 Intent switchToDiagramView = new Intent(this, DiagramViewActivity.class);
                 //Alle Ausgaben in Datenbank
                 ArrayList<Outgo> AlloutgoD =mySQLite.getAllOutgo();
@@ -293,10 +294,12 @@ public class MainActivity extends AppCompatActivity {
                 //Alle Einnahmen in Datenbank
                 ArrayList<Intake> AllIntakeD =mySQLite.getAllIntakes();
                 switchToDiagramView.putExtra("dataIn",AllIntakeD);
+                mySQLite.close();
                 startActivity(switchToDiagramView);
                 return true;
 
-            case R.id.itemTabelle:
+            case R.id.itemTableView:
+                mySQLite = new MySQLite(this);
                 Intent switchToChartView = new Intent(this, ChartViewActivity.class);
                 //Alle Ausgaben in Datenbank
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
@@ -307,10 +310,11 @@ public class MainActivity extends AppCompatActivity {
                 //Alle Einnahmen in Datenbank
                 ArrayList<Outgo> AllintakeT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataIn",AllintakeT);
+                mySQLite.close();
                 startActivity(switchToChartView);
                 return true;
 
-            case R.id.itemKalender:
+            case R.id.itemCalendar:
                 Intent switchToCalender = new Intent(this, CalendarEventActivity.class);
                 startActivity(switchToCalender);
                 return true;
@@ -318,6 +322,20 @@ public class MainActivity extends AppCompatActivity {
             case R.id.itemToDoListe:
                 Intent switchToToDoList = new Intent(this, ToDoListActivity.class);
                 startActivity(switchToToDoList);
+                return true;
+
+            case R.id.itemAddCategory:
+                mySQLite = new MySQLite(this);
+                Intent switchToAddCategory = new Intent(this, AddCategoryActivity.class);
+                ArrayList<Category> categories1 = mySQLite.getAllCategory();
+                switchToAddCategory.putExtra("list",(Serializable) categories1);
+                mySQLite.close();
+                startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
+                return true;
+
+            case R.id.itemPdfCreator:
+                Intent switchToPdfCreator = new Intent(this, PDFCreatorActivity.class);
+                startActivity(switchToPdfCreator);
                 return true;
 
             default:
@@ -334,13 +352,16 @@ public class MainActivity extends AppCompatActivity {
 
         // Von AddEntryActivity
         if (resultCode == RESULT_OK && requestCode == REQUESTCODE_ADD) {
-            String entry = data.getExtras().getString("entry");
-            if (entry.equals("Intake")) { //Eingabe
-                Intake intake = (Intake) data.getSerializableExtra("object");
-                mySQLite.addIntake(intake);
-            } else { //Ausgabe
-                Outgo outgo = (Outgo) data.getSerializableExtra("object");
-                mySQLite.addOutgo(outgo);
+            String selection = data.getExtras().getString("selection");
+            if(selection.equals("add")) {
+                String entry = data.getExtras().getString("entry");
+                if (entry.equals("Intake")) { //Eingabe
+                    Intake intake = (Intake) data.getSerializableExtra("object");
+                    mySQLite.addIntake(intake);
+                } else { //Ausgabe
+                    Outgo outgo = (Outgo) data.getSerializableExtra("object");
+                    mySQLite.addOutgo(outgo);
+                }
             }
         }
 
@@ -388,7 +409,16 @@ public class MainActivity extends AppCompatActivity {
                     mySQLite.updateOutgo(outgo, id);
                 }
             }
-
+        }
+        //Kategorie hinzufügen
+        if(resultCode == RESULT_OK && requestCode == REQUESTCODE_ADD_CATEGORY){
+            String selection = data.getExtras().getString("selection");
+            if(selection.equals("ok")){
+                Category category = (Category) data.getSerializableExtra("category");
+               // mySQLite.addCategory(category);
+                Toast.makeText(MainActivity.this, category.toString(),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
         setData();
     }
