@@ -71,7 +71,6 @@ public class AnnualViewActivity extends AppCompatActivity {
         db = new MySQLite(this);
         db.openDatabase();
 
-        //Daten anzeigen
         setData();
     }
 
@@ -183,7 +182,6 @@ public class AnnualViewActivity extends AppCompatActivity {
                     break;
             }
             //Datnbankzugriff: AUsgaben
-            //hier Werte aus Dtenbank von einzelnen Monaten übergeben,-
             float AusgabeMonateX = db.getValueOutgosMonth(31,monthrechne,vorYear);
             Outgoe.addPoint(new ValueLinePoint(monatJahresansicht, AusgabeMonateX));
 
