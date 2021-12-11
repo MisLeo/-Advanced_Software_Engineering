@@ -138,9 +138,8 @@ public class AnnualViewActivity extends AppCompatActivity {
         }
         int vorYear = year-1; //2020
 
-        //Für vorjahresanzeige
+        //vorjahresanzeige
         while (monthrechne <= 12) {
-            //Für Achsenbeschriftung
             String monatJahresansicht = "leer";
 
             switch (monthrechne) {
@@ -195,7 +194,6 @@ public class AnnualViewActivity extends AppCompatActivity {
         //dieses Jahr anzeigen
         //letzer Monata wird die Achse nicht beschriftet
         while (mo <= (month)) {
-            //Für Achsenbeschriftung
             String monatJahresansicht = "leer";
 
             switch (mo) {
@@ -260,9 +258,8 @@ public class AnnualViewActivity extends AppCompatActivity {
 
         int vorYear = year-1; //2020
 
-        //Für vorjahresanzeige
+        //vorjahresanzeige
         while (monthrechne <= 12) {
-            //Für Achsenbeschriftung
             String monatJahresansicht = "leer";
 
             switch (monthrechne) {
@@ -304,7 +301,6 @@ public class AnnualViewActivity extends AppCompatActivity {
                     break;
             }
             //Datnbankzugriff: AUsgaben
-            //hier Werte aus Datenbank von einzelnen Monaten übergeben
             float AusgabeMonateX = db.getValueOutgosMonth(31,monthrechne,vorYear);
             BarChartyear.addBar(new BarModel(
                     monatJahresansicht,
@@ -317,55 +313,55 @@ public class AnnualViewActivity extends AppCompatActivity {
             //ANzeige von Wert in Text unter Diagramm
             switch (m) {
                 case 1:
-                    tvM1out.setText(Float.toString(AusgabeMonateX));
+                    tvM1out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM1.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 2:
-                    tvM2out.setText(Float.toString(AusgabeMonateX));
+                    tvM2out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM2.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 3:
-                    tvM3out.setText(Float.toString(AusgabeMonateX));
+                    tvM3out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM3.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 4:
-                    tvM4out.setText(Float.toString(AusgabeMonateX));
+                    tvM4out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM4.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 5:
-                    tvM5out.setText(Float.toString(AusgabeMonateX));
+                    tvM5out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM5.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 6:
-                    tvM6out.setText(Float.toString(AusgabeMonateX));
+                    tvM6out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM6.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 7:
-                    tvM7out.setText(Float.toString(AusgabeMonateX));
+                    tvM7out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM7.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 8:
-                    tvM8out.setText(Float.toString(AusgabeMonateX));
+                    tvM8out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM8.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 9:
-                    tvM9out.setText(Float.toString(AusgabeMonateX));
+                    tvM9out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM9.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 10:
-                    tvM10out.setText(Float.toString(AusgabeMonateX));
+                    tvM10out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM10.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 11:
-                    tvM11out.setText(Float.toString(AusgabeMonateX));
+                    tvM11out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM11.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 12:
-                    tvM12out.setText(Float.toString(AusgabeMonateX));
+                    tvM12out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM12.setText(monatJahresansicht+"."+vorYear);
                     break;
                 case 13:
-                    tvM13out.setText(Float.toString(AusgabeMonateX));
+                    tvM13out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM13.setText(monatJahresansicht+"."+vorYear);
                     break;
             }
@@ -377,7 +373,6 @@ public class AnnualViewActivity extends AppCompatActivity {
         //dieses Jahr anzeigen
         //letzer Monata wird die Achse nicht beschriftet
         while (mo <= (month)) {
-            //Für Achsenbeschriftung
             String monatJahresansicht = "leer";
 
             switch (mo) {
@@ -433,55 +428,55 @@ public class AnnualViewActivity extends AppCompatActivity {
             //ANzeige von Wert in Text unter Diagramm
             switch (m) {
                 case 1:
-                    tvM1out.setText(Float.toString(AusgabeMonateX));
+                    tvM1out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM1.setText(monatJahresansicht+"."+year);
                     break;
                 case 2:
-                    tvM2out.setText(Float.toString(AusgabeMonateX));
+                    tvM2out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM2.setText(monatJahresansicht+"."+year);
                     break;
                 case 3:
-                    tvM3out.setText(Float.toString(AusgabeMonateX));
+                    tvM3out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM3.setText(monatJahresansicht+"."+year);
                     break;
                 case 4:
-                    tvM4out.setText(Float.toString(AusgabeMonateX));
+                    tvM4out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM4.setText(monatJahresansicht+"."+year);
                     break;
                 case 5:
-                    tvM5out.setText(Float.toString(AusgabeMonateX));
+                    tvM5out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM5.setText(monatJahresansicht+"."+year);
                     break;
                 case 6:
-                    tvM6out.setText(Float.toString(AusgabeMonateX));
+                    tvM6out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM6.setText(monatJahresansicht+"."+year);
                     break;
                 case 7:
-                    tvM7out.setText(Float.toString(AusgabeMonateX));
+                    tvM7out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM7.setText(monatJahresansicht+"."+year);
                     break;
                 case 8:
-                    tvM8out.setText(Float.toString(AusgabeMonateX));
+                    tvM8out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM8.setText(monatJahresansicht+"."+year);
                     break;
                 case 9:
-                    tvM9out.setText(Float.toString(AusgabeMonateX));
+                    tvM9out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM9.setText(monatJahresansicht+"."+year);
                     break;
                 case 10:
-                    tvM10out.setText(Float.toString(AusgabeMonateX));
+                    tvM10out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM10.setText(monatJahresansicht+"."+year);
                     break;
                 case 11:
-                    tvM11out.setText(Float.toString(AusgabeMonateX));
+                    tvM11out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM11.setText(monatJahresansicht+"."+year);
                     break;
                 case 12:
-                    tvM12out.setText(Float.toString(AusgabeMonateX));
+                    tvM12out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM12.setText(monatJahresansicht+"."+year);
                     break;
                 case 13:
-                    tvM13out.setText(Float.toString(AusgabeMonateX));
+                    tvM13out.setText(Float.toString(AusgabeMonateX)+" €");
                     tvM13.setText(monatJahresansicht+"."+year);
                     break;
             }
@@ -495,7 +490,8 @@ public class AnnualViewActivity extends AppCompatActivity {
 
     }
 
-   /* public void StackedBarGraphMonth() {
+
+  /*  public void StackedBarGraphMonth() {
 
         //Datenbankzugriff
         Intent intent = getIntent();
@@ -569,12 +565,12 @@ public class AnnualViewActivity extends AppCompatActivity {
             //Datnbankzugriff: Kategorien
 
 
-            float AusgabeWohnen = (float) db.getCategorieOutgosMonth(31,monthrechne,vorYear,"Wohnen");
-            float AusgabeLebensmittel =(float) db.getCategorieOutgosMonth(31,monthrechne,vorYear,"Lebensmittel");
-            float AUsgabeVerkehrsmittel = (float) db.getCategorieOutgosMonth(31,monthrechne,vorYear,"Verkehrsmittel");
-            float AusgabeGesundheit =(float) db.getCategorieOutgosMonth(31,monthrechne,vorYear,"Gesundheit");
-            float AusgabeFreizeit =(float) db.getCategorieOutgosMonth(31,monthrechne,vorYear,"Freizeit");
-            float AusgabeSonstiges = (float)db.getCategorieOutgosMonth(31,monthrechne,vorYear,"Sonstiges");
+            float AusgabeWohnen = (float) MonthOutgoCategorie(31,monthrechne,vorYear,Data,"Wohnen");
+            float AusgabeLebensmittel =(float) MonthOutgoCategorie(31,monthrechne,vorYear,Data,"Lebensmittel");
+            float AUsgabeVerkehrsmittel = (float) MonthOutgoCategorie(31,monthrechne,vorYear,Data,"Verkehrsmittel");
+            float AusgabeGesundheit =(float) MonthOutgoCategorie(31,monthrechne,vorYear,Data,"Gesundheit");
+            float AusgabeFreizeit =(float) MonthOutgoCategorie(31,monthrechne,vorYear,Data,"Freizeit");
+            float AusgabeSonstiges = (float) MonthOutgoCategorie(31,monthrechne,vorYear,Data,"Sonstiges");
 
             //geht nicht!!!!
             M1.addBar(new BarModel(
@@ -652,12 +648,12 @@ public class AnnualViewActivity extends AppCompatActivity {
             }
             //Datnbankzugriff:
 
-            float AusgabeWohnen = (float) db.getCategorieOutgosMonth(31,mo,vorYear,"Wohnen");
-            float AusgabeLebensmittel =(float) db.getCategorieOutgosMonth(31,mo,vorYear,"Lebensmittel");
-            float AUsgabeVerkehrsmittel = (float) db.getCategorieOutgosMonth(31,mo,vorYear,"Verkehrsmittel");
-            float AusgabeGesundheit =(float) db.getCategorieOutgosMonth(31,mo,vorYear,"Gesundheit");
-            float AusgabeFreizeit =(float) db.getCategorieOutgosMonth(31,mo,vorYear,"Freizeit");
-            float AusgabeSonstiges = (float)db.getCategorieOutgosMonth(31,mo,vorYear,"Sonstiges");
+            float AusgabeWohnen = (float) MonthOutgoCategorie(31,mo,year,Data,"Wohnen");
+            float AusgabeLebensmittel =(float) MonthOutgoCategorie(31,mo,year,Data,"Lebensmittel");
+            float AUsgabeVerkehrsmittel = (float) MonthOutgoCategorie(31,mo,year,Data,"Verkehrsmittel");
+            float AusgabeGesundheit =(float) MonthOutgoCategorie(31,mo,year,Data,"Gesundheit");
+            float AusgabeFreizeit =(float) MonthOutgoCategorie(31,mo,year,Data,"Freizeit");
+            float AusgabeSonstiges = (float) MonthOutgoCategorie(31,mo,year,Data,"Sonstiges");
 
             StackKat1[stack].addBar(new BarModel(
                     monatJahresansicht,
@@ -693,8 +689,8 @@ public class AnnualViewActivity extends AppCompatActivity {
         BarChartyear.setShowValues(true);
         BarChartyear.setActivated(false);
 
-    }
-*/
+    }*/
+
 
 
 

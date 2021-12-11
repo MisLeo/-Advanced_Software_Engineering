@@ -25,11 +25,12 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     private List<TaskModel> todoList;
     private MySQLite db;
     private ToDoListActivity activity;
+    private static ToDoInterface toDoInterface;
 
-
-    public ToDoAdapter(MySQLite db, ToDoListActivity activity) {
+    public ToDoAdapter(MySQLite db, ToDoListActivity activity, ToDoInterface toDoInterface) {
         this.db = db;
         this.activity = activity;
+        this.toDoInterface = toDoInterface;
     }
 
     @NonNull
@@ -62,7 +63,11 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     //Anzeige aller Elemente bis zum Ende der toDoListe
     @Override
     public int getItemCount() {
-        return todoList.size();
+        int size = 0;
+        if(todoList != null) {
+            size = todoList.size();
+        }
+        return size;
     }
 
     private boolean toBoolean(int n) {
@@ -95,22 +100,19 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
         fragment.show(activity.getSupportFragmentManager(), AddNewTask.TAG);
     }
 
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         CheckBox task;
+
         ViewHolder(View view) {
             super(view);
             task = view.findViewById(R.id.todoCheckBox);
-            task.setOnClickListener(new View.OnClickListener(){
+            task.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                  int pos = getAdapterPosition();
-                  Toast.makeText(v.getContext(), "You clicked this" + pos, Toast.LENGTH_SHORT).show();
-
+                    int pos = getAdapterPosition();
+                    toDoInterface.onTaskClick(pos);
                 }
             });
         }
     }
-
 }

@@ -3,6 +3,7 @@ package com.example.haushaltsapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import android.content.Intent;
@@ -126,8 +127,8 @@ public class DiagramViewActivity extends AppCompatActivity {
 
         wohnencolor =findViewById(R.id.ColorWohnen);
         lebensmittelcolor =findViewById(R.id.ColorLebensmittel);
-        verkehrsmittelcolor =findViewById(R.id.COlorVerkehrsmittel);
-        gesundheitcolor = findViewById(R.id.COlorGesundheit);
+        verkehrsmittelcolor =findViewById(R.id.ColorVerkehrsmittel);
+        gesundheitcolor = findViewById(R.id.ColorGesundheit);
         freizeitcolor = findViewById(R.id.ColorFreizeit);
         sonstigescolor =findViewById(R.id.COlorSonstiges);
 
@@ -166,41 +167,30 @@ public class DiagramViewActivity extends AppCompatActivity {
             switch (n)
             {
                 case 0:
-                    tvWohnen.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
-                    wohnencolor.setBackgroundColor(CatColor);
-                    break;
-                case 1:
-                    tvLebensmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
-                    lebensmittelcolor.setBackgroundColor(CatColor);
-                    break;
-                case 2:
-                    tvVerkehrsmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
+                    tvVerkehrsmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     verkehrsmittelcolor.setBackgroundColor(CatColor);
                     break;
+                case 1:
+                    tvWohnen.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    wohnencolor.setBackgroundColor(CatColor);
+                    break;
+                case 2:
+                    tvLebensmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    lebensmittelcolor.setBackgroundColor(CatColor);
+                    break;
                 case 3:
-                    tvGesundheit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
+                    tvGesundheit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     gesundheitcolor.setBackgroundColor(CatColor);
                     break;
                 case 4:
-                    tvFreizeit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
+                    tvFreizeit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     freizeitcolor.setBackgroundColor(CatColor);
                     break;
                 case 5:
-                    tvSonstiges.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
+                    tvSonstiges.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     sonstigescolor.setBackgroundColor(CatColor);
 
-
-                    //zum Testen, da noch keine  neue Kategorie vorhanden ist
-                    etc1color.setBackgroundColor(CatColor);
-                    etc1n.setText(CatName);
-                    letc1.setVisibility(View.VISIBLE);
-
-                    etc1name.setText(CatName);
-                    tvetc1.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
-                    retc1.setVisibility(View.VISIBLE);
-                    break;
-
-                    //Wenn weiter Kategorien eingetragen sind, weden diese angezeigt
+                //Wenn weiter Kategorien eingetragen sind, weden diese angezeigt
                 //wenn nicht sind sie standardmäßig ausgeblendet
                 case 6:
                     etc1color.setBackgroundColor(CatColor);
@@ -208,7 +198,7 @@ public class DiagramViewActivity extends AppCompatActivity {
                     letc1.setVisibility(View.VISIBLE);
 
                     etc1name.setText(CatName);
-                    tvetc1.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
+                    tvetc1.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     retc1.setVisibility(View.VISIBLE);
                     break;
                 case 7:
@@ -217,7 +207,7 @@ public class DiagramViewActivity extends AppCompatActivity {
                     letc2.setVisibility(View.VISIBLE);
 
                     etc2name.setText(CatName);
-                    tvetc2.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
+                    tvetc2.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     retc2.setVisibility(View.VISIBLE);
                     break;
                 case 8:
@@ -226,11 +216,11 @@ public class DiagramViewActivity extends AppCompatActivity {
                     letc3.setVisibility(View.VISIBLE);
 
                     etc3name.setText(CatName);
-                    tvetc3.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName)));
+                    tvetc3.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     retc3.setVisibility(View.VISIBLE);
                     break;
             }
-         n=n+1;
+            n=n+1;
         }
 
         //Diagramme zurücksetzten
@@ -287,7 +277,7 @@ public class DiagramViewActivity extends AppCompatActivity {
             CatColor =Categories.get(n).getColor();
 
             BarChart.addBar(new BarModel(
-                    CatName,
+                    //CatName,
                     Costs,
                     CatColor
             ));
@@ -296,22 +286,32 @@ public class DiagramViewActivity extends AppCompatActivity {
 
         //mBarChart.callOnClick();
         BarChart.startAnimation();
-        BarChart.setShowValues(true);  //keine Kommazahl darzustellen
-        //mBarChart.setAccessibilityHeading(true);
+        BarChart.setShowValues(false);  //keine Kommazahl darzustellen
+        //BarChart.setAccessibilityHeading(true);
         BarChart.setActivated(false);
     }
+
 
 
     public void changeMonth(View view)
     {
         setData();
     }
-
     //Link zu Jahresansicht
     //Platzierung noch ändern
     public void changeToAnnual(View view) {
+
+        Intent intent = getIntent();
+        ArrayList<Outgo> Data = (ArrayList<Outgo>) intent.getSerializableExtra("dataOut");
+        ArrayList<Intake> DataIn = (ArrayList<Intake>) intent.getSerializableExtra("dataIn");
+
         Intent switchToAnnualView= new Intent(this, AnnualViewActivity.class);
+        ArrayList<Outgo> AlloutgoD =Data;
+        switchToAnnualView.putExtra("dataOut",AlloutgoD);
+        ArrayList<Intake> AllIntakes =DataIn;
+        switchToAnnualView.putExtra("dataIn",AllIntakes);
         startActivity(switchToAnnualView);
+        //noch Datenbank mitgeben
         }
 
 

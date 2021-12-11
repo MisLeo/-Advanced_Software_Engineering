@@ -13,9 +13,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.haushaltsapp.ToDoListPackage.AddNewTask;
-import com.example.haushaltsapp.ToDoListPackage.DialogCloseListener;
+import com.example.haushaltsapp.ToDoListPackage.ToDoInterface;
 import com.example.haushaltsapp.ToDoListPackage.SwipeHandler;
 import com.example.haushaltsapp.ToDoListPackage.ToDoAdapter;
 import com.example.haushaltsapp.ToDoListPackage.TaskModel;
@@ -23,14 +27,15 @@ import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-public class ToDoListActivity extends AppCompatActivity implements DialogCloseListener {
+import androidx.appcompat.app.AlertDialog;
+public class ToDoListActivity extends AppCompatActivity implements ToDoInterface, AdapterView.OnItemSelectedListener {
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
@@ -48,38 +53,42 @@ public class ToDoListActivity extends AppCompatActivity implements DialogCloseLi
     private ToDoAdapter tasksAdapter;
     private FloatingActionButton fabAddTask;
     private List<TaskModel> taskList;
+    private Spinner spinner;
+    private static String type;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_to_do_list);
+        spinner = findViewById(R.id.ToDoListSpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.spinner_ToDoList, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
 
         mySQLite = new MySQLite(this);
         mySQLite.openDatabase();
         tasksRecyclerView = findViewById(R.id.tasksRecyclerView);
         tasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        tasksAdapter = new ToDoAdapter(mySQLite,this);
+        tasksAdapter = new ToDoAdapter(mySQLite,this,this);
         tasksRecyclerView.setAdapter(tasksAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeHandler(tasksAdapter));
         itemTouchHelper.attachToRecyclerView(tasksRecyclerView);
         fabAddTask = findViewById(R.id.fab);
         //Holen der Einträge aus der Datenbank
-        taskList = mySQLite.getAllTasks();
+        taskList = mySQLite.getTaskByType(type);
         Collections.reverse(taskList);
         tasksAdapter.setTasks(taskList);
 
-        //
         fabAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddNewTask.newInstance().show(getSupportFragmentManager(), AddNewTask.TAG);
+                 AddNewTask.newInstance().show(getSupportFragmentManager(), AddNewTask.TAG);
             }
         });
 
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -195,13 +204,47 @@ public class ToDoListActivity extends AppCompatActivity implements DialogCloseLi
     }
 
 
-
     @Override
     public void handleDialogClose(DialogInterface dialog){
-        taskList = mySQLite.getAllTasks();
+        taskList = mySQLite.getTaskByType(type);
         Collections.reverse(taskList);
         tasksAdapter.setTasks(taskList);
         tasksAdapter.notifyDataSetChanged();
     }
 
+    public void onTaskClick(int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(tasksAdapter.getContext());
+        builder.setTitle("Delete Task");
+        builder.setMessage("Are you sure you want to delete this Task?");
+        builder.setPositiveButton("Confirm",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        tasksAdapter.deleteItem(position);
+                    }
+                });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                tasksAdapter.notifyItemChanged(position);
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        type = String.valueOf(spinner.getSelectedItem());
+        AddNewTask.setNewType(type);
+        Toast.makeText(this, "This"+type, Toast.LENGTH_SHORT).show();
+        taskList = mySQLite.getTaskByType(type);
+        tasksAdapter.setTasks(taskList);
+        tasksAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }

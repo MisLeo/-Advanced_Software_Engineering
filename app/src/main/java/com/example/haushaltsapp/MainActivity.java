@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvOutgo, tvIntake, tvResidualbudget;
     private PieChart pieChart;
     private BarChart mBarChart;
+    private ValueLineChart LineChart;
 
     //beide Datanbanken anlegen für die Einnahmen und Ausgaben
     private MySQLite mySQLite = new MySQLite(this, null, null, 0);
@@ -105,8 +106,6 @@ public class MainActivity extends AppCompatActivity {
             mySQLite.addCategory(category);
         }
     }
-
-
 
     //Übertrage das Budget des letzten Monats
     private void setLastBudget(){
@@ -178,9 +177,9 @@ public class MainActivity extends AppCompatActivity {
         float residualBudget = intake-outgo;
 
         //Setzen von Einnahmen und Ausgaben als Stirng in Textview
-        tvIntake.setText(Float.toString(intake));
-        tvOutgo.setText(Float.toString(outgo));
-        tvResidualbudget.setText(Float.toString(residualBudget));
+        tvIntake.setText(Float.toString(intake)+" €");
+        tvOutgo.setText(Float.toString(outgo)+" €");
+        tvResidualbudget.setText(Float.toString(residualBudget)+" €");
 
         //Diagramme zurücksetzten
         pieChart.clearChart();
@@ -188,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         //Diagram Methoden aufrufen
         PieChart(intake,outgo,residualBudget);
         BarGraph(intake,outgo,residualBudget);
+
     }
 
 
@@ -196,6 +196,12 @@ public class MainActivity extends AppCompatActivity {
     {
         //Daten und Farben zuordnen
         //es geht noch nicht die Farbe aus colors.xml zu übernehmen
+       /* pieChart.addPieSlice(new PieModel(
+                "Einnahmen",
+                Einnahmen,
+                Color.parseColor("#66BB6A")));
+
+        */
         pieChart.addPieSlice(new PieModel(
                 "Ausgaben",
                 Ausgaben,
@@ -205,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 Restbudget,
                 Color.parseColor("#FFA726")));
 
+        //Darstellungsoptionen
         pieChart.setInnerPaddingOutline(5);
         pieChart.startAnimation();
         pieChart.setBackgroundColor(0);
@@ -222,12 +229,80 @@ public class MainActivity extends AppCompatActivity {
         mBarChart.addBar(new BarModel(
                 Restbudget,
                 Color.parseColor("#FFA726")));
-
+        //Darstellungsoptionen
         mBarChart.startAnimation();
-        mBarChart.setShowValues(true);  //werte auf Balken
+        mBarChart.setShowValues(true);  //werte Aus Balken
         mBarChart.setActivated(false);
 
     }
+
+    public void LineGraphMonth()
+    {
+        //Benötigt Monat als Sting und Geldwert als Float
+        //für Monatsvergleich der Ausgaben
+        ValueLineSeries series = new ValueLineSeries();
+        series.setColor(0xFF56B7F1);
+        int i =1; //monate hochzählen
+
+        //aktuelles Datum abfragen über month
+        //letzer Monata wird die Achse nicht beschriftet
+        while (i<=(month+1))
+        {
+            //Für Achsenbeschriftung
+            String monatJahresansicht ="leer";
+
+            switch(i) {
+                case 1:
+                    monatJahresansicht = "Jan";
+                    break;
+                case 2:
+                    monatJahresansicht = "Feb";
+                    break;
+                case 3:
+                    monatJahresansicht = "Mar";
+                    break;
+                case 4:
+                    monatJahresansicht = "Apr";
+                    break;
+                case 5:
+                    monatJahresansicht = "Mai";
+                    break;
+                case 6:
+                    monatJahresansicht = "Jun";
+                    break;
+                case 7:
+                    monatJahresansicht = "Jul";
+                    break;
+                case 8:
+                    monatJahresansicht = "Aug";
+                    break;
+                case 9:
+                    monatJahresansicht = "Sep";
+                    break;
+                case 10:
+                    monatJahresansicht = "Okt";
+                    break;
+                case 11:
+                    monatJahresansicht = "Nov";
+                    break;
+                case 12:
+                    monatJahresansicht = "Dez";
+                    break;
+            }
+            //Datnbankzugriff:
+            float AusgabeMonateX = mySQLite.getValueOutgosMonth(31, i, year);
+            series.addPoint(new ValueLinePoint(monatJahresansicht, AusgabeMonateX));
+
+            i++;
+        }
+        //Noch Jahresübergang einbringen
+        //prüfen bis wann Ausgabe vorhaneden sind
+
+        //Darstellungsoptionen
+        LineChart.addSeries(series);
+        LineChart.startAnimation();
+    }
+
 
 
     @Override
@@ -415,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
             String selection = data.getExtras().getString("selection");
             if(selection.equals("ok")){
                 Category category = (Category) data.getSerializableExtra("category");
-               // mySQLite.addCategory(category);
+                mySQLite.addCategory(category);
                 Toast.makeText(MainActivity.this, category.toString(),
                         Toast.LENGTH_SHORT).show();
             }

@@ -7,9 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import com.example.haushaltsapp.ToDoListPackage.TaskModel;
-import com.example.haushaltsapp.database.Category;
-import com.example.haushaltsapp.database.Intake;
-import com.example.haushaltsapp.database.Outgo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +32,7 @@ public class MySQLite extends SQLiteOpenHelper {
         db.execSQL(CREATE_OUTGO_TABLE);
         String CREATE_CATEGORY_TABLE = "CREATE TABLE category ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " +  "name TEXT, "+"color INTEGER, "+"border DOUBLE)";
         db.execSQL(CREATE_CATEGORY_TABLE);
-        String CREATE_TODO_TABLE = "CREATE TABLE todo ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "task TEXT, "+"status INTEGER)";
+        String CREATE_TODO_TABLE = "CREATE TABLE todo ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "task TEXT, "+"status INTEGER, "+ "type TEXT)";
         db.execSQL(CREATE_TODO_TABLE);
     }
 
@@ -70,8 +67,9 @@ public class MySQLite extends SQLiteOpenHelper {
     private static final String KEY_BORDER = "border";
     //////////////////////////////////////////////////////////////////////////////////////////
     private static final String TABLE_TODO  = "todo";
-    private static final String TASK = "task";
-    private static final String STATUS = "status";
+    private static final String KEY_TASK = "task";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_TYPE = "type";
     private SQLiteDatabase db;
 
     public void openDatabase() {
@@ -424,25 +422,55 @@ public class MySQLite extends SQLiteOpenHelper {
         return value;
     }
 
-    public float getCategorieOutgosMonth(int day,int month, int year, String categorie)
+    /*
+    Funktion gibt einen Float-Wert zurück, wlecher alle Ausgabe der Datenbank
+    berücksichtigt, welche in einem bestimmtem Monat in einer bestimmten Kategorie getätigt wurden.
+    Periodische Ausgaben wurden babei berücksichtigt
+     */
+    public  float getCategorieOutgosMonth(int day,int month,int year, String categorie)
     {
-        List<Outgo> outgos = getMonthOutgos( day, month, year);
-        int lenght = outgos.size();
-        int i = 0;
-        float monthOutgo = 0;
-        double outvalue = 0;
-        String cat;
+        ArrayList<Outgo> outgos = new ArrayList<Outgo>();
 
-        while (i < lenght) {
-            cat = outgos.get(i).getCategory();
-             if (categorie.equals(cat)) {
-                 outvalue = outgos.get(i).getValue();
-                 monthOutgo = monthOutgo +(float) outvalue;
-             }
-            i++;
+        // Einträge der vergangenen Monate mit dem zyklus monatlich
+        String condition1 = "(" + KEY_CYCLE + " = \"monatlich\" AND "+KEY_YEAR + " <= \"" + String.valueOf(year)+"\" AND "+KEY_MONTH+"< \""+ String.valueOf(month) +"\" AND "+KEY_CATEGORY+"= \""+ String.valueOf(categorie)+"\")";
+        // Einträge des ausgewählten Monats bis day 31
+        String condition2 = "("+ KEY_YEAR + " = \"" + String.valueOf(year) + "\" AND " + KEY_MONTH + " = \"" + String.valueOf(month) +"\" AND "+KEY_DAY+" <= \""+String.valueOf(31) + "\" AND "+KEY_CATEGORY+"= \""+ String.valueOf(categorie)+"\")";
+        String query = "SELECT * FROM " + TABLE_OUTGO + " WHERE "+condition1+" OR " +condition2;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null) {
+            Outgo outgoCat = null;
+            if (cursor.moveToFirst()) {
+                do {
+                    outgoCat = new Outgo();
+
+                    outgoCat.setId_PK(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                    outgoCat.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)));
+                    outgoCat.setValue(cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE)));
+                    outgoCat.setDay(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_DAY)));
+                    outgoCat.setMonth(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_MONTH)));
+                    outgoCat.setYear(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_YEAR)));
+                    outgoCat.setCycle(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CYCLE)));
+                    outgoCat.setCategory(cursor.getString(cursor.getColumnIndexOrThrow(KEY_CATEGORY)));
+
+                    outgos.add(outgoCat);
+                }
+                while (cursor.moveToNext()) ;
+            }
         }
-        return monthOutgo;
+        db.close();
+
+        float valueCat = 0;
+        for(int i = 0; i < outgos.size(); i++){
+            valueCat = valueCat + (float) outgos.get(i).getValue();
+        }
+        return valueCat;
     }
+
+
+
 
 
 
@@ -553,8 +581,9 @@ public class MySQLite extends SQLiteOpenHelper {
     public void insertTask(TaskModel task){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
-        value.put(TASK, task.getTask());
-        value.put(STATUS, 0);
+        value.put(KEY_TASK, task.getTask());
+        value.put(KEY_STATUS, 0);
+        value.put(KEY_TYPE, task.getType());
         db.insert(TABLE_TODO, null, value);
         db.close();
     }
@@ -563,7 +592,7 @@ public class MySQLite extends SQLiteOpenHelper {
         List<TaskModel> taskList = new ArrayList<>();
 
         String query = "SELECT * FROM "+TABLE_TODO;
-        SQLiteDatabase db = this.getReadableDatabase();
+        db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
 
         if(cursor != null){
@@ -572,8 +601,9 @@ public class MySQLite extends SQLiteOpenHelper {
                 do{
                     task = new TaskModel();
                     task.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
-                    task.setTask(cursor.getString(cursor.getColumnIndexOrThrow(TASK)));
-                    task.setStatus(cursor.getInt(cursor.getColumnIndexOrThrow(STATUS)));
+                    task.setTask(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TASK)));
+                    task.setStatus(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_STATUS)));
+                    task.setType(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TYPE)));
                     taskList.add(task);
                 }
                 while(cursor.moveToNext());
@@ -586,20 +616,42 @@ public class MySQLite extends SQLiteOpenHelper {
 
     public void updateTask(int id, String task){
         ContentValues cv = new ContentValues();
-        cv.put(TASK, task);
+        cv.put(KEY_TASK, task);
         db.update(TABLE_TODO, cv, KEY_ID + "= ?", new String[] {String.valueOf(id)});
     }
 
     //Auffrischen des Task Status
     public void updateStatus(int id, int status){
         ContentValues cv = new ContentValues();
-        cv.put(STATUS, status);
+        cv.put(KEY_STATUS, status);
         db.update(TABLE_TODO, cv, KEY_ID + "= ?", new String[] {String.valueOf(id)});
     }
 
     //Löschen der Task
     public void deleteTask(int id){
         db.delete(TABLE_TODO, KEY_ID + "= ?", new String[] {String.valueOf(id)});
+    }
+    public List<TaskModel> getTaskByType(String type){
+            List<TaskModel> taskList = new ArrayList<>();
+            db = this.getWritableDatabase();
+            String query = "SELECT * FROM "+TABLE_TODO+" WHERE "+KEY_TYPE+" = \""+type+"\"";
+            Cursor cursor = db.rawQuery(query, null);
+            if(cursor != null){
+                TaskModel task = null;
+                    if(cursor.moveToFirst()){
+                        do{
+                            task = new TaskModel();
+                            task.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID)));
+                            task.setTask(cursor.getString(cursor.getColumnIndexOrThrow(KEY_TASK)));
+                            task.setStatus(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_STATUS)));
+                            taskList.add(task);
+                        }
+                        while(cursor.moveToNext());
+                    }
+                }
+                cursor.close();
+                db.close();
+            return taskList;
     }
 }
 
