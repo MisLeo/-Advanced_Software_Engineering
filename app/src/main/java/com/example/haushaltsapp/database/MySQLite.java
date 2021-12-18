@@ -156,6 +156,33 @@ public class MySQLite extends SQLiteOpenHelper {
         return intake;
     }
 
+
+    public int getIntakeIdbyName(String name){
+        int result = -1;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM "+TABLE_INTAKE+" WHERE "+KEY_NAME+" = \""+name+"\"";
+
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.moveToFirst()){
+            result = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID));
+        }
+        db.close();
+        return result;
+    }
+
+    public int getOutgoIdbyName(String name){
+        int result = -1;
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT * FROM "+TABLE_OUTGO+" WHERE "+KEY_NAME+" = \""+name+"\"";
+
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.moveToFirst()){
+            result = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID));
+        }
+        db.close();
+        return result;
+    }
+
     /*
     Funktion löscht die Einnahme welche die übergebne Id besitzt.
     Sollte ein solcher Eintrag nicht exestieren wird die Datenbank ohne
@@ -178,14 +205,16 @@ public class MySQLite extends SQLiteOpenHelper {
     ein neuer Eintrag mit den gewünschten Daten angelegt.
      */
     public int updateIntake(Intake intake, int id){
-        int i = -1;
-        try {
-            deleteIntakeById(id);
-            addIntake(intake);
-            i = 1;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        value.put(KEY_NAME, intake.getName());
+        value.put(KEY_VALUE, intake.getValue());
+        value.put(KEY_DAY, intake.getDay());
+        value.put(KEY_MONTH, intake.getMonth());
+        value.put(KEY_YEAR, intake.getYear());
+        value.put(KEY_CYCLE, intake.getCycle());
+        int i = db.update(TABLE_INTAKE, value, KEY_ID+" = ?", new String[] { String.valueOf(id) });
+        db.close();
         return i;
     }
 
@@ -353,14 +382,17 @@ public class MySQLite extends SQLiteOpenHelper {
     ein neuer Eintrag mit den gewünschten Daten angelegt.
      */
     public int updateOutgo(Outgo outgo, int id){
-        int i = -1;
-        try {
-            deleteOutgoById(id);
-            addOutgo(outgo);
-            i = 1;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        value.put(KEY_NAME, outgo.getName());
+        value.put(KEY_VALUE, outgo.getValue());
+        value.put(KEY_DAY, outgo.getDay());
+        value.put(KEY_MONTH, outgo.getMonth());
+        value.put(KEY_YEAR, outgo.getYear());
+        value.put(KEY_CYCLE, outgo.getCycle());
+        value.put(KEY_CATEGORY, outgo.getCategory());
+        int i = db.update(TABLE_OUTGO, value, KEY_ID+" = ?", new String[] { String.valueOf(id) });
+        db.close();
         return i;
     }
 
@@ -631,6 +663,7 @@ public class MySQLite extends SQLiteOpenHelper {
     public void deleteTask(int id){
         db.delete(TABLE_TODO, KEY_ID + "= ?", new String[] {String.valueOf(id)});
     }
+
     public List<TaskModel> getTaskByType(String type){
             List<TaskModel> taskList = new ArrayList<>();
             db = this.getWritableDatabase();

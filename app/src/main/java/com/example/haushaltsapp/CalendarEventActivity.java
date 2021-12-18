@@ -176,6 +176,7 @@ public class CalendarEventActivity extends AppCompatActivity {
         //Die aktuelle Activity im Menü ausblenden
         MenuItem item = menu.findItem(R.id.itemCalendar);
         item.setEnabled(false);
+
         return true;
     }
 

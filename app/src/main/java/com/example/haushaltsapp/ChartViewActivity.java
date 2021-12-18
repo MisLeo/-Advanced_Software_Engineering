@@ -200,6 +200,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         inflater.inflate(R.menu.navigation_menu, menu);
         MenuItem item = menu.findItem(R.id.itemTableView);
         item.setEnabled(false);
+
         return true;
     }
 

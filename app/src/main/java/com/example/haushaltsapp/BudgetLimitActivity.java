@@ -17,6 +17,27 @@ import com.example.haushaltsapp.database.Outgo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.haushaltsapp.database.Category;
+import com.example.haushaltsapp.database.MySQLite;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BudgetLimitActivity extends AppCompatActivity {
 
@@ -30,12 +51,191 @@ public class BudgetLimitActivity extends AppCompatActivity {
     private int month;
     private int year;
     ///////////////////////////////
+    private static boolean limitGesamt = false;
+    private static boolean limitCategory = false;
+
+    private LinearLayout linearLayout;
+    private CheckBox checkBoxGesamt, checkBoxCategory;
+
+    //gibt an, welche Limits betrachtet werden sollen?
+    //die für die Kategorien (Datenbank) oder
+    //das Gesamtlimit (Variable gesamtLimit)
+    private boolean gesamtButton = false;
+    private boolean categoryButton = false;
+
+    //Variablen für Gesamtlimit
+    private String gesamtString = "Gesamtbudget";
+    private static int gesamtLimit = 0;
+    private int gesamtColor = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget_limit);
+
+        linearLayout = findViewById(R.id.container);
+        checkBoxGesamt = findViewById(R.id.checkBox);
+        checkBoxCategory = findViewById(R.id.checkBox2);
+
+        //Infos aus der Datenbank
+        mySQLite = new MySQLite(this);
+        ArrayList<Category> list = mySQLite.getAllCategory();
+
+        //Gesamtlimit
+        addCategory(gesamtString, gesamtLimit, gesamtColor);
+        //Darstellen der Kategorien
+        for(int i = 0; i < list.size(); i++){
+            Category category = list.get(i);
+            addCategory(category.getName_PK(), category.getBorder(), category.getColor());
+        }
+
+        gesamtButton = limitGesamt;
+        categoryButton = limitCategory;
+        //Alte Werte setzen bzg checkbox
+        if(limitGesamt){
+            checkBoxGesamt.setChecked(true);
+        }
+        if(limitCategory){
+            checkBoxCategory.setChecked(true);
+        }
     }
+
+    //layout aufbauen
+    private void addCategory(String str, double value,int color){
+        View view  = getLayoutInflater().inflate(R.layout.category_limit, null);
+
+        View viewColor = view.findViewById(R.id.preview_selected_color);
+        viewColor.setBackgroundColor(color);
+
+        TextView textView = view.findViewById(R.id.name);
+        textView.setText(str);
+
+        EditText editText = view.findViewById(R.id.limit);
+        editText.setText(String.valueOf((int) value));
+
+        linearLayout.addView(view);
+    }
+
+    //Vermeiden, dass man zwei gleichzeitig setzen kann
+    //Variablen gesamtButton und categoryButton setzen
+    public void onCheckboxClicked(View view) {
+        // Is the view now checked?
+        boolean checked = ((CheckBox) view).isChecked();
+
+        // Check which checkbox was clicked
+        switch(view.getId()) {
+            case R.id.checkBox:
+                if (checked) {
+                    if(categoryButton){
+                        Toast.makeText(BudgetLimitActivity.this, "Es können nicht beide Limits betrachtet werden.",
+                                Toast.LENGTH_SHORT).show();
+                        checkBoxGesamt.setChecked(false);
+                        gesamtButton = false;
+                    }else{
+                        gesamtButton = true;
+                    }
+                }else {
+                    gesamtButton = false;
+                }break;
+            case R.id.checkBox2:
+                if (checked) {
+                    if(gesamtButton){
+                        Toast.makeText(BudgetLimitActivity.this, "Es können nicht beide Limits betrachtet werden.",
+                                Toast.LENGTH_SHORT).show();
+                        checkBoxCategory.setChecked(false);
+                        categoryButton = false;
+                    }else{
+                        categoryButton = true;
+                    }
+                }else {
+                    categoryButton = false;
+                }break;
+        }
+    }
+
+
+
+    //Abbrechen
+    public void clickCancel(View view){
+        super.finish();
+    }
+
+    //Ok
+    public void clickOk(View view){
+        //Prüfen, ob die eingabe sinnvoll ist. -> sind alle werte zwischen 0 und 100?
+        //und in Summe nur zwischen 0 und 100%
+        boolean valideValues = checkValues();
+
+        if(valideValues){
+            limitGesamt = gesamtButton;
+            limitCategory = categoryButton;
+
+            writeValues();
+
+            super.finish();
+        }
+    }
+
+    private boolean checkValues(){
+        int summe = 0;
+
+        int childCount = linearLayout.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View v = linearLayout.getChildAt(i);
+            EditText valueLimit = v.findViewById(R.id.limit);
+            int valueInt = Integer.valueOf(valueLimit.getText().toString());
+
+            if(valueInt > 100 || valueInt < 0){
+                TextView name = v.findViewById(R.id.name);
+                Toast.makeText(BudgetLimitActivity.this, "Ihre Eingabe bei "+name.getText()+" ist fehlerhaft.",
+                        Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            if(i > 0) { //Erster Eintrag ist Gesamtbudget
+                summe = summe + valueInt;
+            }
+        }
+
+        if(summe > 100){
+            Toast.makeText(BudgetLimitActivity.this, "Der Wert von 100% wird überschritten.",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+
+    private void writeValues(){
+
+        //Gesamtlimit setzen
+        View v = linearLayout.getChildAt(0);
+        EditText valueLimit = v.findViewById(R.id.limit);
+        gesamtLimit = Integer.parseInt(valueLimit.getText().toString());
+        /*
+        int childCount = linearLayout.getChildCount();
+
+        //Gesamt
+        View v = linearLayout.getChildAt(0);
+        EditText valueLimit = v.findViewById(R.id.limit);
+       // gesamtLimit = Integer.valueOf(valueLimit.getText().toString());
+
+        //Kategorien
+        for (int i = 1; i < childCount; i++) {
+            v = linearLayout.getChildAt(i);
+            valueLimit = v.findViewById(R.id.limit);
+            TextView name = v.findViewById(R.id.name);
+
+            Category category = mySQLite.getCategory(name.toString());
+            category.setBorder(Double.valueOf(valueLimit.getText().toString()));
+
+
+            mySQLite.updateCategory(category);
+        }
+
+         */
+    }
+
 
 
     @Override

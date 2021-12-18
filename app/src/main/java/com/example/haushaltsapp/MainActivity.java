@@ -47,9 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private MySQLite mySQLite = new MySQLite(this, null, null, 0);
 
     //REQUESTCODES
-    private final int REQUESTCODE_ADD = 12; //AddEntryActivity
     private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
-    private final int REQUESTCODE_EDIT = 14; //EditEntryActivity
     private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
 
     //aktuelles Datum
@@ -185,31 +183,34 @@ public class MainActivity extends AppCompatActivity {
         pieChart.clearChart();
         mBarChart.clearChart();
         //Diagram Methoden aufrufen
-        PieChart(intake,outgo,residualBudget);
-        BarGraph(intake,outgo,residualBudget);
+        PieChart(outgo,residualBudget);
+        BarGraph(intake,outgo);
 
     }
 
 
 
-    public void PieChart (float Einnahmen,float Ausgaben, float Restbudget)
+    public void PieChart (float Ausgaben, float Restbudget)
     {
-        //Daten und Farben zuordnen
-        //es geht noch nicht die Farbe aus colors.xml zu übernehmen
-       /* pieChart.addPieSlice(new PieModel(
-                "Einnahmen",
-                Einnahmen,
-                Color.parseColor("#66BB6A")));
-
-        */
         pieChart.addPieSlice(new PieModel(
                 "Ausgaben",
                 Ausgaben,
                 Color.parseColor("#EF5350")));
-        pieChart.addPieSlice(new PieModel(
-                "Restbudget",
-                Restbudget,
-                Color.parseColor("#FFA726")));
+
+        if (Restbudget >0)
+        {
+            pieChart.addPieSlice(new PieModel(
+                    "Restbudget",
+                    Restbudget,
+                    Color.parseColor("#FFA726")));
+
+        }
+        else {
+            pieChart.addPieSlice(new PieModel(
+                    "Restbudget",
+                    0,
+                    Color.parseColor("#FFA726")));
+        }
 
         //Darstellungsoptionen
         pieChart.setInnerPaddingOutline(5);
@@ -217,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         pieChart.setBackgroundColor(0);
     }
 
-    public void BarGraph(float Einnahmen,float Ausgaben, float Restbudget)
+    public void BarGraph(float Einnahmen,float Ausgaben)
     {
         //Daten und Farben zuordnen
         mBarChart.addBar(new BarModel(
@@ -226,9 +227,9 @@ public class MainActivity extends AppCompatActivity {
         mBarChart.addBar(new BarModel(
                 Ausgaben,
                 Color.parseColor("#EF5350")));
-        mBarChart.addBar(new BarModel(
+        /*mBarChart.addBar(new BarModel(
                 Restbudget,
-                Color.parseColor("#FFA726")));
+                Color.parseColor("#FFA726")));*/
         //Darstellungsoptionen
         mBarChart.startAnimation();
         mBarChart.setShowValues(true);  //werte Aus Balken
@@ -313,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
         //Die aktuelle Activity im Menü ausblenden
         MenuItem item = menu.findItem(R.id.itemMainPage);
         item.setEnabled(false);
+
         return true;
     }
 
@@ -327,12 +329,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.itemAddIntakesOutgoes:
-                mySQLite = new MySQLite(this);
-                ArrayList<Category> categories = mySQLite.getAllCategory();
                 Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
-                switchToAddEntry.putExtra("list",categories);
-                mySQLite.close();
-                startActivityForResult(switchToAddEntry,REQUESTCODE_ADD);
+                startActivity(switchToAddEntry);
                 return true;
 
             case R.id.subitemIntakes:
@@ -425,21 +423,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Von AddEntryActivity
-        if (resultCode == RESULT_OK && requestCode == REQUESTCODE_ADD) {
-            String selection = data.getExtras().getString("selection");
-            if(selection.equals("add")) {
-                String entry = data.getExtras().getString("entry");
-                if (entry.equals("Intake")) { //Eingabe
-                    Intake intake = (Intake) data.getSerializableExtra("object");
-                    mySQLite.addIntake(intake);
-                } else { //Ausgabe
-                    Outgo outgo = (Outgo) data.getSerializableExtra("object");
-                    mySQLite.addOutgo(outgo);
-                }
-            }
-        }
-
         // Von ShowEntryActivity
         if (resultCode == RESULT_OK && requestCode == REQUESTCODE_SHOW) {
 
@@ -448,53 +431,12 @@ public class MainActivity extends AppCompatActivity {
 
             Intent i = new Intent(this, EditEntryActivity.class);
             if(id > -1){
-                if (entry.equals("Intake")) { //Einnahme
-                    Intake intake = mySQLite.getIntakeById(id);
-                    i.putExtra("object", (Serializable) intake);
-                }else{
-                    Outgo outgo = mySQLite.getOutgoById(id);
-                    ArrayList<Category> categories = mySQLite.getAllCategory();
-                    i.putExtra("object", (Serializable) outgo);
-                    i.putExtra("list",categories);
-                }
                 i.putExtra("id", id);
                 i.putExtra("entry", entry);
-                startActivityForResult(i, REQUESTCODE_EDIT);
-            }
-        }
-
-        //Eintrag löschen oder ändern von EditEntryActivity
-        if(resultCode == RESULT_OK && requestCode == REQUESTCODE_EDIT){
-            String selection = data.getExtras().getString("selection");
-            String entry = data.getExtras().getString("entry");
-            int id = data.getExtras().getInt("id");
-
-            if(selection.equals("clear")){ //löschen
-                if(entry.equals("Intake")){ //Intake
-                    mySQLite.deleteIntakeById(id);
-                }else{ //Outgo
-                    mySQLite.deleteOutgoById(id);
-                }
-            }else{ //ändern
-                if(entry.equals("Intake")){ //Intake
-                    Intake intake = (Intake) data.getSerializableExtra("object");
-                    mySQLite.updateIntake(intake, id);
-                }else{ //Outgo
-                    Outgo outgo = (Outgo) data.getSerializableExtra("object");
-                    mySQLite.updateOutgo(outgo, id);
-                }
-            }
-        }
-        //Kategorie hinzufügen
-        if(resultCode == RESULT_OK && requestCode == REQUESTCODE_ADD_CATEGORY){
-            String selection = data.getExtras().getString("selection");
-            if(selection.equals("ok")){
-                Category category = (Category) data.getSerializableExtra("category");
-                mySQLite.addCategory(category);
-                Toast.makeText(MainActivity.this, category.toString(),
-                        Toast.LENGTH_SHORT).show();
+                startActivity(i);
             }
         }
         setData();
     }
+
 }
