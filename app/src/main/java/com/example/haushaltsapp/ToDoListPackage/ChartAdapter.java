@@ -7,27 +7,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.R;
 import com.example.haushaltsapp.ToDoListActivity;
+import com.example.haushaltsapp.database.MySQLite;
 
 import java.util.List;
 
-//Adapter und ViewHolder definieren, wie Daten im RecyclerView dargestellt werden
-
-public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
-
-    private List<TaskModel> todoList;
+public class ChartAdapter extends RecyclerView.Adapter<ChartAdapter.ViewHolder> {
+    private List<TaskModel> chartList;
     private MySQLite db;
     private ToDoListActivity activity;
     private static ToDoInterface toDoInterface;
 
-    public ToDoAdapter(MySQLite db, ToDoListActivity activity, ToDoInterface toDoInterface) {
+    public ChartAdapter(MySQLite db, ToDoListActivity activity, ToDoInterface toDoInterface) {
         this.db = db;
         this.activity = activity;
         this.toDoInterface = toDoInterface;
@@ -36,16 +32,16 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     @NonNull
     @Override
     //Anzeigen der Tasks, Aufruf durch RecyclerView wenn neuer ViewHolder kreiert wird
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ChartAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.task_layout, parent, false);
-        return new ViewHolder(itemView);
+        return new ChartAdapter.ViewHolder(itemView);
     }
 
     //Aufruf durch RecyclerView, um Verbindug zwischen ViewHolder und zugehörigen Daten zu generieren
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ChartAdapter.ViewHolder holder, int position) {
         db.openDatabase();
-        final TaskModel item = todoList.get(position);
+        final TaskModel item = chartList.get(position);
         holder.task.setText(item.getTask());
         holder.task.setChecked(toBoolean(item.getStatus()));
         int previousStatus = item.getStatus();
@@ -71,8 +67,8 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     @Override
     public int getItemCount() {
         int size = 0;
-        if(todoList != null) {
-            size = todoList.size();
+        if(chartList != null) {
+            size = chartList.size();
         }
         return size;
     }
@@ -86,19 +82,19 @@ public class ToDoAdapter extends RecyclerView.Adapter<ToDoAdapter.ViewHolder> {
     }
 
     public void setTasks(List<TaskModel> todoList) {
-        this.todoList = todoList;
+        this.chartList = todoList;
         notifyDataSetChanged();
     }
 
     public void deleteItem(int position) {
-        TaskModel item = todoList.get(position);
+        TaskModel item = chartList.get(position);
         db.deleteTask(item.getId());
-        todoList.remove(position);
+        chartList.remove(position);
         notifyItemRemoved(position);
     }
 
     public void editItem(int position) {
-        TaskModel item = todoList.get(position);
+        TaskModel item = chartList.get(position);
         Bundle bundle = new Bundle();
         bundle.putInt("id", item.getId());
         bundle.putString("task", item.getTask());

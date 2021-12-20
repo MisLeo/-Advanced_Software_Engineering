@@ -20,9 +20,9 @@
             android:id="@+id/cardViewGraph"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
             android:elevation="10dp"
             app:cardCornerRadius="10dp">
 
@@ -52,8 +52,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
 
                         <org.eazegraph.lib.charts.PieChart xmlns:app="http://schemas.android.com/apk/res-auto"
                             android:id="@+id/piechart"
@@ -67,16 +66,16 @@
 
                         <org.eazegraph.lib.charts.BarChart
                             android:id="@+id/barchart"
-                            android:layout_width="300dp"
+                            android:layout_width="350dp"
                             android:layout_height="300dp"
-                            android:layout_marginStart="15dp"
+                            android:layout_marginStart="25dp"
                             android:layout_marginTop="15dp"
                             android:padding="6dp"
+                            app:egBarWidth="80dp"
                             app:egFixedBarWidth="true"
-                            app:egBarWidth="20dp"
-                            app:egLegendHeight="40dp"/>
+                            app:egLegendHeight="40dp" />
 
-                       <!-- <org.eazegraph.lib.charts.ValueLineChart
+                        <!-- <org.eazegraph.lib.charts.ValueLineChart
                             android:layout_width="400dp"
                             android:layout_height="300dp"
                             android:id="@+id/linechart"
@@ -163,7 +162,6 @@
                             android:textSize="18sp" />
 
                     </LinearLayout>
-
 
 
                 </LinearLayout>

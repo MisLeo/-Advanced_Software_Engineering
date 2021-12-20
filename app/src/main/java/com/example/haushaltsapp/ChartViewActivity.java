@@ -10,20 +10,31 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ArrayAdapter;
 import android.widget.HorizontalScrollView;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.haushaltsapp.ToDoListPackage.AddNewTask;
+import com.example.haushaltsapp.ToDoListPackage.SwipeHandler;
+import com.example.haushaltsapp.ToDoListPackage.TaskModel;
+import com.example.haushaltsapp.ToDoListPackage.ToDoAdapter;
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ChartViewActivity extends  AppCompatActivity {
 
@@ -49,7 +60,56 @@ public class ChartViewActivity extends  AppCompatActivity {
     private TableLayout scrollableTableLayout;
 
 
+    private RecyclerView ChartRecyclerView;
+    private ToDoAdapter ChartAdapter;
+    private FloatingActionButton fabAddTask;
+    private List<TaskModel> chartList;
+    private Spinner spinner;
+    private static String type;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chart_view);
+        mySQLite = new MySQLite(this);
+
+        //code von Davids TO DO Liste noch anpassen auf Tabellenansicht
+
+
+        //noch ändern zu AUswahl zwischen AUsgaben Einnahmen Alles
+     /*   Intent intent = getIntent();
+        ArrayList<Category> list = mySQLite.getAllCategory();
+        spinner = findViewById(R.id.ToDoListSpinner);
+        ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(getApplicationContext(),  android.R.layout.simple_spinner_dropdown_item, list);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
+        mySQLite.openDatabase();
+        ChartRecyclerView = findViewById(R.id.chartRecyclerView);
+        ChartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ChartAdapter = new ToDoAdapter(mySQLite,this,this);
+        ChartRecyclerView.setAdapter(ChartAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeHandler(ChartAdapter));
+        itemTouchHelper.attachToRecyclerView(ChartRecyclerView);
+        fabAddTask = findViewById(R.id.fab);
+
+        chartList = mySQLite.getTaskByType(type);
+        //Collections.reverse(taskList);
+        ChartAdapter.setTasks(chartList);
+        ChartAdapter.notifyDataSetChanged();
+
+        fabAddTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddNewTask.newInstance().show(getSupportFragmentManager(), AddNewTask.TAG);
+            }
+        });*/
+
+    }
+
+//Alte Version Tabellenansicht
+/*
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,10 +151,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         setHeaderWidth(textView, COLUMN_WIDTHS[1]);
         textView = (TextView) findViewById(R.id.Datum);
         setHeaderWidth(textView, COLUMN_WIDTHS[2]);
-            /*textView = (TextView) findViewById(R.id.Kategorie);
-            setHeaderWidth(textView, COLUMN_WIDTHS[3]);
-            textView = (TextView) findViewById(R.id.Sonstiges);
-            setHeaderWidth(textView, COLUMN_WIDTHS[4]);*/
+
     }
 
     private void setHeaderWidth(TextView textView, int width) {
@@ -149,49 +206,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         return getResources().getDisplayMetrics().widthPixels;
     }
 
-
-
-/* @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chart_view);
-        ListView mListView = (ListView) findViewById(R.id.listView);
-        Intent intent = getIntent();
-        ArrayList<Outgo> ListeOut = (ArrayList<Outgo>) intent.getSerializableExtra("list");
-        //zum TEsten ohne Datenbankzugriff
-        //Erzeugen die AUsgabe objects
-        Expenditures T1 = new Expenditures("Tanken", "54", "11.11.2021");
-        Expenditures T2 = new Expenditures("Einkaufen Lidl", "24", "13.11.2021");
-        Expenditures T3 = new Expenditures("Handy", "3.99", "01.11.2021");
-        Expenditures T4 = new Expenditures("Penny", "10", "20.11.2021");
-        Expenditures T5 = new Expenditures("Penny EInk.", "34.87", "21.11.2021");
-        //füllen der Array List
-        ArrayList<Expenditures> AusgabeList = new ArrayList<>();
-        AusgabeList.add(T1);
-        AusgabeList.add(T2);
-        AusgabeList.add(T3);
-        AusgabeList.add(T4);
-        AusgabeList.add(T5);
-        AusgabeList.add(T1);
-        AusgabeList.add(T2);
-        AusgabeList.add(T4);
-        AusgabeList.add(T3);
-        AusgabeList.add(T5);
-        AusgabeList.add(T1);
-        AusgabeList.add(T1);
-        AusgabeList.add(T3);
-        AusgabeList.add(T4);
-        AusgabeList.add(T2);
-        //Zum Test ohne Datenbank
-        ExpendituresListAdapter adapter = new ExpendituresListAdapter(this, R.layout.activity_adapter_list_view, AusgabeList);
-        mListView.setAdapter(adapter);
-        //Intent switchOutgoListAdapter =new Intent(this, OutgoListAdapter.A.class);
-        //ArrayList<Outgo> outgoes1 = ListeOut;
-        //switchOutgoListAdapter.putExtra("list",(Serializable) outgoes1);
-        //OutgoListAdapter adapter = new OutgoListAdapter(this,R.layout.activity_adapter_list_view,ListeOut);
-        //mListView.setAdapter(adapter);
-    }*/
-
+*/
 
 
     @Override

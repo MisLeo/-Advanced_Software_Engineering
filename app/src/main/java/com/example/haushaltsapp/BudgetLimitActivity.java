@@ -16,6 +16,7 @@ import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -47,10 +48,8 @@ public class BudgetLimitActivity extends AppCompatActivity {
     private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
     private final int REQUESTCODE_EDIT = 14; //EditEntryActivity
     private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
-    private int day;
-    private int month;
-    private int year;
-    ///////////////////////////////
+
+
     private static boolean limitGesamt = false;
     private static boolean limitCategory = false;
 
@@ -66,12 +65,19 @@ public class BudgetLimitActivity extends AppCompatActivity {
     //Variablen für Gesamtlimit
     private String gesamtString = "Gesamtbudget";
     private static int gesamtLimit = 0;
-    private int gesamtColor = 1000;
+    private int gesamtColor = 10;
+
+    //aktuelles Datum
+    private int day;
+    private int month;
+    private int year;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget_limit);
+
+        getDate();
 
         linearLayout = findViewById(R.id.container);
         checkBoxGesamt = findViewById(R.id.checkBox);
@@ -100,6 +106,27 @@ public class BudgetLimitActivity extends AppCompatActivity {
         }
     }
 
+    public static boolean getCatButtonStatus(){
+        return limitCategory;
+    }
+
+    public static boolean getTotalButtonStatus(){
+        return limitGesamt;
+    }
+
+    public static Integer getPercentageLimit(){
+        return gesamtLimit;
+    }
+    // Setzt die Variablen day, month, year
+    private void getDate() {
+        java.util.Calendar calender = java.util.Calendar.getInstance();
+        SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
+        String dates = datumsformat.format(calender.getTime());
+        day = Integer.parseInt(dates.substring(0, 2));
+        month = Integer.parseInt(dates.substring(3, 5));
+        year = Integer.parseInt(dates.substring(6, 10));
+    }
+
     //layout aufbauen
     private void addCategory(String str, double value,int color){
         View view  = getLayoutInflater().inflate(R.layout.category_limit, null);
@@ -113,8 +140,14 @@ public class BudgetLimitActivity extends AppCompatActivity {
         EditText editText = view.findViewById(R.id.limit);
         editText.setText(String.valueOf((int) value));
 
+        if(str.equals("Gesamtbudget")){
+            TextView prozent = view.findViewById(R.id.prozent);
+            prozent.setText("%");
+        }
+
         linearLayout.addView(view);
     }
+
 
     //Vermeiden, dass man zwei gleichzeitig setzen kann
     //Variablen gesamtButton und categoryButton setzen
@@ -127,8 +160,6 @@ public class BudgetLimitActivity extends AppCompatActivity {
             case R.id.checkBox:
                 if (checked) {
                     if(categoryButton){
-                        Toast.makeText(BudgetLimitActivity.this, "Es können nicht beide Limits betrachtet werden.",
-                                Toast.LENGTH_SHORT).show();
                         checkBoxGesamt.setChecked(false);
                         gesamtButton = false;
                     }else{
@@ -140,8 +171,6 @@ public class BudgetLimitActivity extends AppCompatActivity {
             case R.id.checkBox2:
                 if (checked) {
                     if(gesamtButton){
-                        Toast.makeText(BudgetLimitActivity.this, "Es können nicht beide Limits betrachtet werden.",
-                                Toast.LENGTH_SHORT).show();
                         checkBoxCategory.setChecked(false);
                         categoryButton = false;
                     }else{
@@ -177,27 +206,28 @@ public class BudgetLimitActivity extends AppCompatActivity {
     }
 
     private boolean checkValues(){
-        int summe = 0;
+
+        double summe = 0;
 
         int childCount = linearLayout.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View v = linearLayout.getChildAt(i);
             EditText valueLimit = v.findViewById(R.id.limit);
-            int valueInt = Integer.valueOf(valueLimit.getText().toString());
+            double valueInt = Double.valueOf(valueLimit.getText().toString());
 
-            if(valueInt > 100 || valueInt < 0){
+            if(i > 0) { //Erster Eintrag ist Gesamtbudget
+                summe = summe + valueInt;
+            }else if(valueInt > 100 || valueInt < 0){
                 TextView name = v.findViewById(R.id.name);
                 Toast.makeText(BudgetLimitActivity.this, "Ihre Eingabe bei "+name.getText()+" ist fehlerhaft.",
                         Toast.LENGTH_SHORT).show();
                 return false;
             }
-            if(i > 0) { //Erster Eintrag ist Gesamtbudget
-                summe = summe + valueInt;
-            }
         }
 
-        if(summe > 100){
-            Toast.makeText(BudgetLimitActivity.this, "Der Wert von 100% wird überschritten.",
+        double gesamtbudget = mySQLite.getValueIntakesMonth(day,month,year);
+        if(summe > gesamtbudget){
+            Toast.makeText(BudgetLimitActivity.this, "Das Gesamtbudget des Montas von "+gesamtbudget+"€ wird mit diesen Angaben überschritten.",
                     Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -208,33 +238,24 @@ public class BudgetLimitActivity extends AppCompatActivity {
 
     private void writeValues(){
 
-        //Gesamtlimit setzen
-        View v = linearLayout.getChildAt(0);
-        EditText valueLimit = v.findViewById(R.id.limit);
-        gesamtLimit = Integer.parseInt(valueLimit.getText().toString());
-        /*
-        int childCount = linearLayout.getChildCount();
-
         //Gesamt
         View v = linearLayout.getChildAt(0);
         EditText valueLimit = v.findViewById(R.id.limit);
-       // gesamtLimit = Integer.valueOf(valueLimit.getText().toString());
+        gesamtLimit = Integer.parseInt(valueLimit.getText().toString());
 
         //Kategorien
+        int childCount = linearLayout.getChildCount();
         for (int i = 1; i < childCount; i++) {
             v = linearLayout.getChildAt(i);
             valueLimit = v.findViewById(R.id.limit);
             TextView name = v.findViewById(R.id.name);
 
-            Category category = mySQLite.getCategory(name.toString());
+            Category category = mySQLite.getCategory(name.getText().toString());
             category.setBorder(Double.valueOf(valueLimit.getText().toString()));
-
-
             mySQLite.updateCategory(category);
         }
-
-         */
     }
+
 
 
 

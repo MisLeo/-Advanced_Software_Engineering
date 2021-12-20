@@ -4,119 +4,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ChartViewActivity">
 
     <LinearLayout
-        android:id="@+id/fillable_area"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp"
+        tools:layout_editor_absoluteX="-87dp"
+        tools:layout_editor_absoluteY="-32dp">
 
-        <TableLayout
-            android:id="@+id/table_header"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tasksText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:text="Tabellenansicht Ausgaben und Einnahmen"
+            android:textColor="@android:color/black"
+            android:textSize="20dp" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="30dp">
 
-                <TextView
-                    android:id="@+id/Ausgabe"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:background="@color/teal_200"
-                    android:text="Ausgabe"
-                    android:textSize="25dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="@color/black" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chartRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tasksText"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="20dp"
+            android:nestedScrollingEnabled="true"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-                <HorizontalScrollView
-                    android:id="@+id/tblHeaderhorzScrollView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp">
-
-                    <LinearLayout
-                        android:id="@+id/tableHeaderScrollContent"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/Wert"
-                            android:layout_width="wrap_content"
-                            android:layout_height="30dp"
-                            android:background="@color/teal_200"
-                            android:text="Wert"
-                            android:textSize="25dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@color/black" />
-
-                        <TextView
-                            android:id="@+id/Datum"
-                            android:layout_width="wrap_content"
-                            android:layout_height="30dp"
-                            android:background="@color/teal_200"
-                            android:text="Datum"
-                            android:textSize="25dp"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@color/black" />
-
-                        <!--
-                        <TextView
-                            android:id="@+id/Kategorie"
-                            android:layout_width="wrap_content"
-                            android:layout_height="30dp"
-                            android:background="@color/teal_200"
-                            android:text="Kategorie"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@color/black" />
-                        <TextView
-                            android:id="@+id/Sonstiges"
-                            android:layout_width="wrap_content"
-                            android:layout_height="30dp"
-                            android:background="@color/teal_200"
-                            android:text="Sonstiges"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:textColor="@color/black" />
--->
-                    </LinearLayout>
-                </HorizontalScrollView>
-
-            </TableRow>
-        </TableLayout>
-
-        <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:id="@+id/fillable_area2"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <TableLayout
-                    android:id="@+id/fixed_column"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    />
-
-                <HorizontalScrollView
-                    android:id="@+id/horizontalScrollView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbarStyle="insideOverlay"
-                    >
-
-                    <TableLayout
-                        android:id="@+id/scrollable_part"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent" />
-                </HorizontalScrollView>
-            </LinearLayout>
-        </ScrollView>
     </LinearLayout>
+
+
+    <Spinner
+        android:id="@+id/TabelleSpinner"
+        android:layout_width="180dp"
+        android:layout_height="65dp"
+        android:autoSizeTextType="uniform"
+        android:text="AUS und EIN"
+        tools:layout_editor_absoluteX="231dp"
+        tools:layout_editor_absoluteY="0dp"
+        tools:ignore="MissingConstraints" />
+
+    <!--   <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:backgroundTint="@android:color/holo_green_dark"
+        android:src="@drawable/ic_baseline_add"
+        app:backgroundTint="@android:color/holo_green_dark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.912"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.914" />
+-->
+
 </androidx.constraintlayout.widget.ConstraintLayout>

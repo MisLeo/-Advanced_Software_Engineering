@@ -77,14 +77,15 @@ public class DiagramViewActivity extends AppCompatActivity {
     private EditText editTextDate; //Datum
     private String dates;
 
-    private void getDate() {
+    // Setzt die Variablen day, month, year
+  /*  private void getDate() {
         java.util.Calendar calender = java.util.Calendar.getInstance();
         SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
         String dates = datumsformat.format(calender.getTime());
         day = Integer.parseInt(dates.substring(0, 2));
         month = Integer.parseInt(dates.substring(3, 5));
         year = Integer.parseInt(dates.substring(6, 10));
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,19 +97,7 @@ public class DiagramViewActivity extends AppCompatActivity {
         db = new MySQLite(this);
         db.openDatabase();
         //Erhalte das aktuelle Datum
-        getDate();
-
-     /*   //Aktuelles Datum anzeigen
-        editTextDate = (EditText) findViewById(R.id.editTextDate);
-        java.util.Calendar kalender = Calendar.getInstance();
-        SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
-        editTextDate.setText(datumsformat.format(kalender.getTime()));
-
-        //Aktuelles Datum von Kalendar holen, um im CalenderView einzubinden
-        year = kalender.get(Calendar.YEAR);
-        month = kalender.get(Calendar.MONTH);
-        day = kalender.get(Calendar.DAY_OF_MONTH);
-*/
+        //getDate();
 
         //Aktuelles Datum anzeigen
         editTextDate = (EditText) findViewById(R.id.editTextDate);
@@ -180,14 +169,11 @@ public class DiagramViewActivity extends AppCompatActivity {
 
     private void setData() {
 
-        //Datum von Textfeld
+        //Datum von Textfeld auslesen
         dates = editTextDate.getText().toString();
         day = Integer.parseInt(dates.substring(0,2));
         month = Integer.parseInt(dates.substring(3,5));
         year = Integer.parseInt(dates.substring(6,10));
-
-
-
 
         pieChart = findViewById(R.id.piechart);
         BarChart = findViewById(R.id.barchart);
@@ -236,6 +222,20 @@ public class DiagramViewActivity extends AppCompatActivity {
         lineetc3 = findViewById(R.id.Lineetc3);
 
         ArrayList<Category> Categories =db.getAllCategory();
+        //Textfelder und Farben setzen
+        setTextandColor( Categories);
+
+        //Diagramme zurücksetzten
+        pieChart.clearChart();
+        BarChart.clearChart();
+        //Diagram Methoden aufrufen
+        PieChartKat(Categories);
+        BarGraphKat(Categories);
+    }
+
+    public  void setTextandColor ( ArrayList<Category> Categories)
+    {
+
         int numCat= Categories.size();
         int n =0;
         String CatName;
@@ -305,13 +305,6 @@ public class DiagramViewActivity extends AppCompatActivity {
             }
             n=n+1;
         }
-
-        //Diagramme zurücksetzten
-        pieChart.clearChart();
-        BarChart.clearChart();
-        //Diagram Methoden aufrufen
-        PieChartKat(Categories);
-        BarGraphKat(Categories);
     }
 
     public void PieChartKat (ArrayList<Category> Categories){
@@ -333,7 +326,6 @@ public class DiagramViewActivity extends AppCompatActivity {
                             CatName,
                             Costs,
                             CatColor));
-
             n++;
         }
 
@@ -360,7 +352,7 @@ public class DiagramViewActivity extends AppCompatActivity {
             CatColor =Categories.get(n).getColor();
 
             BarChart.addBar(new BarModel(
-                    //CatName,
+                    //CatName,      //Anzeige von Kategorie als Achsenbeschriftung
                     Costs,
                     CatColor
             ));
@@ -369,17 +361,17 @@ public class DiagramViewActivity extends AppCompatActivity {
 
         //mBarChart.callOnClick();
         BarChart.startAnimation();
-        BarChart.setShowValues(false);  //keine Kommazahl darzustellen
+        BarChart.setShowValues(false);  //Beschriftung auf Balken
         //BarChart.setAccessibilityHeading(true);
         BarChart.setActivated(false);
     }
-
 
 
     public void changeMonth(View view)
     {
         setData();
     }
+
 
     public  void openCalender(View dateview) {
         java.util.Calendar calender = java.util.Calendar.getInstance();
@@ -412,9 +404,6 @@ public class DiagramViewActivity extends AppCompatActivity {
                         editTextDate.setText(selectedDay + "." + month + "." + selectedYear);
                     }
                 }
-
-                //editTextDate.setText(selectedYear + "/" + (selectedMonth + 1) + "/" + selectedDay);
-
                 //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit)
                 calender.set(year, month, day, 8, 0, 0);
                 startDateInMilliSec = calender.getTimeInMillis();
@@ -426,28 +415,19 @@ public class DiagramViewActivity extends AppCompatActivity {
     }
 
     //Link zu Jahresansicht
-    //Platzierung noch ändern
     public void changeToAnnual(View view) {
 
         Intent intent = getIntent();
-        /*ArrayList<Outgo> Data = (ArrayList<Outgo>) intent.getSerializableExtra("dataOut");
-        ArrayList<Intake> DataIn = (ArrayList<Intake>) intent.getSerializableExtra("dataIn");
-*/
         Intent switchToAnnualView= new Intent(this, AnnualViewActivity.class);
-       /*ArrayList<Outgo> AlloutgoD =Data;
-        switchToAnnualView.putExtra("dataOut",AlloutgoD);
-        ArrayList<Intake> AllIntakes =DataIn;
-        switchToAnnualView.putExtra("dataIn",AllIntakes);*/
         startActivity(switchToAnnualView);
-        //noch Datenbank mitgeben
     }
 
+    //Link zu Monatsvergleich
     public void changeToMonthcomparison(View view) {
 
         Intent intent = getIntent();
         Intent switchMonthcomparisonView= new Intent(this, MonthcomparisonViewActivity.class);
         startActivity(switchMonthcomparisonView);
-        //noch Datenbank mitgeben
     }
 
 
