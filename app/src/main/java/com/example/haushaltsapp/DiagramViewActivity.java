@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -53,16 +52,15 @@ public class DiagramViewActivity extends AppCompatActivity {
     private long endDateInMilliSec;
 
     //noch erweitern um tv+, bei zufügen von weiteren Kategorien
-
+    private LinearLayout lverkehrsmittel, lwohnen, llebensmittel, lgesundheit, lfreizeit, lsonstiges, letc1, letc2, letc3;
     private View wohnencolor, lebensmittelcolor, gesundheitcolor, verkehrsmittelcolor, freizeitcolor, sonstigescolor;
-    private LinearLayout letc1, letc2, letc3;
     private View etc1color, etc2color, etc3color;
-    private TextView etc1n, etc2n, etc3n;
+    private TextView wohnentext, lebensmitteltext, verkehrsmitteltext, gesundheittext, freitzeittext,sonstigesttext, etc1text, etc2text, etc3text;
 
-    private RelativeLayout retc1, retc2, retc3;
+    private RelativeLayout rWohnen, rLebensmittel, rVerkehrsmittel, rGesundheit, rFreizeit, rSonstiges, retc1, retc2, retc3;
     private TextView tvWohnen, tvLebensmittel, tvGesundheit, tvVerkehrsmittel, tvFreizeit, tvSonstiges, tvetc1, tvetc2, tvetc3;
-    private TextView etc1name, etc2name, etc3name;
-    private View lineetc1, lineetc2, lineetc3;
+    private TextView verkehrsmittelname, wohnenname, lebensmittelname, gesundheitname, freizeitname, sonstigesname, etc1name, etc2name, etc3name;
+    private View line0, line1, line2, line3, line4, line5, line6, line7, line8, line9;
 
 
     private PieChart pieChart;
@@ -72,20 +70,9 @@ public class DiagramViewActivity extends AppCompatActivity {
     private int day;
     private int month;
     private int year;
-    private int monthk;
 
-    private EditText editTextDate; //Datum
+    private TextView editTextDate; //Datum
     private String dates;
-
-    // Setzt die Variablen day, month, year
-  /*  private void getDate() {
-        java.util.Calendar calender = java.util.Calendar.getInstance();
-        SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
-        String dates = datumsformat.format(calender.getTime());
-        day = Integer.parseInt(dates.substring(0, 2));
-        month = Integer.parseInt(dates.substring(3, 5));
-        year = Integer.parseInt(dates.substring(6, 10));
-    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,76 +83,15 @@ public class DiagramViewActivity extends AppCompatActivity {
 
         db = new MySQLite(this);
         db.openDatabase();
-        //Erhalte das aktuelle Datum
-        //getDate();
 
         //Aktuelles Datum anzeigen
-        editTextDate = (EditText) findViewById(R.id.editTextDate);
+        editTextDate = (TextView) findViewById(R.id.editTextDate);
         java.util.Calendar calender = Calendar.getInstance();
         SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
         editTextDate.setText(datumsformat.format(calender.getTime()));
 
         setData();
     }
- /*  private void setCalender()
-    {
-
-        //Kalender Datumsauswahl
-        calenderView = findViewById(R.id.calenderView);
-        editTextDate = findViewById(R.id.editTextDate);
-
-       Calendar calendar = Calendar.getInstance();
-        year = calendar.get(Calendar.YEAR);
-        monthk = calendar.get(Calendar.MONTH);
-        day = calendar.get(Calendar.DAY_OF_MONTH);
-
-
-    java.util.Calendar calender = java.util.Calendar.getInstance();
-    SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
-    String dates = datumsformat.format(calender.getTime());
-    day =Integer.parseInt(dates.substring(0,2));
-    month =Integer.parseInt(dates.substring(3,5));
-    year =Integer.parseInt(dates.substring(6,10));
-        editTextDate.setText(year +"/"+(month)+"/"+day);
-    // editTextDate.setText(year + "/" + (month + 1) + "/" + day);
-
-    //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit)
-        calender.set(year,month,day,8,0,0);
-    //calender.set(year,monthk,day,8,0,0);
-    startDateInMilliSec =calender.getTimeInMillis();
-        calender.set(year,month,day,8,0,0);
-    //calender.set(year,monthk,day,8,0,0);
-    endDateInMilliSec =calender.getTimeInMillis();
-
-    //Setzen von Listener auf dem Kalender Symbol
-        calenderView.setOnClickListener(new View.OnClickListener()
-
-    {
-        @Override
-        public void onClick (View dateView){
-        DatePickerDialog dateDialog = new DatePickerDialog(DiagramViewActivity.this, new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-                day = selectedDay;
-                month = selectedMonth;// + 1; //richtige monatszahl
-                year = selectedYear;
-
-                //Addition bei Monat von 1, Index beginnend bei 0
-                editTextDate.setText(selectedYear + "/" + (selectedMonth + 1) + "/" + selectedDay);
-
-                //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit)
-                calender.set(year, month, day, 8, 0, 0);
-                startDateInMilliSec = calender.getTimeInMillis();
-                calender.set(year, month, day, 9, 0, 0);
-                endDateInMilliSec = calender.getTimeInMillis();
-            }
-        }, year, month, day);
-        dateDialog.show();
-    }
-    });
-}
-*/
 
     private void setData() {
 
@@ -178,48 +104,84 @@ public class DiagramViewActivity extends AppCompatActivity {
         pieChart = findViewById(R.id.piechart);
         BarChart = findViewById(R.id.barchart);
 
+        //linear Layouts
+        lverkehrsmittel= findViewById(R.id.LinearLayoutVerkehrsmittel);
+        lwohnen= findViewById(R.id.LinearLayoutWohnen);
+        llebensmittel =findViewById(R.id.LinearLayoutLebensmittel);
+        lgesundheit= findViewById(R.id.LinearLayoutGesundheit);
+        lfreizeit = findViewById(R.id.LinearLayoutFreizeit);
+        lsonstiges = findViewById(R.id.LinearLayoutSonstiges);
+        letc1 = findViewById(R.id.LinearLayoutetc1);
+        letc2 = findViewById(R.id.LinearLayoutetc2);
+        letc3 = findViewById(R.id.LinearLayoutetc3);
+
+        //farben
+        verkehrsmittelcolor =findViewById(R.id.ColorVerkehrsmittel);
+        wohnencolor =findViewById(R.id.ColorWohnen);
+        lebensmittelcolor =findViewById(R.id.ColorLebensmittel);
+        gesundheitcolor = findViewById(R.id.ColorGesundheit);
+        freizeitcolor = findViewById(R.id.ColorFreizeit);
+        sonstigescolor =findViewById(R.id.COlorSonstiges);
+        etc1color = findViewById(R.id.etc1color);
+        etc2color = findViewById(R.id.etc2color);
+        etc3color = findViewById(R.id.etc3color);
+
+        //namen unter Diagramm
+        verkehrsmitteltext =findViewById(R.id.textVerkehrsmittel);
+        wohnentext =findViewById(R.id.textWohnen);
+        lebensmitteltext =findViewById(R.id.textLebensmittel);
+        gesundheittext=findViewById(R.id.textGesundheit);
+        freitzeittext=findViewById(R.id.textFreizeit);
+        sonstigesttext=findViewById(R.id.textSonstiges);
+        etc1text =findViewById(R.id.etc1);
+        etc2text =findViewById(R.id.etc2);
+        etc3text =findViewById(R.id.etc3);
+
+        //Relativlayout
+        rVerkehrsmittel = findViewById(R.id.RelativLayoutVerkehrsmittel);
+        rWohnen =findViewById(R.id.RelativLayoutWohnen);
+        rLebensmittel = findViewById(R.id.RelativLayoutLebensmittel);
+        rGesundheit = findViewById(R.id.RelativLayoutGesundheit);
+        rFreizeit= findViewById(R.id.RelativLayoutFreizeit);
+        rSonstiges =findViewById(R.id.RelativLayoutSonstiges);
+        retc1 =findViewById(R.id.RelativLayoutetc1);
+        retc2 =findViewById(R.id.RelativLayoutetc2);
+        retc3 =findViewById(R.id.RelativLayoutetc3);
+
+        //Linien in Tabelle
+        line0 = findViewById(R.id.line0);
+        line1 = findViewById(R.id.line1);
+        line2 = findViewById(R.id.line2);
+        line3 = findViewById(R.id.line3);
+        line4 = findViewById(R.id.line4);
+        line5 = findViewById(R.id.line5);
+        line6 = findViewById(R.id.line6);
+        line7 = findViewById(R.id.line7);
+        line8 = findViewById(R.id.line8);
+        line9 = findViewById(R.id.line9);
+
+        //Name in Tabelle
+        verkehrsmittelname =findViewById(R.id.Verkehrmittelname);
+        wohnenname =findViewById(R.id.Wohnenname);
+        lebensmittelname =findViewById(R.id.Lebensmittelname);
+        gesundheitname=findViewById(R.id.Gesundheitname);
+        freizeitname =findViewById(R.id.Freizeitname);
+        sonstigesname =findViewById(R.id.Sonstigesname);
+        etc1name = findViewById(R.id.etc1name);
+        etc2name = findViewById(R.id.etc2name);
+        etc3name = findViewById(R.id.etc3name);
+
+        //Anzeige für Werte in Tabelle
         tvWohnen =findViewById(R.id.tvWohnen);
         tvLebensmittel = findViewById(R.id.tvLebensmittel);
         tvVerkehrsmittel = findViewById(R.id.tvVerkehrsmittel);
         tvGesundheit = findViewById(R.id.tvGesundheit);
         tvFreizeit = findViewById(R.id.tvFreizeit);
         tvSonstiges = findViewById(R.id.tvSonstiges);
-
         //Anzeige von weitern Kategorien in verschiedenen Textfeldern und Views
         tvetc1 = findViewById(R.id.tvetc1);
         tvetc2 = findViewById(R.id.tvect2);
         tvetc3 = findViewById(R.id.tvetc3);
-
-        letc1 = findViewById(R.id.LinearLayoutetc1);
-        letc2 = findViewById(R.id.LinearLayoutetc2);
-        letc3 = findViewById(R.id.LinearLayoutetc3);
-
-        wohnencolor =findViewById(R.id.ColorWohnen);
-        lebensmittelcolor =findViewById(R.id.ColorLebensmittel);
-        verkehrsmittelcolor =findViewById(R.id.ColorVerkehrsmittel);
-        gesundheitcolor = findViewById(R.id.ColorGesundheit);
-        freizeitcolor = findViewById(R.id.ColorFreizeit);
-        sonstigescolor =findViewById(R.id.COlorSonstiges);
-
-        etc1color = findViewById(R.id.etc1color);
-        etc2color = findViewById(R.id.etc2color);
-        etc3color = findViewById(R.id.etc3color);
-
-        etc1n =findViewById(R.id.etc1);
-        etc2n =findViewById(R.id.etc2);
-        etc3n =findViewById(R.id.etc3);
-
-        retc1 =findViewById(R.id.RelativLayoutetc1);
-        retc2 =findViewById(R.id.RelativLayoutetc2);
-        retc3 =findViewById(R.id.RelativLayoutetc3);
-
-        etc1name = findViewById(R.id.etc1name);
-        etc2name = findViewById(R.id.etc2name);
-        etc3name = findViewById(R.id.etc3name);
-
-        lineetc1 = findViewById(R.id.Lineetc1);
-        lineetc2 = findViewById(R.id.Lineetc2);
-        lineetc3 = findViewById(R.id.Lineetc3);
 
         ArrayList<Category> Categories =db.getAllCategory();
         //Textfelder und Farben setzen
@@ -250,57 +212,98 @@ public class DiagramViewActivity extends AppCompatActivity {
             switch (n)
             {
                 case 0:
-                    tvVerkehrsmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     verkehrsmittelcolor.setBackgroundColor(CatColor);
+                    verkehrsmitteltext.setText(CatName);
+                    lverkehrsmittel.setVisibility(View.VISIBLE);
+
+                    verkehrsmittelname.setText(CatName);
+                    tvVerkehrsmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    rVerkehrsmittel.setVisibility(View.VISIBLE);
+                    line1.setVisibility(View.VISIBLE);
                     break;
                 case 1:
-                    tvWohnen.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     wohnencolor.setBackgroundColor(CatColor);
+                    wohnentext.setText(CatName);
+                    lwohnen.setVisibility(View.VISIBLE);
+
+                    wohnenname.setText(CatName);
+                    tvWohnen.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    rWohnen.setVisibility(View.VISIBLE);
+                    line2.setVisibility(View.VISIBLE);
                     break;
                 case 2:
-                    tvLebensmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     lebensmittelcolor.setBackgroundColor(CatColor);
+                    lebensmitteltext.setText(CatName);
+                    llebensmittel.setVisibility(View.VISIBLE);
+
+                    lebensmittelname.setText(CatName);
+                    tvLebensmittel.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    rLebensmittel.setVisibility(View.VISIBLE);
+                    line3.setVisibility(View.VISIBLE);
                     break;
                 case 3:
-                    tvGesundheit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     gesundheitcolor.setBackgroundColor(CatColor);
+                    gesundheittext.setText(CatName);
+                    lgesundheit.setVisibility(View.VISIBLE);
+
+                    gesundheitname.setText(CatName);
+                    tvGesundheit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    rGesundheit.setVisibility(View.VISIBLE);
+                    line4.setVisibility(View.VISIBLE);
                     break;
                 case 4:
-                    tvFreizeit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     freizeitcolor.setBackgroundColor(CatColor);
+                    freitzeittext.setText(CatName);
+                    lfreizeit.setVisibility(View.VISIBLE);
+
+                    freizeitname.setText(CatName);
+                    tvFreizeit.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    rFreizeit.setVisibility(View.VISIBLE);
+                    line5.setVisibility(View.VISIBLE);
                     break;
                 case 5:
-                    tvSonstiges.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     sonstigescolor.setBackgroundColor(CatColor);
+                    sonstigesttext.setText(CatName);
+                    lsonstiges.setVisibility(View.VISIBLE);
+
+                    sonstigesname.setText(CatName);
+                    tvSonstiges.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
+                    rSonstiges.setVisibility(View.VISIBLE);
+                    line6.setVisibility(View.VISIBLE);
+                    break;
+
 
                     //Wenn weiter Kategorien eingetragen sind, weden diese angezeigt
                     //wenn nicht sind sie standardmäßig ausgeblendet
                 case 6:
                     etc1color.setBackgroundColor(CatColor);
-                    etc1n.setText(CatName);
+                    etc1text.setText(CatName);
                     letc1.setVisibility(View.VISIBLE);
 
                     etc1name.setText(CatName);
                     tvetc1.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     retc1.setVisibility(View.VISIBLE);
+                    line7.setVisibility(View.VISIBLE);
                     break;
                 case 7:
                     etc2color.setBackgroundColor(CatColor);
-                    etc2n.setText(CatName);
+                    etc2text.setText(CatName);
                     letc2.setVisibility(View.VISIBLE);
 
                     etc2name.setText(CatName);
                     tvetc2.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     retc2.setVisibility(View.VISIBLE);
+                    line8.setVisibility(View.VISIBLE);
                     break;
                 case 8:
                     etc3color.setBackgroundColor(CatColor);
-                    etc3n.setText(CatName);
+                    etc3text.setText(CatName);
                     letc3.setVisibility(View.VISIBLE);
 
                     etc3name.setText(CatName);
                     tvetc3.setText(Float.toString(db.getCategorieOutgosMonth(day,month,year,CatName))+" €");
                     retc3.setVisibility(View.VISIBLE);
+                    line9.setVisibility(View.VISIBLE);
                     break;
             }
             n=n+1;
@@ -375,16 +378,19 @@ public class DiagramViewActivity extends AppCompatActivity {
 
     public  void openCalender(View dateview) {
         java.util.Calendar calender = java.util.Calendar.getInstance();
+        year = calender.get(Calendar.YEAR);
+        month = calender.get(Calendar.MONTH);
+        day = calender.get(Calendar.DAY_OF_MONTH);
         DatePickerDialog dateDialog = new DatePickerDialog(DiagramViewActivity.this, new DatePickerDialog.OnDateSetListener() {
+
 
             @Override
             public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
 
                 day = selectedDay;
-                month = selectedMonth + 1; //richtige monatszahl
+                month = selectedMonth+1;
                 year = selectedYear;
 
-                //Addition bei Monat von 1, Index beginnend bei 0
                 if (day<10)
                 {
                     if(month<10)
@@ -404,7 +410,7 @@ public class DiagramViewActivity extends AppCompatActivity {
                         editTextDate.setText(selectedDay + "." + month + "." + selectedYear);
                     }
                 }
-                //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit)
+                //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit
                 calender.set(year, month, day, 8, 0, 0);
                 startDateInMilliSec = calender.getTimeInMillis();
                 calender.set(year, month, day, 9, 0, 0);

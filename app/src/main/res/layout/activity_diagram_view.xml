@@ -52,16 +52,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Monat:"
-                        android:textSize="20dp"
+                        android:textSize="18dp"
                         app:layout_constraintTop_toBottomOf="@+id/textView3"
                         tools:layout_editor_absoluteX="55dp" />
 
-                    <EditText
+                    <TextView
                         android:id="@+id/editTextDate"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:ems="10"
+                        android:textSize="18dp"
                         android:inputType="date"
                         android:text="01.01.2000" />
 
@@ -99,7 +100,7 @@
 
                         <org.eazegraph.lib.charts.PieChart xmlns:app="http://schemas.android.com/apk/res-auto"
                             android:id="@+id/piechart"
-                            android:layout_width="300dp"
+                            android:layout_width="350dp"
                             android:layout_height="300dp"
                             android:layout_marginStart="15dp"
                             android:layout_marginTop="15dp"
@@ -129,6 +130,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:id="@+id/LinearLayoutVerkehrsmittel"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
                         android:layout_gravity="center_vertical">
@@ -140,19 +142,22 @@
                             android:background="@color/Sonstiges" />
 
                         <TextView
+                            android:id="@+id/textVerkehrsmittel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="10dp"
-                            android:text="@string/Kat_Verkehrsmittel"
+                            android:text="Kat_Verkehrsmittel"
                             android:textSize="18sp" />
 
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/LinearLayoutWohnen"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="5dp"
+                        android:visibility="invisible">
 
                         <View
                             android:id="@+id/ColorWohnen"
@@ -161,19 +166,22 @@
                             android:background="@color/Sonstiges" />
 
                         <TextView
+                            android:id="@+id/textWohnen"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="10dp"
-                            android:text="@string/Kat_Wohnen"
+                            android:text="Kat_Wohnen"
                             android:textSize="18sp" />
 
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/LinearLayoutLebensmittel"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="5dp"
+                        android:visibility="invisible">
 
                         <View
                             android:id="@+id/ColorLebensmittel"
@@ -182,19 +190,22 @@
                             android:background="@color/Sonstiges" />
 
                         <TextView
+                            android:id="@+id/textLebensmittel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="10dp"
-                            android:text="@string/Kat_Lebensmittel"
+                            android:text="Kat_Lebensmittel"
                             android:textSize="18sp" />
 
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/LinearLayoutGesundheit"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="5dp"
+                        android:visibility="invisible">
 
                         <View
                             android:id="@+id/ColorGesundheit"
@@ -203,19 +214,22 @@
                             android:background="@color/Sonstiges" />
 
                         <TextView
+                            android:id="@+id/textGesundheit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="10dp"
-                            android:text="@string/Kat_Gesundheit"
+                            android:text="Kat_Gesundheit"
                             android:textSize="18sp" />
 
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/LinearLayoutFreizeit"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="5dp"
+                        android:visibility="invisible">
 
                         <View
                             android:id="@+id/ColorFreizeit"
@@ -224,19 +238,22 @@
                             android:background="@color/Sonstiges" />
 
                         <TextView
+                            android:id="@+id/textFreizeit"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="10dp"
-                            android:text="@string/Kat_Freizeit"
+                            android:text="Kat_Freizeit"
                             android:textSize="18sp" />
 
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/LinearLayoutSonstiges"
                         android:layout_width="match_parent"
                         android:layout_height="25dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="5dp"
+                        android:visibility="invisible">
 
                         <View
                             android:id="@+id/COlorSonstiges"
@@ -245,10 +262,11 @@
                             android:background="@color/Sonstiges" />
 
                         <TextView
+                            android:id="@+id/textSonstiges"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingLeft="10dp"
-                            android:text="@string/Kat_Sonstiges"
+                            android:text="Kat_Sonstiges"
                             android:textSize="18sp" />
 
                     </LinearLayout>
@@ -343,6 +361,7 @@
                         android:textStyle="bold" />
 
                     <View
+                        android:id="@+id/line0"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
@@ -351,6 +370,7 @@
                         android:background="@color/color_two" />
 
                     <RelativeLayout
+                        android:id="@+id/RelativLayoutVerkehrsmittel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="25dp"
@@ -359,6 +379,7 @@
                         android:layout_marginBottom="2dp">
 
                         <TextView
+                            android:id="@+id/Verkehrmittelname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
@@ -379,13 +400,16 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/line1"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:background="@color/color_two" />
+                        android:background="@color/color_two"
+                        android:visibility="invisible"/>
 
                     <RelativeLayout
+                        android:id="@+id/RelativLayoutWohnen"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="25dp"
@@ -394,6 +418,7 @@
                         android:layout_marginBottom="2dp">
 
                         <TextView
+                            android:id="@+id/Wohnenname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
@@ -415,13 +440,16 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/line2"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:background="@color/color_two" />
+                        android:background="@color/color_two"
+                        android:visibility="invisible"/>
 
                     <RelativeLayout
+                        android:id="@+id/RelativLayoutLebensmittel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="25dp"
@@ -430,6 +458,7 @@
                         android:layout_marginBottom="2dp">
 
                         <TextView
+                            android:id="@+id/Lebensmittelname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
@@ -451,13 +480,16 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/line3"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:background="@color/color_two" />
+                        android:background="@color/color_two"
+                        android:visibility="invisible"/>
 
                     <RelativeLayout
+                        android:id="@+id/RelativLayoutGesundheit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="25dp"
@@ -466,6 +498,7 @@
                         android:layout_marginBottom="2dp">
 
                         <TextView
+                            android:id="@+id/Gesundheitname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
@@ -487,13 +520,16 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/line4"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:background="@color/color_two" />
+                        android:background="@color/color_two"
+                        android:visibility="invisible"/>
 
                     <RelativeLayout
+                        android:id="@+id/RelativLayoutFreizeit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="25dp"
@@ -502,6 +538,7 @@
                         android:layout_marginBottom="2dp">
 
                         <TextView
+                            android:id="@+id/Freizeitname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
@@ -522,13 +559,16 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/line5"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:background="@color/color_two" />
+                        android:background="@color/color_two"
+                        android:visibility="invisible"/>
 
                     <RelativeLayout
+                        android:id="@+id/RelativLayoutSonstiges"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="25dp"
@@ -537,6 +577,7 @@
                         android:layout_marginBottom="2dp">
 
                         <TextView
+                            android:id="@+id/Sonstigesname"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-light"
@@ -557,11 +598,13 @@
                     </RelativeLayout>
 
                     <View
+                        android:id="@+id/line6"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:background="@color/color_two" />
+                        android:background="@color/color_two"
+                        android:visibility="invisible"/>
 
                     <RelativeLayout
                         android:id="@+id/RelativLayoutetc1"
@@ -595,8 +638,7 @@
                     </RelativeLayout>
 
                     <View
-
-                        android:id="@+id/Lineetc1"
+                        android:id="@+id/line7"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
@@ -637,7 +679,7 @@
                     </RelativeLayout>
 
                     <View
-                        android:id="@+id/Lineetc2"
+                        android:id="@+id/line8"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"
@@ -677,7 +719,7 @@
                     </RelativeLayout>
 
                     <View
-                        android:id="@+id/Lineetc3"
+                        android:id="@+id/line9"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginLeft="20dp"

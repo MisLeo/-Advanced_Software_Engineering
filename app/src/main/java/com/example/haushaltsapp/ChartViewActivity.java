@@ -3,40 +3,28 @@ package com.example.haushaltsapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.ArrayAdapter;
-import android.widget.HorizontalScrollView;
-import android.widget.Spinner;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.haushaltsapp.ToDoListPackage.AddNewTask;
-import com.example.haushaltsapp.ToDoListPackage.SwipeHandler;
-import com.example.haushaltsapp.ToDoListPackage.TaskModel;
-import com.example.haushaltsapp.ToDoListPackage.ToDoAdapter;
+import com.example.haushaltsapp.ChartPackage.testChart;
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class ChartViewActivity extends  AppCompatActivity {
+public class ChartViewActivity extends  AppCompatActivity
+{
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
@@ -54,20 +42,47 @@ public class ChartViewActivity extends  AppCompatActivity {
     private final static int CONTENT_ROW_HEIGHT = 80;
     private final static int FIXED_HEADER_HEIGHT = 60;
 
-    //Textgröße noch ändern und Button zum bearbeiten der Einträge anlegen
-
-    private TableLayout fixedTableLayout;
-    private TableLayout scrollableTableLayout;
-
-
-    private RecyclerView ChartRecyclerView;
-    private ToDoAdapter ChartAdapter;
-    private FloatingActionButton fabAddTask;
-    private List<TaskModel> chartList;
-    private Spinner spinner;
-    private static String type;
+    private ArrayList<Outgo> Outgolist;
+    private RecyclerView recyclerView;
+    private recyclerAdapter.RecyclerviewClickListener listener;
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_chart_view);
+        mySQLite = new MySQLite(this);
+        Outgolist = mySQLite.getAllOutgo();
+
+
+        recyclerView = findViewById(R.id.chartRecyclerView);
+
+        setAddaper();
+    }
+
+
+    private void setAddaper()
+    {
+        setOnClickListener();
+
+        recyclerAdapter adapter = new recyclerAdapter(Outgolist, listener);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator( new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+    }
+    private void setOnClickListener()
+    {
+        listener = new recyclerAdapter.RecyclerviewClickListener() {
+            @Override
+            public void onClick(View v, int position) {
+                Intent intenttoedit = new Intent(getApplicationContext(), testChart.class);
+                intenttoedit.putExtra("name", Outgolist.get(position).getName());
+                startActivity(intenttoedit);
+            }
+        };
+    }
+
+ /*   @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_view);
@@ -76,37 +91,22 @@ public class ChartViewActivity extends  AppCompatActivity {
         //code von Davids TO DO Liste noch anpassen auf Tabellenansicht
 
 
-        //noch ändern zu AUswahl zwischen AUsgaben Einnahmen Alles
-     /*   Intent intent = getIntent();
-        ArrayList<Category> list = mySQLite.getAllCategory();
-        spinner = findViewById(R.id.ToDoListSpinner);
-        ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(getApplicationContext(),  android.R.layout.simple_spinner_dropdown_item, list);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
-
         mySQLite.openDatabase();
         ChartRecyclerView = findViewById(R.id.chartRecyclerView);
         ChartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        ChartAdapter = new ToDoAdapter(mySQLite,this,this);
-        ChartRecyclerView.setAdapter(ChartAdapter);
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeHandler(ChartAdapter));
+        chartAdapter = new ChartAdapter (mySQLite,this,this);
+        ChartRecyclerView.setAdapter(chartAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeHandlerChart(chartAdapter));
         itemTouchHelper.attachToRecyclerView(ChartRecyclerView);
-        fabAddTask = findViewById(R.id.fab);
+        //fabAddChart = findViewById(R.id.fab);
 
-        chartList = mySQLite.getTaskByType(type);
+        chartList = mySQLite.getAllOutgo();
+            // chartList = mySQLite.getTaskByType(type);
         //Collections.reverse(taskList);
-        ChartAdapter.setTasks(chartList);
-        ChartAdapter.notifyDataSetChanged();
+        chartAdapter.setChart(chartList);
+        chartAdapter.notifyDataSetChanged();
 
-        fabAddTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddNewTask.newInstance().show(getSupportFragmentManager(), AddNewTask.TAG);
-            }
-        });*/
-
-    }
+    }*/
 
 //Alte Version Tabellenansicht
 /*
@@ -321,4 +321,47 @@ public class ChartViewActivity extends  AppCompatActivity {
         }
     }
 
+  /*  @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        type = String.valueOf(spinner.getSelectedItem());
+        AddNewEntry.setNewType(type);
+        chartList = mySQLite.getAllOutgo();
+        chartAdapter.setChart(chartList);
+        chartAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    @Override
+    public void handleDialogClose(DialogInterface dialog) {
+        chartList = mySQLite.getAllOutgo();
+        Collections.reverse(chartList);
+        chartAdapter.setChart(chartList);
+        chartAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onTaskClick(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(chartAdapter.getContext());
+        builder.setMessage("Haben Sie diese Aufgabe erledigt?");
+        builder.setPositiveButton("Ja",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getBaseContext(), "Glückwunsch! Mach weiter so!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        builder.setNegativeButton("Abbruch", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                chartAdapter.notifyItemChanged(position);
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }*/
 }
+

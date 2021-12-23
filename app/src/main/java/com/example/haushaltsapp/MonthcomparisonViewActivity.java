@@ -39,7 +39,6 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
     ///////////////////////////////
     private MySQLite db;
 
-    //private ValueLineChart LineChartyear;
     private BarChart BarChartInOutcomparison;
 
     private TextView tvM1o, tvM2o, tvM1i, tvM2i;
@@ -51,34 +50,22 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
     private int year, year1, year2;
     private String datesM1, datesM2;
 
-    private EditText editTextDateM1; //Datum M1
-    private EditText editTextDateM2; //Datum M2
+    private TextView editTextDateM1; //Datum M1
+    private TextView editTextDateM2; //Datum M2
     private long startDateInMilliSec;
     private long endDateInMilliSec;
 
-    // Setzt die Variablen day, month, year
-  /*  private void getDate(){
-        java.util.Calendar calender = java.util.Calendar.getInstance();
-        SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
-        String dates = datumsformat.format(calender.getTime());
-        day = Integer.parseInt(dates.substring(0,2));
-        month = Integer.parseInt(dates.substring(3,5));
-        year = Integer.parseInt(dates.substring(6,10));
-    }
-*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monthcomparison_view);
 
-        //getDate();
-
         db = new MySQLite(this);
         db.openDatabase();
 
         //Aktuelles Datum anzeigen
-        editTextDateM1 = (EditText) findViewById(R.id.editTextDateM1);
-        editTextDateM2 = (EditText) findViewById(R.id.editTextDateM2);
+        editTextDateM1 = (TextView) findViewById(R.id.editTextDateM1);
+        editTextDateM2 = (TextView) findViewById(R.id.editTextDateM2);
         java.util.Calendar calender = Calendar.getInstance();
         SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
 
@@ -127,16 +114,18 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
 
     public  void openCalenderM1(View dateview) {
         java.util.Calendar calender = java.util.Calendar.getInstance();
+        year1 = calender.get(Calendar.YEAR);
+        month1 = calender.get(Calendar.MONTH);
+        day1 = calender.get(Calendar.DAY_OF_MONTH);
         DatePickerDialog dateDialog = new DatePickerDialog(MonthcomparisonViewActivity.this, new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
 
                 day1 = selectedDay;
-                month1 = selectedMonth + 1; //richtige monatszahl
+                month1 = selectedMonth+1;
                 year1 = selectedYear;
 
-                //Addition bei Monat von 1, Index beginnend bei 0
                 if (day1<10)
                 {
                     if(month1<10)
@@ -171,6 +160,9 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
 
     public  void openCalenderM2(View dateview) {
         java.util.Calendar calender = java.util.Calendar.getInstance();
+        year2 = calender.get(Calendar.YEAR);
+        month2 = calender.get(Calendar.MONTH);
+        day2 = calender.get(Calendar.DAY_OF_MONTH);
         DatePickerDialog dateDialog = new DatePickerDialog(MonthcomparisonViewActivity.this, new DatePickerDialog.OnDateSetListener() {
 
             @Override

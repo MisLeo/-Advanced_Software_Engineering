@@ -579,6 +579,7 @@ public class MySQLite extends SQLiteOpenHelper {
         return categories;
     }
 
+
     /*
     Erhalte das Object Category mit dem namen
      */
