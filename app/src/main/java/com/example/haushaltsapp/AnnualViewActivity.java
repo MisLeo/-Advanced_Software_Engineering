@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.haushaltsapp.database.Category;
@@ -44,12 +43,15 @@ public class AnnualViewActivity extends AppCompatActivity {
     ///////////////////////////////
     private MySQLite db;
 
+    //private ValueLineChart LineChartyear;
     private BarChart BarChartInOut;
+    //private BarChart BarChartyear;
 
     private TextView tvM1o, tvM2o, tvM3o, tvM4o,tvM5o,tvM6o,tvM7o,tvM8o,tvM9o,tvM10o,tvM11o,tvM12o,tvM13o;
     private TextView tvM1out, tvM2out, tvM3out, tvM4out,tvM5out,tvM6out,tvM7out,tvM8out,tvM9out,tvM10out,tvM11out,tvM12out,tvM13out;
     private TextView tvM1i, tvM2i, tvM3i, tvM4i,tvM5i,tvM6i,tvM7i,tvM8i,tvM9i,tvM10i,tvM11i,tvM12i,tvM13i;
     private  TextView tvM1in, tvM2in,tvM3in,tvM4in,tvM5in,tvM6in,tvM7in,tvM8in,tvM9in,tvM10in,tvM11in,tvM12in,tvM13in;
+
 
     //aktuelles Datum
     private int day;
@@ -68,7 +70,7 @@ public class AnnualViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_annual_view);
 
         db = new MySQLite(this);
-        db.openDatabase();
+        // db.openDatabase(); // nicht mehr notwendig // Auskommentiert von Yvette Groner
 
         //Aktuelles Datum anzeigen
         editTextDate = (TextView) findViewById(R.id.editTextDate);
@@ -1030,13 +1032,10 @@ public class AnnualViewActivity extends AppCompatActivity {
 
     }*/
 
-
-
     public void changelastMonth(View view)
     {
         setData();
     }
-
 
     public  void openCalender(View dateview) {
         java.util.Calendar calender = java.util.Calendar.getInstance();

@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="10dp"
         tools:layout_editor_absoluteX="-87dp"
         tools:layout_editor_absoluteY="-32dp">
 
@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
-            android:text="Tabellenansicht Ausgaben und Einnahmen"
+            android:text="Tabellenansicht Ausgaben"
             android:textColor="@android:color/black"
             android:textSize="20dp" />
 

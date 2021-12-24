@@ -100,7 +100,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         calenderView = findViewById(R.id.calenderView);
 
         db = new MySQLite(this);
-        db.openDatabase();
+        // db.openDatabase(); // nicht mehr notwendig // Auskommentiert von Yvette Groner
 
         Calendar calendar = Calendar.getInstance();
         calendarYear  = calendar.get(Calendar.YEAR);

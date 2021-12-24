@@ -71,7 +71,7 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        mySQLite.openDatabase();
+        // db.openDatabase(); // nicht mehr notwendig // Auskommentiert von Yvette Groner
         tasksRecyclerView = findViewById(R.id.tasksRecyclerView);
         tasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         tasksAdapter = new ToDoAdapter(mySQLite,this,this);

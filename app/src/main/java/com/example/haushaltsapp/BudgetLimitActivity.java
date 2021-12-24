@@ -95,8 +95,12 @@ public class BudgetLimitActivity extends AppCompatActivity {
             addCategory(category.getName_PK(), category.getBorder(), category.getColor());
         }
 
-        gesamtButton = limitGesamt;
-        categoryButton = limitCategory;
+  //      gesamtButton = mySQLite.getSateLimitState("Gesamtlimit").equals("true");
+  //      categoryButton = mySQLite.getSateLimitState("Kategorielimit").equals("true");
+
+        gesamtButton = false;
+        categoryButton = false;
+
         //Alte Werte setzen bzg checkbox
         if(limitGesamt){
             checkBoxGesamt.setChecked(true);
@@ -162,22 +166,28 @@ public class BudgetLimitActivity extends AppCompatActivity {
                     if(categoryButton){
                         checkBoxGesamt.setChecked(false);
                         gesamtButton = false;
-                    }else{
+                    //    mySQLite.updateLimitSate("Gesamtlimit","false");
+                     }else{
                         gesamtButton = true;
+                      //  mySQLite.updateLimitSate("Gesamtlimit","true");
                     }
                 }else {
                     gesamtButton = false;
+                   // mySQLite.updateLimitSate("Gesamtlimit","false");
                 }break;
             case R.id.checkBox2:
                 if (checked) {
                     if(gesamtButton){
                         checkBoxCategory.setChecked(false);
                         categoryButton = false;
+                     //   mySQLite.updateLimitSate("Kategorielimit","false");
                     }else{
                         categoryButton = true;
+                       // mySQLite.updateLimitSate("Kategorielimit","true");
                     }
                 }else {
                     categoryButton = false;
+                   // mySQLite.updateLimitSate("Kategorielimit","false");
                 }break;
         }
     }

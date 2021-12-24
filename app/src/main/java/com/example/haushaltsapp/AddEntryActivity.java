@@ -15,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.haushaltsapp.database.Category;
@@ -37,7 +38,7 @@ public class AddEntryActivity extends AppCompatActivity {
     private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
 
     private Spinner spinnerCyclus, spinnerCategory; //Zyklus, Kategorie
-    private EditText editTextDate; //Datum
+    private TextView editTextDate; //Datum
     private ImageView calenderView; //Kalender
 
     //Werte der Einnahme oder Ausgabe
@@ -80,7 +81,7 @@ public class AddEntryActivity extends AppCompatActivity {
         spinnerCategory.setAdapter(adapter3);
 
         //Aktuelles Datum anzeigen
-        editTextDate = (EditText) findViewById(R.id.editTextDate);
+        editTextDate = (TextView) findViewById(R.id.editTextDate);
         java.util.Calendar kalender = Calendar.getInstance();
         SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
         editTextDate.setText(datumsformat.format(kalender.getTime()));
@@ -261,7 +262,7 @@ public class AddEntryActivity extends AppCompatActivity {
                     Outgo outgo = new Outgo(titel, value, 1, monthEntry, yearEntry, "einmalig","Sonstiges");
                     mySQLite.addOutgo(outgo);
                 }
-            }while ((monthEntry < monthCurrent) && (yearEntry <= yearCurrent));
+            }while (!((monthEntry != monthCurrent) && (yearEntry != yearCurrent)));
         }
     }
 

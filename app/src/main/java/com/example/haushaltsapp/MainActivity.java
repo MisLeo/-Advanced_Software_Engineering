@@ -73,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
         //Kategorien setzen
         setCategories();
 
+        //LimitState Database füllen
+      //  setLimitState();
+
         //Restbudget in den neuen Monat übernehmen
         setLastBudget();
 
@@ -91,6 +94,15 @@ public class MainActivity extends AppCompatActivity {
         day = Integer.parseInt(dates.substring(0,2));
         month = Integer.parseInt(dates.substring(3,5));
         year = Integer.parseInt(dates.substring(6,10));
+    }
+
+
+    private void setLimitState(){
+        String state = mySQLite.getSateLimitState("Gesamtlimit");
+        if(state.equals("")){
+            mySQLite.addLimitState("Gesamtlimit", "false");
+            mySQLite.addLimitState("Kategorielimit","false");
+        }
     }
 
     //Kategorien anlegen

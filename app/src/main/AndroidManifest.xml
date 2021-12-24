@@ -41,7 +41,7 @@
             android:name=".ChartViewActivity"
             android:exported="true" />
         <activity
-            android:name=".ChartPackage.testChart"
+            android:name=".Charttest"
             android:exported="true" />
         <activity
             android:name=".CalendarEventActivity"

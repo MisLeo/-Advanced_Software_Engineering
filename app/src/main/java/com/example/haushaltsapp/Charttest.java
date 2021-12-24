@@ -1,20 +1,19 @@
-package com.example.haushaltsapp.ChartPackage;
+package com.example.haushaltsapp;
 
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.haushaltsapp.R;
-import com.example.haushaltsapp.database.MySQLite;
 
-public class testChart extends AppCompatActivity {
+//nur zum Testen
+public class Charttest extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.charttest);
-        TextView nameText = findViewById(R.id.testname);
+        TextView Outname = findViewById(R.id.testname);
 
         String name = "";
 
@@ -23,6 +22,8 @@ public class testChart extends AppCompatActivity {
         {
             name = extras.getString("name");
         }
-        nameText.setText(name);
+        Outname.setText(name);
     }
 }
+
+
