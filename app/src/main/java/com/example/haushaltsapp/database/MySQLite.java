@@ -38,7 +38,7 @@ public class MySQLite extends SQLiteOpenHelper {
         String CREATE_TODO_TABLE = "CREATE TABLE todo ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "task TEXT, "+"status INTEGER, "+ "type TEXT)";
         db.execSQL(CREATE_TODO_TABLE);
 
-        String CREATE_Limit_TABLE = "CREATE TABLE limitState ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "name TEXT, "+"state TEXT)";
+        String CREATE_Limit_TABLE = "CREATE TABLE limitState ( " + "id INTEGER PRIMARY KEY AUTOINCREMENT, " + "name TEXT, "+"value DOUBLE, "+"state TEXT)";
         db.execSQL(CREATE_Limit_TABLE);
     }
 
@@ -860,17 +860,19 @@ Periodische Ausgaben wurden dabei berücksichtigt.
 
 
     //////////////////////////////////////////////////////////////////////////////////////////
-    // Tabelle limitState: id, name, state
+    // Tabelle limitState: id, name, value, state
     //@David es gibt die Einträge mit dem Namen Gesamtlimit und Kategorielimit
     //State ist dabei true oder false.
     //////////////////////////////////////////////////////////////////////////////////////////
 
     //LimitSate hinzufügen
+    //value ist default 0.ß
     public void addLimitState(String name, String state){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues value = new ContentValues();
         value.put(KEY_NAME, name);
         value.put(KEY_STATE, state);
+        value.put(KEY_VALUE, 0);
         db.insert(TABLE_LIMITSATATE, null, value);
         db.close();
     }
@@ -884,7 +886,28 @@ Periodische Ausgaben wurden dabei berücksichtigt.
         value.put(KEY_STATE, state);
 
         //id ermitteln
-        String query = "SELECT * FROM "+TABLE_LIMITSATATE+" WHERE "+KEY_NAME+" = "+name;
+        String query = "SELECT * FROM "+TABLE_LIMITSATATE+" WHERE "+KEY_NAME+" = \""+name+"\"";
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor.moveToFirst()){
+            id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID));
+        }
+
+        int i = db.update(TABLE_LIMITSATATE, value, KEY_ID+" = ?", new String[] { String.valueOf(id) });
+        db.close();
+        return i;
+    }
+
+    //Limit ersetzen. Primär für Gesamtlimit
+    public int updateStateLimit(String name, double valueLimit, String state){
+        int id = -1;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        value.put(KEY_NAME, name);
+        value.put(KEY_VALUE, valueLimit);
+        value.put(KEY_STATE, state);
+
+        //id ermitteln
+        String query = "SELECT * FROM "+TABLE_LIMITSATATE+" WHERE "+KEY_NAME+" = \""+name+"\"";
         Cursor cursor = db.rawQuery(query, null);
         if(cursor.moveToFirst()){
             id = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ID));
@@ -899,8 +922,7 @@ Periodische Ausgaben wurden dabei berücksichtigt.
     public String getSateLimitState(String name){
         String state = "";
 
-
-        String query = "SELECT * FROM "+TABLE_LIMITSATATE+" WHERE "+KEY_NAME+" = "+name;
+        String query = "SELECT * FROM "+TABLE_LIMITSATATE+" WHERE "+KEY_NAME+" = \""+name+"\"";
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         if(cursor != null) {
@@ -912,5 +934,24 @@ Periodische Ausgaben wurden dabei berücksichtigt.
         db.close();
 
         return state;
+    }
+
+    //Wert ermitteln
+    public double getSateLimitValue(String name){
+        double value = 0.0;
+
+
+        String query = "SELECT * FROM "+TABLE_LIMITSATATE+" WHERE "+KEY_NAME+" = \""+name+"\"";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if(cursor != null) {
+            if (cursor.moveToFirst()) {
+                value = cursor.getDouble(cursor.getColumnIndexOrThrow(KEY_VALUE));
+            }
+        }
+
+        db.close();
+
+        return value;
     }
 }

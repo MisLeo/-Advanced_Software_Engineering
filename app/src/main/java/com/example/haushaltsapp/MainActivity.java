@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         setCategories();
 
         //LimitState Database füllen
-      //  setLimitState();
+        setLimitState();
 
         //Restbudget in den neuen Monat übernehmen
         setLastBudget();
@@ -463,7 +463,8 @@ public class MainActivity extends AppCompatActivity {
         String categoryName = "";
         Double categoryLimit= 0.0;
         Boolean categoryLimitReached;
-        Boolean isCatButtonChecked = BudgetLimitActivity.getCatButtonStatus();
+       // Boolean isCatButtonChecked = BudgetLimitActivity.getCatButtonStatus();
+        boolean isCatButtonChecked = mySQLite.getSateLimitState("Kategorielimit").equals("true"); //später aus der Datenbank - Yvette
         if(isCatButtonChecked){
             for(int i = 0; i < categorieList.size(); i++){
                 Category category = categorieList.get(i);
@@ -475,19 +476,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+
     }
 
     private void checkPercentageLimitReached(){
-        Integer percentOfBudget=0;
+
+        Integer percentOfBudget=0; //double?
         Boolean isPerecentLimitReached;
-        Boolean isPercentageButtonChecked = BudgetLimitActivity.getTotalButtonStatus();
+       // Boolean isPercentageButtonChecked = BudgetLimitActivity.getTotalButtonStatus();
+        Boolean isPercentageButtonChecked = mySQLite.getSateLimitState("Gesamtlimit").equals("true"); ; //später aus der Dantebank. Yvette
         if(isPercentageButtonChecked){
-            percentOfBudget = BudgetLimitActivity.getPercentageLimit();
+            // percentOfBudget = BudgetLimitActivity.getPercentageLimit();
+            percentOfBudget =  (int) mySQLite.getSateLimitValue("Gesamtlimit"); //Später aus der Datenbank. Yvette
             isPerecentLimitReached=mySQLite.isPercentBudgetLimitReached(month, percentOfBudget);
                 if(isPerecentLimitReached && percentOfBudget>=0 ){
                     addPercentageNotification();
                 }
         }
+
     }
 
     private void addCategoryNotification(String category) {

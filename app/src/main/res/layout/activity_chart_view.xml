@@ -6,6 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".ChartViewActivity">
 
+    <Spinner
+        android:id="@+id/SpinnerInOut"
+        android:layout_width="150dp"
+        android:layout_height="65dp"
+        android:autoSizeTextType="uniform"
+        android:text="Selected"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.969"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.007" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,9 +33,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="20dp"
-            android:text="Tabellenansicht Ausgaben"
+            android:text="Tabellenansicht"
             android:textColor="@android:color/black"
             android:textSize="20dp" />
+
+
 
 
         <androidx.recyclerview.widget.RecyclerView

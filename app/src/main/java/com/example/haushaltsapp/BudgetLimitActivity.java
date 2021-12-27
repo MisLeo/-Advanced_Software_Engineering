@@ -64,7 +64,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
 
     //Variablen für Gesamtlimit
     private String gesamtString = "Gesamtbudget";
-    private static int gesamtLimit = 0;
+    private double gesamtLimit = 0;
     private int gesamtColor = 10;
 
     //aktuelles Datum
@@ -77,17 +77,27 @@ public class BudgetLimitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_budget_limit);
 
-        getDate();
+        //Datenbank
+        mySQLite = new MySQLite(this);
 
-        linearLayout = findViewById(R.id.container);
+        //checkBox
         checkBoxGesamt = findViewById(R.id.checkBox);
         checkBoxCategory = findViewById(R.id.checkBox2);
+        //Ggf Hacken setzen
+        if(mySQLite.getSateLimitState("Gesamtlimit").equals("true")){
+            checkBoxGesamt.setChecked(true);
+        }
 
-        //Infos aus der Datenbank
-        mySQLite = new MySQLite(this);
-        ArrayList<Category> list = mySQLite.getAllCategory();
+        if(mySQLite.getSateLimitState("Kategorielimit").equals("true")){
+            checkBoxCategory.setChecked(true);
+        }
 
+
+        //Kategorien in der View darstellen
+        linearLayout = findViewById(R.id.container);
         //Gesamtlimit
+        ArrayList<Category> list = mySQLite.getAllCategory();
+        gesamtLimit = mySQLite.getSateLimitValue("Gesamtlimit");
         addCategory(gesamtString, gesamtLimit, gesamtColor);
         //Darstellen der Kategorien
         for(int i = 0; i < list.size(); i++){
@@ -95,21 +105,10 @@ public class BudgetLimitActivity extends AppCompatActivity {
             addCategory(category.getName_PK(), category.getBorder(), category.getColor());
         }
 
-  //      gesamtButton = mySQLite.getSateLimitState("Gesamtlimit").equals("true");
-  //      categoryButton = mySQLite.getSateLimitState("Kategorielimit").equals("true");
-
-        gesamtButton = false;
-        categoryButton = false;
-
-        //Alte Werte setzen bzg checkbox
-        if(limitGesamt){
-            checkBoxGesamt.setChecked(true);
-        }
-        if(limitCategory){
-            checkBoxCategory.setChecked(true);
-        }
+        getDate(); //aktueler Tag, Monat, Jahr wichtig für Eingabeprüfung
     }
 
+    /*
     public static boolean getCatButtonStatus(){
         return limitCategory;
     }
@@ -121,8 +120,12 @@ public class BudgetLimitActivity extends AppCompatActivity {
     public static Integer getPercentageLimit(){
         return gesamtLimit;
     }
+
+     */
+
     // Setzt die Variablen day, month, year
     private void getDate() {
+
         java.util.Calendar calender = java.util.Calendar.getInstance();
         SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
         String dates = datumsformat.format(calender.getTime());
@@ -133,6 +136,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
 
     //layout aufbauen
     private void addCategory(String str, double value,int color){
+
         View view  = getLayoutInflater().inflate(R.layout.category_limit, null);
 
         View viewColor = view.findViewById(R.id.preview_selected_color);
@@ -161,34 +165,24 @@ public class BudgetLimitActivity extends AppCompatActivity {
 
         // Check which checkbox was clicked
         switch(view.getId()) {
-            case R.id.checkBox:
+            case R.id.checkBox: //Gesamtlimit
                 if (checked) {
-                    if(categoryButton){
+                    if (checkBoxCategory.isChecked()) {
+                        Toast.makeText(BudgetLimitActivity.this, "Es kann nur ein Limit betrachtet werden",
+                                Toast.LENGTH_SHORT).show();
                         checkBoxGesamt.setChecked(false);
-                        gesamtButton = false;
-                    //    mySQLite.updateLimitSate("Gesamtlimit","false");
-                     }else{
-                        gesamtButton = true;
-                      //  mySQLite.updateLimitSate("Gesamtlimit","true");
                     }
-                }else {
-                    gesamtButton = false;
-                   // mySQLite.updateLimitSate("Gesamtlimit","false");
-                }break;
-            case R.id.checkBox2:
+                }
+                break;
+            case R.id.checkBox2: //Kategorie
                 if (checked) {
-                    if(gesamtButton){
+                    if (checkBoxGesamt.isChecked()) {
+                        Toast.makeText(BudgetLimitActivity.this, "Es kann nur ein Limit betrachtet werden",
+                                Toast.LENGTH_SHORT).show();
                         checkBoxCategory.setChecked(false);
-                        categoryButton = false;
-                     //   mySQLite.updateLimitSate("Kategorielimit","false");
-                    }else{
-                        categoryButton = true;
-                       // mySQLite.updateLimitSate("Kategorielimit","true");
                     }
-                }else {
-                    categoryButton = false;
-                   // mySQLite.updateLimitSate("Kategorielimit","false");
-                }break;
+                }
+                break;
         }
     }
 
@@ -196,7 +190,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
 
     //Abbrechen
     public void clickCancel(View view){
-        super.finish();
+        super.finish(); //zurück zum letzten Frame
     }
 
     //Ok
@@ -204,13 +198,8 @@ public class BudgetLimitActivity extends AppCompatActivity {
         //Prüfen, ob die eingabe sinnvoll ist. -> sind alle werte zwischen 0 und 100?
         //und in Summe nur zwischen 0 und 100%
         boolean valideValues = checkValues();
-
         if(valideValues){
-            limitGesamt = gesamtButton;
-            limitCategory = categoryButton;
-
-            writeValues();
-
+            writeValues(); //Werte in die Datenbank schreiben
             super.finish();
         }
     }
@@ -248,10 +237,25 @@ public class BudgetLimitActivity extends AppCompatActivity {
 
     private void writeValues(){
 
+
         //Gesamt
         View v = linearLayout.getChildAt(0);
         EditText valueLimit = v.findViewById(R.id.limit);
-        gesamtLimit = Integer.parseInt(valueLimit.getText().toString());
+        gesamtLimit = Double.parseDouble(valueLimit.getText().toString());
+        //Wert in die Datanbank
+        //mySQLite.updateStateLimitValue("Gesamtlimit",gesamtLimit);
+        if(checkBoxGesamt.isChecked()){
+            mySQLite.updateStateLimit("Gesamtlimit", gesamtLimit, "true");
+        }else{
+            mySQLite.updateStateLimit("Gesamtlimit", gesamtLimit, "false");
+        }
+
+        //Kategorie-Limit in DB
+        if(checkBoxCategory.isChecked()){
+            mySQLite.updateLimitSate("Kategorielimit","true");
+        }else{
+            mySQLite.updateLimitSate("Kategorielimit","false");
+        }
 
         //Kategorien
         int childCount = linearLayout.getChildCount();
@@ -268,7 +272,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
 
 
 
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -381,5 +385,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+ */
 
 }

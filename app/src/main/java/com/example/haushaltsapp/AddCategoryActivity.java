@@ -62,15 +62,6 @@ public class AddCategoryActivity extends AppCompatActivity {
         mColorPreview = findViewById(R.id.preview_selected_color);
         mDefaultColor = 0;
 
-        //Später löschen?
-        TextView viewText = findViewById(R.id.textView3);
-        String text = "";
-        Intent intent = getIntent();
-        ArrayList<Category> list = mySQLite.getAllCategory();
-        for(int i = 0; i < list.size(); i++){
-            text = text + list.get(i).toString()+"\n";
-        }
-        viewText.setText(text);
     }
 
 

@@ -136,7 +136,12 @@ public class AddEntryActivity extends AppCompatActivity {
                 setBudgetEntry(month, year);
             }
             super.finish();
+
         }
+        //Leonie
+        Intent intent = getIntent();
+        Intent switchToMainView= new Intent(this, MainActivity.class);
+        startActivity(switchToMainView);
     }
 
     /*
@@ -152,6 +157,10 @@ public class AddEntryActivity extends AppCompatActivity {
             }
             super.finish();
         }
+        //Leonie
+        Intent intent = getIntent();
+        Intent switchToMainView= new Intent(this, MainActivity.class);
+        startActivity(switchToMainView);
     }
 
 

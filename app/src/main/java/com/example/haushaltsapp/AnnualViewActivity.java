@@ -1071,10 +1071,10 @@ public class AnnualViewActivity extends AppCompatActivity {
                     }
                 }
                 //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit)
-                calender.set(year, month, day, 8, 0, 0);
-                startDateInMilliSec = calender.getTimeInMillis();
-                calender.set(year, month, day, 9, 0, 0);
-                endDateInMilliSec = calender.getTimeInMillis();
+                //calender.set(year, month, day, 8, 0, 0);
+                //startDateInMilliSec = calender.getTimeInMillis();
+                //calender.set(year, month, day, 9, 0, 0);
+                //endDateInMilliSec = calender.getTimeInMillis();
             }
         }, year, month, day);
         dateDialog.show();

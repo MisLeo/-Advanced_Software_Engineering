@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EditEntryActivity">
+    tools:context=".Charttest">
 
     <TextView
     android:id="@+id/Name"
@@ -125,6 +125,7 @@
 
         <ImageView
             android:id="@+id/calenderView"
+            android:onClick="openCalender"
             android:layout_width="70dp"
             android:layout_height="50dp"
             android:layout_marginStart="1dp"

@@ -3,6 +3,7 @@ package com.example.haushaltsapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.View;
@@ -22,6 +23,7 @@ import com.example.haushaltsapp.database.Outgo;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /*
 Activity um eine Einnahme oder Ausgabe zu ändern oder zu löschen
@@ -47,6 +49,9 @@ public class EditEntryActivity extends AppCompatActivity {
     private int year;
     private String cyclus;
     private String category = " ";
+
+    //private Intake intake;
+    //private Outgo outgo;
 
     //Aktuelles Datum. Notwendig um Budget-Eintrag anzupassen
     private int monthCurrent;
@@ -83,7 +88,7 @@ public class EditEntryActivity extends AppCompatActivity {
             month = intake.getMonth();
             year = intake.getYear();
             cyclus = intake.getCycle();
-        }else{ //Ausgabe
+        }else{ //Outgo Ausgabe
             Outgo outgo = mySQLite.getOutgoById(id);
             name = outgo.getName();
             value = outgo.getValue();
@@ -95,12 +100,12 @@ public class EditEntryActivity extends AppCompatActivity {
         }
 
         setValue(); //Werte in der Oberfläche setzen
-
+        /* Auskommentiert von Leonie
         ////////////
         //Kalender
         calenderView = findViewById(R.id.calenderView);
         //Setzen von Listener auf dem Kalender Symbol
-        calenderView.setOnClickListener(new View.OnClickListener() {
+       calenderView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View dateView) {
                 DatePickerDialog dateDialog = new DatePickerDialog(EditEntryActivity.this, new DatePickerDialog.OnDateSetListener() {
@@ -124,7 +129,55 @@ public class EditEntryActivity extends AppCompatActivity {
                 }, year, month, day);
                 dateDialog.show();
             }
-        });
+        });*/
+    }
+
+    //eingefügt von Leonie
+    public  void openCalender(View dateview) {
+        java.util.Calendar calender = java.util.Calendar.getInstance();
+        //aktuelle Datum in Kalender
+        /*year = calender.get(Calendar.YEAR);
+        month = calender.get(Calendar.MONTH);
+        day = calender.get(Calendar.DAY_OF_MONTH);
+         */
+
+        //Datum von Eintrag verwenden
+        dates = editTextDate.getText().toString();
+        day = Integer.parseInt(dates.substring(0,2));
+        month = Integer.parseInt(dates.substring(3,5));
+        month =month-1; //wird ein Monat später angezeigt, deshalb -1 rechnen
+        year = Integer.parseInt(dates.substring(6,10));
+        DatePickerDialog dateDialog = new DatePickerDialog(EditEntryActivity.this, new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+
+                day = selectedDay;
+                month = selectedMonth+1;
+                year = selectedYear;
+
+                if (day<10)
+                {
+                    if(month<10)
+                    {
+                        editTextDate.setText("0"+ selectedDay+".0"+month+"."+selectedYear);
+                    }
+                    else {
+                        editTextDate.setText("0" + selectedDay + "." + month + "." + selectedYear);
+                    }
+                }
+                else {
+                    if(month<10)
+                    {
+                        editTextDate.setText(selectedDay+".0"+month+"."+selectedYear);
+                    }
+                    else {
+                        editTextDate.setText(selectedDay + "." + month + "." + selectedYear);
+                    }
+                }
+            }
+        }, year, month, day);
+        dateDialog.show();
     }
 
     // Setzt die Variablen monthCurrent und yearCurrent mit dem aktuellen datum
@@ -163,7 +216,8 @@ public class EditEntryActivity extends AppCompatActivity {
            // String aktuellCatagory = outgo.getCategory();
             int spinnerPosition = adapter.getPosition(category);
             spinnerCategory.setSelection(spinnerPosition);
-        }else{
+        }
+        else{
             TextView textView1 = (TextView) findViewById(R.id.textView8);
             textView1.setVisibility(View.GONE);
             spinnerCategory.setVisibility(View.GONE);
@@ -188,8 +242,21 @@ public class EditEntryActivity extends AppCompatActivity {
 
         //Datum setzen
         editTextDate = (TextView) findViewById(R.id.editTextDate);
-        String dateStr = String.valueOf(day)+"."+String.valueOf(month)+"."+String.valueOf(year);
-        editTextDate.setText(dateStr);
+
+        //Leonie
+        String dayString = String.valueOf(day);
+        String monthString = String.valueOf(month);
+        if(day < 10){
+            dayString = "0"+dayString;
+        }
+        if(month < 10){
+            monthString = "0"+monthString;
+        }
+        editTextDate.setText(dayString+"."+monthString+"."+year);
+
+        //Leonie auskommentiert
+       // String dateStr = String.valueOf(day)+"."+String.valueOf(month)+"."+String.valueOf(year);
+       // editTextDate.setText(dateStr);
     }
 
     public void onClickchange(View view){
@@ -209,6 +276,10 @@ public class EditEntryActivity extends AppCompatActivity {
             }
             super.finish();
         }
+        //Leonie
+        Intent intent = getIntent();
+        Intent switchToChartView= new Intent(this, ChartViewActivity.class);
+        startActivity(switchToChartView);
     }
 
     public void onClickdeli(View view){
@@ -221,6 +292,10 @@ public class EditEntryActivity extends AppCompatActivity {
             setBudgetEntry(month, year);
         }
         super.finish();
+        //Leonie
+        Intent intent = getIntent();
+        Intent switchToChartView= new Intent(this, ChartViewActivity.class);
+        startActivity(switchToChartView);
     }
 
     private boolean getValues(){

@@ -8,6 +8,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,6 +21,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.haushaltsapp.ToDoListPackage.AddNewTask;
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
@@ -39,9 +44,14 @@ public class ChartViewActivity extends  AppCompatActivity {
     ///////////////////////////////
 
 
+    private Spinner spinner;
+
     private ArrayList<Outgo> Outgolist;
+    private ArrayList<Intake> Intakelist;
     private RecyclerView recyclerView;
     private  RecyclerAdapter.RecyclerViewClickListener listener;
+    private RecyclerAdapterIn.RecyclerViewClickListenerIn listenerIn;
+    private String InOutSpinner;
 
 
     @Override
@@ -50,13 +60,41 @@ public class ChartViewActivity extends  AppCompatActivity {
         setContentView(R.layout.activity_chart_view);
         mySQLite = new MySQLite(this);
         Outgolist = mySQLite.getAllOutgo();
+        Intakelist = mySQLite.getAllIntakes();
+
+        //Spinner zu auswahl von In und Out
+        spinner = findViewById(R.id.SpinnerInOut);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.spinner_TabelleInOut, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            //ausgelesen, welcher Spinner gesetzt ist
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i==0)
+                {
+                    InOutSpinner ="Outgo";
+                    setAddapertOut();
+                }
+                else if (i == 1)
+                {
+                    InOutSpinner ="Intake";
+                    setAddapertIn();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         recyclerView = findViewById((R.id.chartRecyclerView));
-
-        setAddapert();
     }
 
-    private void setAddapert() {
+
+    private void setAddapertOut() {
 
         setOnClickListner();
         RecyclerAdapter adapter = new RecyclerAdapter(Outgolist, listener);
@@ -67,26 +105,43 @@ public class ChartViewActivity extends  AppCompatActivity {
 
     }
 
+    private void setAddapertIn() {
+
+        setOnClickListner();
+        RecyclerAdapterIn adapter = new RecyclerAdapterIn(Intakelist, listenerIn);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator( new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+
+    }
     private void setOnClickListner() {
+        listenerIn = new RecyclerAdapterIn.RecyclerViewClickListenerIn() {
+            @Override
+            public void onClick(View v, int position) {
+                String entry="";
+                //Activity Edit entry aufrufen
+                //id wird nicht richtig übergeben
+                Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                int Id =Intakelist.get(position).getId_PK();
+                intenttoedit.putExtra("id", Id);
+                intenttoedit.putExtra("entry", InOutSpinner);
+                setResult(RESULT_OK, intenttoedit);
+                startActivity(intenttoedit);
+            }
+        };
+
         listener = new RecyclerAdapter.RecyclerViewClickListener() {
             @Override
             public void onClick(View v, int position) {
-                //zum Testen geht
-                //Intent intenttoedit = new Intent(getApplicationContext(), Charttest.class);
-                //intenttoedit.putExtra("name", Outgolist.get(position).getName());
-                //startActivity(intenttoedit);
 
-
-                //id übergeben
-                //Activity Edit entry aufrufen,
-                //geht jedoch nicht
+                String entry="";
+                //Activity Edit entry aufrufen
                 Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
                 int Id =Outgolist.get(position).getId_PK();
                 intenttoedit.putExtra("id", Id);
-                //wenn entry
-                String entry = intenttoedit.getStringExtra("entry");
-                intenttoedit.putExtra("outgo", entry);
-                //setResult(RESULT_OK, intenttoedit);
+                intenttoedit.putExtra("entry", InOutSpinner);
+                setResult(RESULT_OK, intenttoedit);
                 startActivity(intenttoedit);
             }
         };

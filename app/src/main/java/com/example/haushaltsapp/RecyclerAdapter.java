@@ -66,7 +66,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         holder.Outname.setText(name);
 
         String value = Double.toString(OutgoList.get(position).getValue());
-        holder.OutValue.setText(value);
+        holder.OutValue.setText(value+" €");
 
         String day = Integer.toString(OutgoList.get(position).getDay());
         String month = Integer.toString(OutgoList.get(position).getMonth());
