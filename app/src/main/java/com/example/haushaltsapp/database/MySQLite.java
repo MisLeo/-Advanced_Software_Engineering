@@ -643,6 +643,13 @@ Periodische Ausgaben wurden dabei berücksichtigt.
         return i;
     }
 
+    //Suche Alle einträge mit bestimmter Categorie
+    //und ändere die Categorie in den Einträgen zu Sonstiges ab
+    public void ChangeCategorietoSonstiges(String Categorie)
+    {
+
+    }
+
 
 ////////////////////////////////////To Do Listen ////////////////////////////////////////////
 

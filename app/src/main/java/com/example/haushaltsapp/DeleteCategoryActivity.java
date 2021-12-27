@@ -1,35 +1,30 @@
 package com.example.haushaltsapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.os.Bundle;
-
 import android.content.Intent;
-import android.text.TextUtils;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.haushaltsapp.ChartPackage.RecyclerAdapter;
+import com.example.haushaltsapp.DeleteCategoryPackage.deleteCategorieAdapter;
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
-/*
-Repräsentation von Einnahmen bzw Ausgaben eines übergebenen Array
- */
-public class ShowEntriesActivity extends AppCompatActivity {
+public class DeleteCategoryActivity extends AppCompatActivity {
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
@@ -43,88 +38,71 @@ public class ShowEntriesActivity extends AppCompatActivity {
     private int year;
     ///////////////////////////////
 
-    private String entry; //Intake oder Outgo
+    private RecyclerView recyclerView;
+    private ArrayList<Category> CategorieList;
+    private deleteCategorieAdapter.deleteCategorieClickListener listener;
 
-    /*
-   Wird am Anfang aufgerufen und stellt die übergebenen Daten dar
-   -- !! Design wird ggf noch angepasst !!--
-    */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_entries);
+        setContentView(R.layout.activity_delete_categorie);
+        mySQLite = new MySQLite(this);
+        CategorieList = mySQLite.getAllCategory();
+        recyclerView = findViewById(R.id.deleteCategorieRecyclerView);
 
-        TextView tv = (TextView) findViewById(R.id.textViewEntry);
-
-        //Informationen auslesen
-        Intent intent = getIntent();
-        entry = intent.getStringExtra("entry");
-
-        //Ausgaben ohner Einnahmen
-        String text = " ";
-        if(entry.equals("Intake")){
-            text = "Alle Einnahmen des aktuellen Monats:";
-            List<Intake> list = (List<Intake>) intent.getSerializableExtra("list");
-            //Liste Sortieren
-            /*
-            Collections.sort(list, new Comparator<Intake>() {
-                @Override
-                public int compare(Intake o1, Intake o2) {
-                    return o1.compareTo(o2);
-                }
-            });
-             */
-
-            for(int i = 0; i < list.size(); i++){
-                text = text + " '\n' "+list.get(i).toString();
-            }
-        }else{
-            text = "Alle Ausgaben des aktuellen Monats:";
-            List<Outgo> list = (List<Outgo>) intent.getSerializableExtra("list");
-            //Liste Sortieren
-            /*
-            Collections.sort(list, new Comparator<Outgo>() {
-                @Override
-                public int compare(Outgo o1, Outgo o2) {
-                    return o1.compareTo(o2);
-                }
-            });
-
-             */
-
-            for(int i = 0; i < list.size(); i++){
-                text = text + " '\n' "+list.get(i).toString();
-            }
-        }
-
-        //Text anzeigen lassen
-        tv.setText(text);
+        setAdapter();
     }
 
-    public void changeEntry(View view){
-        EditText editTextId = (EditText) findViewById(R.id.textViewEditText);
-        int valueId = -1;
-        if(!TextUtils.isEmpty(editTextId.getText())) { //teste, ob überhaupt eine eingabe getätigt wurde
-            valueId = Integer.parseInt(editTextId.getText().toString());
-        }
+    private void setAdapter()
+    {
+        setOnClickListner();
 
-        Intent intent = new Intent();
-        intent.putExtra("entry",entry);
-        intent.putExtra("id",valueId);
-        setResult(RESULT_OK, intent);
-        super.finish();
+        deleteCategorieAdapter adapter = new deleteCategorieAdapter(CategorieList,listener);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setItemAnimator( new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void setOnClickListner(){
+        listener = new deleteCategorieAdapter.deleteCategorieClickListener() {
+            @Override
+            public void onClick(View v, int position) {
+                String Categorie = CategorieList.get(position).getName_PK();
+                if (Categorie.equals("Sonstiges"))
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),"Sonstiges kann nicht gelöscht werden",Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                else
+                {
+                    Toast toast = Toast.makeText(getApplicationContext(),Categorie+" Wird gelöscht",Toast.LENGTH_SHORT);
+                    toast.show();
+                    //suchen nach allen einträgen mit Categorie
+                    //änderen der Categorie zu sonstiges
+                    //Methode noch schreiben
+                    mySQLite.ChangeCategorietoSonstiges(Categorie);
+
+
+                    //Löschen der Kategorie
+                    mySQLite.deleteCategoryByName(Categorie);
+                }
+                //hier aufruf um die ausgewählte Categorie zu löschen
+                //übertrag von allen Einträgen in die Kategorie SOnstiges
+                //SOnstiges kann nicht gelöscht werden!!!
+            }
+        };
     }
 
 
-    /*
-    Sorgt dafür, dass das Menü dargestellt wird.
-    Ohne Funktionalität
-     */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.navigation_menu, menu);
+        MenuItem item = menu.findItem(R.id.itemTableView);
+        item.setEnabled(false);
 
         return true;
     }
@@ -133,7 +111,7 @@ public class ShowEntriesActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.itemMainPage:
                 Intent switchToMain = new Intent(this, MainActivity.class);
                 startActivity(switchToMain);
@@ -143,17 +121,17 @@ public class ShowEntriesActivity extends AppCompatActivity {
                 mySQLite = new MySQLite(this);
                 ArrayList<Category> categories = mySQLite.getAllCategory();
                 Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
-                switchToAddEntry.putExtra("list",categories);
+                switchToAddEntry.putExtra("list", categories);
                 mySQLite.close();
-                startActivityForResult(switchToAddEntry,REQUESTCODE_ADD);
+                startActivityForResult(switchToAddEntry, REQUESTCODE_ADD);
                 return true;
 
             case R.id.subitemIntakes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day,month,year);
+                ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day, month, year);
                 Intent getIntakes = new Intent(this, ShowEntriesActivity.class);
-                getIntakes.putExtra("list",(Serializable) intakes);
-                getIntakes.putExtra("entry","Intake");
+                getIntakes.putExtra("list", (Serializable) intakes);
+                getIntakes.putExtra("entry", "Intake");
                 mySQLite.close();
                 startActivityForResult(getIntakes, REQUESTCODE_SHOW);
                 return true;
@@ -162,8 +140,8 @@ public class ShowEntriesActivity extends AppCompatActivity {
                 mySQLite = new MySQLite(this);
                 ArrayList<Outgo> outgoes = mySQLite.getMonthOutgos(day, month, year);
                 Intent getOutgoes = new Intent(this, ShowEntriesActivity.class);
-                getOutgoes.putExtra("list",(Serializable) outgoes);
-                getOutgoes.putExtra("entry","Outgo");
+                getOutgoes.putExtra("list", (Serializable) outgoes);
+                getOutgoes.putExtra("entry", "Outgo");
                 mySQLite.close();
                 startActivityForResult(getOutgoes, REQUESTCODE_SHOW);
                 return true;
@@ -177,11 +155,11 @@ public class ShowEntriesActivity extends AppCompatActivity {
                 mySQLite = new MySQLite(this);
                 Intent switchToDiagramView = new Intent(this, DiagramViewActivity.class);
                 //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoD =mySQLite.getAllOutgo();
-                switchToDiagramView.putExtra("dataOut",AlloutgoD);
+                ArrayList<Outgo> AlloutgoD = mySQLite.getAllOutgo();
+                switchToDiagramView.putExtra("dataOut", AlloutgoD);
                 //Alle Einnahmen in Datenbank
-                ArrayList<Intake> AllIntakeD =mySQLite.getAllIntakes();
-                switchToDiagramView.putExtra("dataIn",AllIntakeD);
+                ArrayList<Intake> AllIntakeD = mySQLite.getAllIntakes();
+                switchToDiagramView.putExtra("dataIn", AllIntakeD);
                 mySQLite.close();
                 startActivity(switchToDiagramView);
                 return true;
@@ -190,14 +168,14 @@ public class ShowEntriesActivity extends AppCompatActivity {
                 mySQLite = new MySQLite(this);
                 Intent switchToChartView = new Intent(this, ChartViewActivity.class);
                 //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataOut",AlloutgoT);
+                ArrayList<Outgo> AlloutgoT = mySQLite.getAllOutgo();
+                switchToChartView.putExtra("dataOut", AlloutgoT);
                 //Ausgaben von aktuellem Monat
-                ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
-                switchToChartView.putExtra("monthlist",outgoesT);
+                ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day, month, year);
+                switchToChartView.putExtra("monthlist", outgoesT);
                 //Alle Einnahmen in Datenbank
-                ArrayList<Outgo> AllintakeT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataIn",AllintakeT);
+                ArrayList<Outgo> AllintakeT = mySQLite.getAllOutgo();
+                switchToChartView.putExtra("dataIn", AllintakeT);
                 mySQLite.close();
                 startActivity(switchToChartView);
                 return true;
@@ -216,7 +194,7 @@ public class ShowEntriesActivity extends AppCompatActivity {
                 mySQLite = new MySQLite(this);
                 Intent switchToAddCategory = new Intent(this, AddCategoryActivity.class);
                 ArrayList<Category> categories1 = mySQLite.getAllCategory();
-                switchToAddCategory.putExtra("list",(Serializable) categories1);
+                switchToAddCategory.putExtra("list", (Serializable) categories1);
                 mySQLite.close();
                 startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
                 return true;
@@ -236,5 +214,4 @@ public class ShowEntriesActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
 }

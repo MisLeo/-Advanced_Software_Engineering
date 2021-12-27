@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,7 +20,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.haushaltsapp.ToDoListPackage.AddNewTask;
+import com.example.haushaltsapp.ChartPackage.RecyclerAdapter;
+import com.example.haushaltsapp.ChartPackage.RecyclerAdapterIn;
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
@@ -248,6 +248,12 @@ public class ChartViewActivity extends  AppCompatActivity {
                 switchToAddCategory.putExtra("list",(Serializable) categories1);
                 mySQLite.close();
                 startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
+                return true;
+
+            case R.id.itemDeleteCategory:
+                mySQLite = new MySQLite(this);
+                Intent switchToDeleteCategory = new Intent(this, DeleteCategoryActivity.class);
+                startActivity(switchToDeleteCategory);
                 return true;
 
             case R.id.itemPdfCreator:

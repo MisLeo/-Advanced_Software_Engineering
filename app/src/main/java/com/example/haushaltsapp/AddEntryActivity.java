@@ -136,7 +136,6 @@ public class AddEntryActivity extends AppCompatActivity {
                 setBudgetEntry(month, year);
             }
             super.finish();
-
         }
     }
 
@@ -368,6 +367,12 @@ public class AddEntryActivity extends AppCompatActivity {
                 switchToAddCategory.putExtra("list",(Serializable) categories1);
                 mySQLite.close();
                 startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
+                return true;
+
+            case R.id.itemDeleteCategory:
+                mySQLite = new MySQLite(this);
+                Intent switchToDeleteCategory = new Intent(this, DeleteCategoryActivity.class);
+                startActivity(switchToDeleteCategory);
                 return true;
 
             case R.id.itemPdfCreator:

@@ -425,6 +425,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
                 return true;
 
+                //muss noch in anderen Activitys eingefügt werden!!!
+            case R.id.itemDeleteCategory:
+                mySQLite = new MySQLite(this);
+                Intent switchToDeleteCategory = new Intent(this, DeleteCategoryActivity.class);
+                startActivity(switchToDeleteCategory);
+                return true;
+
             case R.id.itemPdfCreator:
                 Intent switchToPdfCreator = new Intent(this, PDFCreatorActivity.class);
                 startActivity(switchToPdfCreator);

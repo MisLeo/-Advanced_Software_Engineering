@@ -1,4 +1,4 @@
-package com.example.haushaltsapp;
+package com.example.haushaltsapp.ChartPackage;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.haushaltsapp.R;
 import com.example.haushaltsapp.database.Outgo;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClic
 
     @Override
     public void onClick(View view) {
-        int po = getAdapterPosition(); //fängt bie po 0 an
+        //int po = getAdapterPosition(); //fängt bie po 0 an
         listener.onClick(view, getAdapterPosition());
 
     }

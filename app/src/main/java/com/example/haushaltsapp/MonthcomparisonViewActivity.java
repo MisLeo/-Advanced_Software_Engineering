@@ -413,6 +413,12 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
                 startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
                 return true;
 
+            case R.id.itemDeleteCategory:
+                mySQLite = new MySQLite(this);
+                Intent switchToDeleteCategory = new Intent(this, DeleteCategoryActivity.class);
+                startActivity(switchToDeleteCategory);
+                return true;
+
             case R.id.itemPdfCreator:
                 Intent switchToPdfCreator = new Intent(this, PDFCreatorActivity.class);
                 startActivity(switchToPdfCreator);

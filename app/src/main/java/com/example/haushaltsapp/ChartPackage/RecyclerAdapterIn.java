@@ -1,4 +1,4 @@
-package com.example.haushaltsapp;
+package com.example.haushaltsapp.ChartPackage;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.haushaltsapp.R;
 import com.example.haushaltsapp.database.Intake;
 
 import java.util.ArrayList;
