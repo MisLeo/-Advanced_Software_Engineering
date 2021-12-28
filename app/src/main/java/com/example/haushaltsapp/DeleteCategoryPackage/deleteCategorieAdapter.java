@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,13 +34,14 @@ public class deleteCategorieAdapter extends RecyclerView.Adapter<deleteCategorie
         {
             super(view);
             Catname = view.findViewById(R.id.CategoryDeleteCheckBox);
-
             view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
+
             listener.onClick(view, getAdapterPosition());
+
         }
     }
 
@@ -55,6 +57,7 @@ public class deleteCategorieAdapter extends RecyclerView.Adapter<deleteCategorie
 
        String nameCat = CategoryList.get(position).getName_PK();
        holder.Catname.setText(nameCat);
+
     }
 
     @Override
@@ -66,15 +69,6 @@ public class deleteCategorieAdapter extends RecyclerView.Adapter<deleteCategorie
        void  onClick(View v, int position);
     }
 
-    public void deleteItem(int position)
-    {
-
-    }
-
-    public void editItem(int position)
-    {
-
-    }
 
 
 

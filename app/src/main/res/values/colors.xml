@@ -20,14 +20,14 @@
     <color name="Freizeit">#F9C74F</color>
     <color name="Sonstiges">#277DA1</color>
     <!--Farben für Layout -->
-    <color name="Hintergrund">#F8F9FA</color><!--Farbe für Fläche -->
-    <color name="Hintergrunddunkel">#6C757D</color><!--Farbe für Rahmen -->
+    <color name="Hintergrund">#F8F9FA</color><!--Farbe für Fläche #F8F9FA -->
+    <color name="Hintergrunddunkel">#6C757D</color><!--Farbe für Rahmen #6C757D-->
     <color name="Hintergrunddunkelgrün">#90BE6D</color>
-    <color name="Textcolorbright0">#6C757D</color><!--Textfarben grauhell -->
-    <color name="Textcolorbright1">#495057</color><!--Textfarben dunkler für Überschriften und Buttons -->
+    <color name="Textcolorbright0">#6C757D</color><!--Textfarben grauhell #6C757D-->
+    <color name="Textcolorbright1">#495057</color><!--Textfarben dunkler für Überschriften und Buttons #495057-->
     <color name="Textcolorbright">#343A40</color>
     <color name="Textcolordark">#212529</color>
-    <color name="Button">#90BE6D</color><!--Farbe für Button grün -->
+    <color name="Button">#90BE6D</color><!--Farbe für Button grün #90BE6D-->
 
     <color name="colorPrimary">#024265</color>
     <color name="colorPrimaryDark">#024265</color>

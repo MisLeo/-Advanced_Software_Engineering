@@ -45,7 +45,6 @@ public class DeleteCategoryActivity extends AppCompatActivity {
     private ArrayList<Category> CategorieList;
     private deleteCategorieAdapter.deleteCategorieClickListener listener;
     private deleteCategorieAdapter deleteAdapter;
-    private FloatingActionButton fabDelete;
 
 
     @Override
@@ -81,7 +80,10 @@ public class DeleteCategoryActivity extends AppCompatActivity {
         listener = new deleteCategorieAdapter.deleteCategorieClickListener() {
             @Override
             public void onClick(View v, int position) {
+
                 String Categorie = CategorieList.get(position).getName_PK();
+
+
                 if (Categorie.equals("Sonstiges"))
                 {
                     Toast toast = Toast.makeText(getApplicationContext(),"Sonstiges kann nicht gelöscht werden",Toast.LENGTH_SHORT);
@@ -89,20 +91,14 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                 }
                 else
                 {
+
                     Toast toast = Toast.makeText(getApplicationContext(),Categorie+" Wird gelöscht",Toast.LENGTH_SHORT);
                     toast.show();
-                    //suchen nach allen einträgen mit Categorie
-                    //änderen der Categorie zu sonstiges
-                    //Methode noch schreiben
+                    //suchen nach allen einträgen mit Categorie änderen der Categorie zu sonstiges
                     mySQLite.ChangeCategorietoSonstiges(Categorie);
-
-
                     //Löschen der Kategorie
                     mySQLite.deleteCategoryByName(Categorie);
                 }
-                //hier aufruf um die ausgewählte Categorie zu löschen
-                //übertrag von allen Einträgen in die Kategorie SOnstiges
-                //SOnstiges kann nicht gelöscht werden!!!
             }
         };
     }

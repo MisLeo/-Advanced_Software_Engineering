@@ -531,6 +531,14 @@ Periodische Ausgaben wurden dabei berücksichtigt.
         return result;
     }
 
+    //Methode zum änderen der Kategorie eines Outputs
+    public void setOutgoCategory(int id, String category){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues value = new ContentValues();
+        value.put(KEY_CATEGORY, category);
+        db.update(TABLE_OUTGO, value, KEY_ID+" = ?", new String[] { String.valueOf(id) });
+        db.close();
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////
 
@@ -646,22 +654,20 @@ Periodische Ausgaben wurden dabei berücksichtigt.
 
     //Suche Alle einträge mit bestimmter Categorie
     //und ändere die Categorie in den Einträgen zu Sonstiges ab
-    public void ChangeCategorietoSonstiges(String categoryname)
-    {
+    public void ChangeCategorietoSonstiges(String categoryname){
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        int ID;
         //alle Einträge mit gesuchter Categorie
         String query = "SELECT * FROM "+TABLE_OUTGO+" WHERE "+KEY_CATEGORY+" = \""+categoryname+"\"";
         Cursor cursor = db.rawQuery(query, null);
-
-        //hier die Werte von Categorie Sonstiges auffüllen
-        if(cursor.moveToFirst()) {
-            values.put(KEY_CATEGORY, "Sonstiges");
+        int countCursor = cursor.getCount();
+        cursor.moveToFirst();
+        for (int j = 0; j < countCursor; j++){
+            ID = Integer.parseInt(cursor.getString(0));
+            setOutgoCategory(ID, "Sonstiges");
         }
-
         db.close();
     }
-
 
 
 ////////////////////////////////////To Do Listen ////////////////////////////////////////////
