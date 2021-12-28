@@ -11,15 +11,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.haushaltsapp.ChartPackage.RecyclerAdapter;
 import com.example.haushaltsapp.DeleteCategoryPackage.deleteCategorieAdapter;
+import com.example.haushaltsapp.ToDoListPackage.SwipeHandler;
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,6 +44,8 @@ public class DeleteCategoryActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<Category> CategorieList;
     private deleteCategorieAdapter.deleteCategorieClickListener listener;
+    private deleteCategorieAdapter deleteAdapter;
+    private FloatingActionButton fabDelete;
 
 
     @Override
@@ -63,6 +68,13 @@ public class DeleteCategoryActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator( new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+
+        deleteAdapter = new deleteCategorieAdapter(CategorieList,listener);
+        recyclerView.setAdapter(deleteAdapter);
+        //ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeHandlerdelete(deleteAdapter));
+
+        //itemTouchHelper.attachToRecyclerView(recyclerView);
+
     }
 
     private void setOnClickListner(){

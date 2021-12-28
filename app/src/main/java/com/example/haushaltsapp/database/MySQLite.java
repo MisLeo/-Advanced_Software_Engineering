@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Color;
 import android.util.Log;
 import com.example.haushaltsapp.ToDoListPackage.TaskModel;
 
@@ -645,10 +646,22 @@ Periodische Ausgaben wurden dabei berücksichtigt.
 
     //Suche Alle einträge mit bestimmter Categorie
     //und ändere die Categorie in den Einträgen zu Sonstiges ab
-    public void ChangeCategorietoSonstiges(String Categorie)
+    public void ChangeCategorietoSonstiges(String categoryname)
     {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        //alle Einträge mit gesuchter Categorie
+        String query = "SELECT * FROM "+TABLE_OUTGO+" WHERE "+KEY_CATEGORY+" = \""+categoryname+"\"";
+        Cursor cursor = db.rawQuery(query, null);
 
+        //hier die Werte von Categorie Sonstiges auffüllen
+        if(cursor.moveToFirst()) {
+            values.put(KEY_CATEGORY, "Sonstiges");
+        }
+
+        db.close();
     }
+
 
 
 ////////////////////////////////////To Do Listen ////////////////////////////////////////////

@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import android.graphics.Color;
+import android.view.autofill.AutofillValue;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Kategorien anlegen
+   /* //Kategorien anlegen
     private void setCategories(){
         ArrayList<Category> categories = mySQLite.getAllCategory();
         if(categories.size() == 0){ //falls es noch keine Kategorien gibt, diese hier anlegen
@@ -120,6 +121,26 @@ public class MainActivity extends AppCompatActivity {
             category = new Category("Freizeit", Color.parseColor("#A5B6DF"), 0.0);
             mySQLite.addCategory(category);
             category = new Category("Sonstiges", Color.parseColor("#FF3AFA"), 0.0);
+            mySQLite.addCategory(category);
+        }
+    }*/
+
+    //Leonie Farben
+    //Kategorien anlegen
+    private void setCategories(){
+        ArrayList<Category> categories = mySQLite.getAllCategory();
+        if(categories.size() == 0){ //falls es noch keine Kategorien gibt, diese hier anlegen
+            Category category = new Category("Verkehrsmittel", Color.parseColor("#F94144"), 0.0);
+            mySQLite.addCategory(category);
+            category = new Category("Wohnen", Color.parseColor("#F3722D"), 0.0);
+            mySQLite.addCategory(category);
+            category = new Category("Lebensmittel", Color.parseColor("#90BE6D"), 0.0);
+            mySQLite.addCategory(category);
+            category = new Category("Gesundheit",Color.parseColor("#4D908E"), 0.0);
+            mySQLite.addCategory(category);
+            category = new Category("Freizeit", Color.parseColor("#F9C74F"), 0.0);
+            mySQLite.addCategory(category);
+            category = new Category("Sonstiges", Color.parseColor("#277DA1"), 0.0);
             mySQLite.addCategory(category);
         }
     }
@@ -214,21 +235,21 @@ public class MainActivity extends AppCompatActivity {
         pieChart.addPieSlice(new PieModel(
                 "Ausgaben",
                 Ausgaben,
-                Color.parseColor("#EF5350")));
+                Color.parseColor("#F94144")));
 
         if (Restbudget >0)
         {
             pieChart.addPieSlice(new PieModel(
                     "Restbudget",
                     Restbudget,
-                    Color.parseColor("#FFA726")));
+                    Color.parseColor("#F9C74F")));
 
         }
         else {
             pieChart.addPieSlice(new PieModel(
                     "Restbudget",
                     0,
-                    Color.parseColor("#FFA726")));
+                    Color.parseColor("#F9C74F")));
         }
 
         //Darstellungsoptionen
@@ -242,10 +263,10 @@ public class MainActivity extends AppCompatActivity {
         //Daten und Farben zuordnen
         mBarChart.addBar(new BarModel(
                 Einnahmen,
-                Color.parseColor("#66BB6A")));
+                Color.parseColor("#90BE6D")));
         mBarChart.addBar(new BarModel(
                 Ausgaben,
-                Color.parseColor("#EF5350")));
+                Color.parseColor("#F94144")));
         /*mBarChart.addBar(new BarModel(
                 Restbudget,
                 Color.parseColor("#FFA726")));*/

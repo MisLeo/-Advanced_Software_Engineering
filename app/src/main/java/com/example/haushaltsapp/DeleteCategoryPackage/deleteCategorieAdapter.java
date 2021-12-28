@@ -1,5 +1,6 @@
 package com.example.haushaltsapp.DeleteCategoryPackage;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,17 @@ public class deleteCategorieAdapter extends RecyclerView.Adapter<deleteCategorie
     public  interface deleteCategorieClickListener{
        void  onClick(View v, int position);
     }
+
+    public void deleteItem(int position)
+    {
+
+    }
+
+    public void editItem(int position)
+    {
+
+    }
+
 
 
 }
