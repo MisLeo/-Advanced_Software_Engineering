@@ -48,4 +48,10 @@
     <color name="TextcolorY">#000000</color>
     <color name="TextcolorHeadY">#ccc9dc</color>
 
+    <!-- Farben David -->
+    <color name="PaleOrange">#F4A261</color>
+    <color name="Lavendel">#967AA1</color>
+    <color name="PaleGreen">#D9ED92</color>
+    <color name="MudGreen">#5B8E7D</color>
+
 </resources>

@@ -2,9 +2,15 @@ package com.example.haushaltsapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +33,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 public class AddEntryActivity extends AppCompatActivity {
 
@@ -91,6 +98,13 @@ public class AddEntryActivity extends AppCompatActivity {
         month = kalender.get(Calendar.MONTH);
         day = kalender.get(Calendar.DAY_OF_MONTH);
 
+        //Auf deutsche Kalenderanzeige umstellen
+        Locale locale = new Locale("de");
+        Locale.setDefault(locale);
+        Resources res = this.getResources();
+        Configuration config = new Configuration(res.getConfiguration());
+        config.locale = locale;
+        res.updateConfiguration(config, res.getDisplayMetrics());
 
         //Kalender
         calenderView = findViewById(R.id.calenderView);
@@ -98,7 +112,7 @@ public class AddEntryActivity extends AppCompatActivity {
         calenderView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View dateView) {
-                DatePickerDialog dateDialog = new DatePickerDialog(AddEntryActivity.this, new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog dateDialog = new DatePickerDialog(AddEntryActivity.this,R.style.datePickerStyle, new DatePickerDialog.OnDateSetListener() {
 
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
@@ -150,6 +164,11 @@ public class AddEntryActivity extends AppCompatActivity {
             if((month < monthCurrent) || (year < yearCurrent)) {//Wenn der Eintrag in der Vergangenheit liegt muss das Budget angepasst werden
                 setBudgetEntry(month, year);
             }
+
+    //Prüfen, ob ein gesetztes Limit für Kategorie oder Gesamt überschritten wird
+        checkCatLimitReached();
+        checkPercentageLimitReached();
+
             super.finish();
         }
     }
@@ -385,5 +404,87 @@ public class AddEntryActivity extends AppCompatActivity {
         }
     }
 
+    private void checkCatLimitReached(){
+        ArrayList<Category> categorieList = mySQLite.getAllCategory();
+        String categoryName = "";
+        Double categoryLimit= 0.0;
+        Boolean categoryLimitReached;
+        int notificationId;
+        boolean isCatButtonChecked = mySQLite.getSateLimitState("Kategorielimit").equals("true"); //später aus der Datenbank - Yvette
+        if(isCatButtonChecked){
+            for(int i = 0; i < categorieList.size(); i++){
+                Category category = categorieList.get(i);
+                categoryName = category.getName_PK();
+                categoryLimit = category.getBorder();
+                notificationId = i;
+                categoryLimitReached=mySQLite.isCatBudgetLimitReached(monthCurrent,yearCurrent,categoryName,categoryLimit);
+                if(categoryLimitReached && categoryLimit>0.0 ){
+                    addCategoryNotification(notificationId,categoryName);
+                }
+            }
+        }
+    }
 
+    private void checkPercentageLimitReached(){
+
+        Integer percentOfBudget=0; //double?
+        Boolean isPerecentLimitReached;
+        Boolean isPercentageButtonChecked = mySQLite.getSateLimitState("Gesamtlimit").equals("true"); ; //später aus der Dantebank. Yvette
+        if(isPercentageButtonChecked){
+            percentOfBudget =  (int) mySQLite.getSateLimitValue("Gesamtlimit"); //Später aus der Datenbank. Yvette
+            isPerecentLimitReached=mySQLite.isPercentBudgetLimitReached(monthCurrent,yearCurrent, percentOfBudget);
+            if(isPerecentLimitReached && percentOfBudget>=0 ){
+                addPercentageNotification();
+            }
+        }
+
+    }
+
+    private void addCategoryNotification(int id, String category) {
+        // Anlegen des Channels der Notifikation
+        String NOTIFICATION_CHANNEL_ID = "channel_id";
+        String CHANNEL_NAME = "Notification Channel";
+        // eindeutige ID für jede Notifikation
+        int NOTIFICATION_ID = id;
+
+        NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Überschreitung des definierten Budget Limits:")
+                .setContentText("Betroffene Kategorie: "+category)
+                .setAutoCancel(true);
+        //notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+        //Intent welcher aufgerufen wird, wenn er in der Statuszeile angeklickt wird
+        Intent notificationIntent = new Intent(this,MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.createNotificationChannel(notificationChannel);
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
+
+    private void addPercentageNotification() {
+        // Anlegen des Channels der Notifikation
+        String NOTIFICATION_CHANNEL_ID = "channel_id";
+        String CHANNEL_NAME = "Notification Channel";
+        int NOTIFICATION_ID = 10;
+
+        NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, CHANNEL_NAME,NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Überschreitung des definierten Budget Limits:")
+                .setContentText("Sie haben das von Ihnen gesetzte Budget überschritten!")
+                .setAutoCancel(true);
+        //notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        //Intent welcher aufgerufen wird, wenn er in der Statuszeile angeklickt wird
+        Intent notificationIntent = new Intent(this,MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.createNotificationChannel(notificationChannel);
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
+    }
 }
+
+
