@@ -33,10 +33,6 @@ public class ChartViewActivity extends  AppCompatActivity {
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
-    private final int REQUESTCODE_ADD = 12; //AddEntryActivity
-    private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
-    private final int REQUESTCODE_EDIT = 14; //EditEntryActivity
-    private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
 
     private int day;
     private int month;
@@ -49,7 +45,7 @@ public class ChartViewActivity extends  AppCompatActivity {
     private ArrayList<Outgo> Outgolist;
     private ArrayList<Intake> Intakelist;
     private RecyclerView recyclerView;
-    private  RecyclerAdapter.RecyclerViewClickListener listener;
+    private RecyclerAdapter.RecyclerViewClickListener listener;
     private RecyclerAdapterIn.RecyclerViewClickListenerIn listenerIn;
     private String InOutSpinner;
 
@@ -62,7 +58,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         Outgolist = mySQLite.getAllOutgo();
         Intakelist = mySQLite.getAllIntakes();
 
-        //Spinner zu auswahl von In und Out
+        //Spinner zu auswahl von Einnahmen oder Ausgaben
         spinner = findViewById(R.id.SpinnerInOut);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.spinner_TabelleInOut, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
@@ -86,7 +82,6 @@ public class ChartViewActivity extends  AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
 
@@ -94,6 +89,7 @@ public class ChartViewActivity extends  AppCompatActivity {
     }
 
 
+    //Ausgaben anzeigen in Recyclerview mit RecyclerAdapter
     private void setAddapertOut() {
 
         setOnClickListner();
@@ -102,9 +98,9 @@ public class ChartViewActivity extends  AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator( new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-
     }
 
+    //Einnahmen anzeigen in Recyclerview mit RecyclerAdapterIn
     private void setAddapertIn() {
 
         setOnClickListner();
@@ -113,15 +109,16 @@ public class ChartViewActivity extends  AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator( new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-
     }
+
+    //Auswahl eines Eintrags in der Tabelle um zu bearbeiten
     private void setOnClickListner() {
+        //Einnahmen
         listenerIn = new RecyclerAdapterIn.RecyclerViewClickListenerIn() {
             @Override
             public void onClick(View v, int position) {
                 String entry="";
                 //Activity Edit entry aufrufen
-                //id wird nicht richtig übergeben
                 Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
                 int Id =Intakelist.get(position).getId_PK();
                 intenttoedit.putExtra("id", Id);
@@ -131,10 +128,10 @@ public class ChartViewActivity extends  AppCompatActivity {
             }
         };
 
+        //Ausgaben
         listener = new RecyclerAdapter.RecyclerViewClickListener() {
             @Override
             public void onClick(View v, int position) {
-
                 String entry="";
                 //Activity Edit entry aufrufen
                 Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
@@ -168,33 +165,20 @@ public class ChartViewActivity extends  AppCompatActivity {
                 startActivity(switchToMain);
                 return true;
 
-            case R.id.itemAddIntakesOutgoes:
+            case R.id.subitemAddIntakes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Category> categories = mySQLite.getAllCategory();
-                Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
-                switchToAddEntry.putExtra("list",categories);
+                Intent switchToAddIntake = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(switchToAddEntry,REQUESTCODE_ADD);
+                switchToAddIntake.putExtra("Selected","Einnahme");
+                startActivity(switchToAddIntake);
                 return true;
 
-            case R.id.subitemIntakes:
+            case R.id.subitemAddOutgoes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day,month,year);
-                Intent getIntakes = new Intent(this, ShowEntriesActivity.class);
-                getIntakes.putExtra("list",(Serializable) intakes);
-                getIntakes.putExtra("entry","Intake");
+                Intent switchToAddOutgo = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(getIntakes, REQUESTCODE_SHOW);
-                return true;
-
-            case R.id.subitemOutgoes:
-                mySQLite = new MySQLite(this);
-                ArrayList<Outgo> outgoes = mySQLite.getMonthOutgos(day, month, year);
-                Intent getOutgoes = new Intent(this, ShowEntriesActivity.class);
-                getOutgoes.putExtra("list",(Serializable) outgoes);
-                getOutgoes.putExtra("entry","Outgo");
-                mySQLite.close();
-                startActivityForResult(getOutgoes, REQUESTCODE_SHOW);
+                switchToAddOutgo.putExtra("Selected","Ausgabe");
+                startActivity(switchToAddOutgo);
                 return true;
 
             case R.id.itemBudgetLimit:
@@ -222,6 +206,9 @@ public class ChartViewActivity extends  AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
+                int day = 0;  //Yvette
+                int month = 0;  //Yvette
+                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank
@@ -244,11 +231,10 @@ public class ChartViewActivity extends  AppCompatActivity {
             case R.id.itemAddCategory:
                 mySQLite = new MySQLite(this);
                 Intent switchToAddCategory = new Intent(this, AddCategoryActivity.class);
-                ArrayList<Category> categories1 = mySQLite.getAllCategory();
-                switchToAddCategory.putExtra("list",(Serializable) categories1);
                 mySQLite.close();
-                startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
+                startActivity(switchToAddCategory);
                 return true;
+
 
             case R.id.itemDeleteCategory:
                 mySQLite = new MySQLite(this);

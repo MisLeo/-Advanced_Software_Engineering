@@ -42,11 +42,6 @@
     <color name="CPP">#EF5350</color>
     <color name="Java">#29B6F6</color>
 
-    <!-- Farben Yvette -->
-    <color name="backgroundY">#0c1821</color>
-    <color name="buttoncolorY">#95a78d</color>
-    <color name="TextcolorY">#000000</color>
-    <color name="TextcolorHeadY">#ccc9dc</color>
 
     <!-- Farben David -->
     <color name="PaleOrange">#F4A261</color>

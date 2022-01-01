@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -22,14 +24,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.haushaltsapp.database.Category;
 import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,10 +39,7 @@ public class AddEntryActivity extends AppCompatActivity {
 
     private MySQLite mySQLite;
 
-    //REQUESTCODES
-    private final int REQUESTCODE_ADD = 12; //AddEntryActivity
-    private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
-    private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
+    private String selected; //Einnahe oder Ausgabe
 
     private Spinner spinnerCyclus, spinnerCategory; //Zyklus, Kategorie
     private TextView editTextDate; //Datum
@@ -62,6 +59,12 @@ public class AddEntryActivity extends AppCompatActivity {
     private int monthCurrent;
     private int yearCurrent;
 
+    /*
+    1: gewähltes Datum liegt in der Zukunft
+    2: der Titel wurde nicht gesetzt
+    3: es wurde kein Wert gesetzt
+     */
+    private int errorValue; //bei entsprechendem Fehler wird ein Dialog geöffnet, um den Benutzer darauf hinzuweisen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,22 +73,18 @@ public class AddEntryActivity extends AppCompatActivity {
 
         mySQLite = new MySQLite(this);
 
+        errorValue = 0; //default
+
         getDate(); //setze monthCurrent und yearCurrent mit dem aktuellen Datum
 
 
-        //Spinner um den Zyklus anzugeben
-        spinnerCyclus = (Spinner) findViewById(R.id.spinnerCyclus);
-        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,  R.array.spinner_cyclus, android.R.layout.simple_spinner_item);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCyclus.setAdapter(adapter2);
-
-        //Spinner Kategorie
+        //Was soll angelegt werden? Eine Einnahme oder eine Ausgabe?
         Intent intent = getIntent();
-        ArrayList<Category> list = mySQLite.getAllCategory();
-        spinnerCategory = (Spinner) findViewById(R.id.spinnerCategory);
-        ArrayAdapter<Category> adapter3 = new ArrayAdapter<Category>(getApplicationContext(),  android.R.layout.simple_spinner_dropdown_item, list);
-        adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCategory.setAdapter(adapter3);
+        selected = intent.getStringExtra("Selected");
+
+
+        //Layout erstellen
+        setLayout();
 
         //Aktuelles Datum anzeigen
         editTextDate = (TextView) findViewById(R.id.editTextDate);
@@ -122,10 +121,11 @@ public class AddEntryActivity extends AppCompatActivity {
 
                         String dayString = String.valueOf(day);
                         String monthString = String.valueOf(month+1);
+
                         if(day < 10){
                             dayString = "0"+dayString;
                         }
-                        if(month < 10){
+                        if(month < 9){
                             monthString = "0"+monthString;
                         }
                         editTextDate.setText(dayString+"."+monthString+"."+year);
@@ -137,40 +137,70 @@ public class AddEntryActivity extends AppCompatActivity {
     }
 
 
+    //Methode um das Layout aufzubauen
+    private void setLayout(){
+        TextView titel = (TextView) findViewById(R.id.titel);
+        titel.setText(selected+" anlegen");
+
+        //Spinner um den Zyklus anzugeben
+        spinnerCyclus = (Spinner) findViewById(R.id.spinnerCyclus);
+        ArrayAdapter<CharSequence> adapter2 = ArrayAdapter.createFromResource(this,  R.array.spinner_cyclus, android.R.layout.simple_spinner_item);
+        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCyclus.setAdapter(adapter2);
+
+        //Spinner Kategorie - nur anzeigen, wenn es eine Ausgabe ist
+        spinnerCategory = (Spinner) findViewById(R.id.spinnerCategory);
+        if(selected.equals("Ausgabe")){
+            ArrayList<Category> list = mySQLite.getAllCategory();
+            ArrayAdapter<Category> adapter3 = new ArrayAdapter<Category>(getApplicationContext(),  android.R.layout.simple_spinner_dropdown_item, list);
+            adapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerCategory.setAdapter(adapter3);
+        }else{ //Einnahme - muss nicht angezeigt werden
+            spinnerCategory.setVisibility(View.INVISIBLE);
+            TextView categoryTitel = (TextView) findViewById(R.id.textView8);
+            categoryTitel.setVisibility(View.INVISIBLE);
+        }
+    }
+
+
 
     /*
     Eingabe soll eine Einnahme sein
      */
-    public void onClickIntake(View view){
+    public void onClickOk(View view){
         boolean valide = getValues();
         if(valide){ //Titel und Wert wurde gesetzt
-            Intake intake = new Intake(name, value, day, month, year, cyclus);
-            mySQLite.addIntake(intake);
-            if((month < monthCurrent) || (year < yearCurrent)) {//Wenn der Eintrag in der Vergangenheit liegt muss das Budget angepasst werden
+
+            if(selected.equals("Einnahme")){ //Einnahme
+                Intake intake = new Intake(name, value, day, month, year, cyclus);
+                mySQLite.addIntake(intake);
+            }else{ //Ausgabe
+                Outgo outgo = new Outgo(name, value, day, month, year, cyclus, category);
+                mySQLite.addOutgo(outgo);
+                //Prüfen, ob ein gesetztes Limit für Kategorie oder Gesamt überschritten wird
+                      checkCatLimitReached();
+                      checkPercentageLimitReached();
+            }
+
+            //Wenn der Eintrag in der Vergangenheit liegt muss der Budget-Eintrag angepasst werden
+            if((month < monthCurrent) || (year < yearCurrent)) {
                 setBudgetEntry(month, year);
             }
-            super.finish();
+
+            //Zurück zur Main
+            Intent switchToMainActivity= new Intent(this, MainActivity.class);
+            startActivity(switchToMainActivity);
+        }else{
+            informUser(); //Was für ein Fehler ist aufgetreten?
         }
     }
 
     /*
     Ausgabe soll eine Ausgabe sein
     */
-    public void onClickOutgo(View view){
-        boolean valide = getValues();
-        if(valide){ ////Titel und Wert wurde gesetzt
-            Outgo outgo = new Outgo(name, value, day, month, year, cyclus, category);
-            mySQLite.addOutgo(outgo);
-            if((month < monthCurrent) || (year < yearCurrent)) {//Wenn der Eintrag in der Vergangenheit liegt muss das Budget angepasst werden
-                setBudgetEntry(month, year);
-            }
-
-    //Prüfen, ob ein gesetztes Limit für Kategorie oder Gesamt überschritten wird
-        checkCatLimitReached();
-        checkPercentageLimitReached();
-
-            super.finish();
-        }
+    public void onClickCancel(View view){
+        Intent switchToMainActivity= new Intent(this, MainActivity.class);
+        startActivity(switchToMainActivity);
     }
 
 
@@ -188,8 +218,7 @@ public class AddEntryActivity extends AppCompatActivity {
         year = Integer.parseInt(dates.substring(6,10));
 
         if((month > monthCurrent && year >= yearCurrent) || (year > yearCurrent)){ //Eintrag liegt in der Zukunft
-            Toast.makeText(AddEntryActivity.this, "Ihr gewähltes Datum liegt in der Zukunft",
-                    Toast.LENGTH_SHORT).show();
+            errorValue = 1;
             retValue = false;
         }
 
@@ -198,8 +227,7 @@ public class AddEntryActivity extends AppCompatActivity {
         String valueString = editTextValue.getText().toString().replace(',', '.');
         value = Double.parseDouble(valueString);
         if(value == 0.0){
-            Toast.makeText(AddEntryActivity.this, "Bitte geben Sie einen Wert ein",
-                    Toast.LENGTH_SHORT).show();
+            errorValue = 3;
             retValue = false;
         }
 
@@ -207,8 +235,7 @@ public class AddEntryActivity extends AppCompatActivity {
         EditText editTextName = (EditText) findViewById(R.id.Bezeichnung);
         name = editTextName.getText().toString();
         if(name.equals("Titel")){
-            Toast.makeText(AddEntryActivity.this, "Bitte geben Sie einen Titel ein",
-                    Toast.LENGTH_SHORT).show();
+            errorValue = 2;
             retValue = false;
         }
 
@@ -217,11 +244,39 @@ public class AddEntryActivity extends AppCompatActivity {
         cyclus = spinnerCyclus.getSelectedItem().toString();
 
         //Kategorie
-        category = spinnerCategory.getSelectedItem().toString();
+        if(selected.equals("Ausgabe")){
+            category = spinnerCategory.getSelectedItem().toString();
+        }
 
         return retValue;
     }
 
+
+    //Methode öffnet ein Fenster um den Benutzer auf unterschiedliche Fehler hinzuweisen.
+    private void informUser(){
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setTitle("Hinweis");
+
+        if(errorValue == 1){
+            builder1.setMessage("Das gewählte Datum liegt in der Zukunft.");
+        }else if(errorValue == 2){
+            builder1.setMessage("Bitte setzen Sie einen Titel.");
+        }else{ // errorValue == 3
+            builder1.setMessage("Bitte geben Sie einen Wert an.");
+        }
+
+        builder1.setCancelable(true);
+        builder1.setNeutralButton(android.R.string.ok,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+
+        errorValue = 0; //danach zurücksetzen
+    }
 
     // Setzt die Variablen monthCurrent und yearCurrent mit dem aktuellen datum
     private void getDate(){
@@ -244,13 +299,14 @@ public class AddEntryActivity extends AppCompatActivity {
                 // Erst hochzählen da man den nächsten Monat braucht
                 if(monthEntry == 12){
                     monthEntry = 1;
-                    yearEntry++;
+                    yearEntry = yearEntry +1;
                 }else{
-                    monthEntry++;
+                    monthEntry = monthEntry + 1;
                 }
+
                 //Eintrag muss aus der Datenbank enfernt werden
                 //Wie der Eintrag lautet
-                String titel = "Restbudget vom ";
+                String titel = "Übertrag vom ";
                 if(monthEntry > 1){
                     titel = titel+(monthEntry-1)+"."+yearEntry;
                 }else{
@@ -270,8 +326,8 @@ public class AddEntryActivity extends AppCompatActivity {
                 double value = 0.0;
                 if (monthEntry > 1) {
                     value = mySQLite.getValueIntakesMonth(31, monthEntry - 1, yearEntry) - mySQLite.getValueOutgosMonth(31, monthEntry - 1, yearEntry);
-                } else {
-                    value = mySQLite.getValueIntakesMonth(31, 1, yearEntry - 1) - mySQLite.getValueOutgosMonth(31, 1, yearEntry - 1);
+                } else { //1
+                    value = mySQLite.getValueIntakesMonth(31, 12, yearEntry - 1) - mySQLite.getValueOutgosMonth(31, 12, yearEntry - 1);
                 }
                 if(value >= 0) { //Einnahme
                     Intake intake = new Intake(titel, value, 1, monthEntry, yearEntry, "einmalig");
@@ -281,7 +337,7 @@ public class AddEntryActivity extends AppCompatActivity {
                     Outgo outgo = new Outgo(titel, value, 1, monthEntry, yearEntry, "einmalig","Sonstiges");
                     mySQLite.addOutgo(outgo);
                 }
-            }while (!((monthEntry != monthCurrent) && (yearEntry != yearCurrent)));
+            }while (!((monthEntry == monthCurrent) && (yearEntry == yearCurrent)));
         }
     }
 
@@ -291,11 +347,15 @@ public class AddEntryActivity extends AppCompatActivity {
         inflater.inflate(R.menu.navigation_menu, menu);
 
         //Die aktuelle Activity im Menü ausblenden
-        MenuItem item = menu.findItem(R.id.itemAddIntakesOutgoes);
+        MenuItem item = menu.findItem(R.id.subitemAddOutgoes);//Default Ausgaben
+        if(selected.equals("Einnahme")){
+            item = menu.findItem(R.id.subitemAddIntakes);
+        }
         item.setEnabled(false);
 
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -306,33 +366,20 @@ public class AddEntryActivity extends AppCompatActivity {
                 startActivity(switchToMain);
                 return true;
 
-            case R.id.itemAddIntakesOutgoes:
+            case R.id.subitemAddIntakes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Category> categories = mySQLite.getAllCategory();
-                Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
-                switchToAddEntry.putExtra("list",categories);
+                Intent switchToAddIntake = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(switchToAddEntry,REQUESTCODE_ADD);
+                switchToAddIntake.putExtra("Selected","Einnahme");
+                startActivity(switchToAddIntake);
                 return true;
 
-            case R.id.subitemIntakes:
+            case R.id.subitemAddOutgoes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day,month,year);
-                Intent getIntakes = new Intent(this, ShowEntriesActivity.class);
-                getIntakes.putExtra("list",(Serializable) intakes);
-                getIntakes.putExtra("entry","Intake");
+                Intent switchToAddOutgo = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(getIntakes, REQUESTCODE_SHOW);
-                return true;
-
-            case R.id.subitemOutgoes:
-                mySQLite = new MySQLite(this);
-                ArrayList<Outgo> outgoes = mySQLite.getMonthOutgos(day, month, year);
-                Intent getOutgoes = new Intent(this, ShowEntriesActivity.class);
-                getOutgoes.putExtra("list",(Serializable) outgoes);
-                getOutgoes.putExtra("entry","Outgo");
-                mySQLite.close();
-                startActivityForResult(getOutgoes, REQUESTCODE_SHOW);
+                switchToAddOutgo.putExtra("Selected","Ausgabe");
+                startActivity(switchToAddOutgo);
                 return true;
 
             case R.id.itemBudgetLimit:
@@ -360,6 +407,9 @@ public class AddEntryActivity extends AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
+                int day = 0;  //Yvette
+                int month = 0;  //Yvette
+                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank
@@ -382,11 +432,10 @@ public class AddEntryActivity extends AppCompatActivity {
             case R.id.itemAddCategory:
                 mySQLite = new MySQLite(this);
                 Intent switchToAddCategory = new Intent(this, AddCategoryActivity.class);
-                ArrayList<Category> categories1 = mySQLite.getAllCategory();
-                switchToAddCategory.putExtra("list",(Serializable) categories1);
                 mySQLite.close();
-                startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
+                startActivity(switchToAddCategory);
                 return true;
+
 
             case R.id.itemDeleteCategory:
                 mySQLite = new MySQLite(this);

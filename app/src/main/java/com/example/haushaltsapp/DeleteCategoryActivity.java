@@ -33,10 +33,6 @@ public class DeleteCategoryActivity extends AppCompatActivity {
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
-    private final int REQUESTCODE_ADD = 12; //AddEntryActivity
-    private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
-    private final int REQUESTCODE_EDIT = 14; //EditEntryActivity
-    private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
 
     private int day;
     private int month;
@@ -60,6 +56,7 @@ public class DeleteCategoryActivity extends AppCompatActivity {
         setAdapter();
     }
 
+    //Anzeige der Kategorien
     private void setAdapter()
     {
         setOnClickListner();
@@ -75,20 +72,24 @@ public class DeleteCategoryActivity extends AppCompatActivity {
 
     }
 
+    //Auswahl einer Kategorie um diese zu löschen
     private void setOnClickListner(){
 
         listener = new deleteCategorieAdapter.deleteCategorieClickListener() {
-
             @Override
             public void onClick(View v, int position) {
 
                 String Categorie = CategorieList.get(position).getName_PK();
 
+                //Sonstiges kann nicht gelöscht werden
+                //Toast mit Meldung
                 if (Categorie.equals("Sonstiges"))
                 {
                     Toast toast = Toast.makeText(getApplicationContext(),"Sonstiges kann nicht gelöscht werden",Toast.LENGTH_SHORT);
                     toast.show();
                 }
+                //Kategorie löschen
+                //Melung bringen um zu bestätigen, das gelöscht werden soll
                 else
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(DeleteCategoryActivity.this );
@@ -106,7 +107,6 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                                     deleteAdapter.deleteCategorie(position);
                                     Toast toast = Toast.makeText(getApplicationContext(),Categorie+" wurde gelöscht",Toast.LENGTH_SHORT);
                                     toast.show();
-
                                 }
                             });
                     builder.setNegativeButton("Abbruch",
@@ -119,14 +119,10 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                             });
                     AlertDialog dialog = builder.create();
                     dialog.show();
-
                 }
             }
         };
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -142,39 +138,26 @@ public class DeleteCategoryActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()) {
+        switch (item.getItemId()){
             case R.id.itemMainPage:
                 Intent switchToMain = new Intent(this, MainActivity.class);
                 startActivity(switchToMain);
                 return true;
 
-            case R.id.itemAddIntakesOutgoes:
+            case R.id.subitemAddIntakes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Category> categories = mySQLite.getAllCategory();
-                Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
-                switchToAddEntry.putExtra("list", categories);
+                Intent switchToAddIntake = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(switchToAddEntry, REQUESTCODE_ADD);
+                switchToAddIntake.putExtra("Selected","Einnahme");
+                startActivity(switchToAddIntake);
                 return true;
 
-            case R.id.subitemIntakes:
+            case R.id.subitemAddOutgoes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day, month, year);
-                Intent getIntakes = new Intent(this, ShowEntriesActivity.class);
-                getIntakes.putExtra("list", (Serializable) intakes);
-                getIntakes.putExtra("entry", "Intake");
+                Intent switchToAddOutgo = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(getIntakes, REQUESTCODE_SHOW);
-                return true;
-
-            case R.id.subitemOutgoes:
-                mySQLite = new MySQLite(this);
-                ArrayList<Outgo> outgoes = mySQLite.getMonthOutgos(day, month, year);
-                Intent getOutgoes = new Intent(this, ShowEntriesActivity.class);
-                getOutgoes.putExtra("list", (Serializable) outgoes);
-                getOutgoes.putExtra("entry", "Outgo");
-                mySQLite.close();
-                startActivityForResult(getOutgoes, REQUESTCODE_SHOW);
+                switchToAddOutgo.putExtra("Selected","Ausgabe");
+                startActivity(switchToAddOutgo);
                 return true;
 
             case R.id.itemBudgetLimit:
@@ -186,11 +169,11 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                 mySQLite = new MySQLite(this);
                 Intent switchToDiagramView = new Intent(this, DiagramViewActivity.class);
                 //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoD = mySQLite.getAllOutgo();
-                switchToDiagramView.putExtra("dataOut", AlloutgoD);
+                ArrayList<Outgo> AlloutgoD =mySQLite.getAllOutgo();
+                switchToDiagramView.putExtra("dataOut",AlloutgoD);
                 //Alle Einnahmen in Datenbank
-                ArrayList<Intake> AllIntakeD = mySQLite.getAllIntakes();
-                switchToDiagramView.putExtra("dataIn", AllIntakeD);
+                ArrayList<Intake> AllIntakeD =mySQLite.getAllIntakes();
+                switchToDiagramView.putExtra("dataIn",AllIntakeD);
                 mySQLite.close();
                 startActivity(switchToDiagramView);
                 return true;
@@ -199,14 +182,17 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                 mySQLite = new MySQLite(this);
                 Intent switchToChartView = new Intent(this, ChartViewActivity.class);
                 //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoT = mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataOut", AlloutgoT);
+                ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
+                switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
-                ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day, month, year);
-                switchToChartView.putExtra("monthlist", outgoesT);
+                int day = 0;  //Yvette
+                int month = 0;  //Yvette
+                int year = 0;  //Yvette
+                ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
+                switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank
-                ArrayList<Outgo> AllintakeT = mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataIn", AllintakeT);
+                ArrayList<Outgo> AllintakeT =mySQLite.getAllOutgo();
+                switchToChartView.putExtra("dataIn",AllintakeT);
                 mySQLite.close();
                 startActivity(switchToChartView);
                 return true;
@@ -224,11 +210,10 @@ public class DeleteCategoryActivity extends AppCompatActivity {
             case R.id.itemAddCategory:
                 mySQLite = new MySQLite(this);
                 Intent switchToAddCategory = new Intent(this, AddCategoryActivity.class);
-                ArrayList<Category> categories1 = mySQLite.getAllCategory();
-                switchToAddCategory.putExtra("list", (Serializable) categories1);
                 mySQLite.close();
-                startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
+                startActivity(switchToAddCategory);
                 return true;
+
 
             case R.id.itemDeleteCategory:
                 mySQLite = new MySQLite(this);

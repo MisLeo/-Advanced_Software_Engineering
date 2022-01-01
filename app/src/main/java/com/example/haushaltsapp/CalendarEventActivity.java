@@ -3,6 +3,7 @@ package com.example.haushaltsapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -45,10 +46,6 @@ public class CalendarEventActivity extends AppCompatActivity {
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
-    private final int REQUESTCODE_ADD = 12; //AddEntryActivity
-    private final int REQUESTCODE_SHOW = 13; //ShowEntryActivity
-    private final int REQUESTCODE_EDIT = 14; //EditEntryActivity
-    private final int REQUESTCODE_ADD_CATEGORY = 15; //AddCategoryActivity
     ///////////////////////////////
 
     private int Storage_Permission_Code = 1;
@@ -163,9 +160,10 @@ public class CalendarEventActivity extends AppCompatActivity {
                 .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime)
                 .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, isAllDay);
 
-        if (insertEvent.resolveActivity(getPackageManager()) != null) {
+
+        try {
             startActivity(insertEvent);
-        } else {
+        } catch (ActivityNotFoundException e) {
             Toast.makeText(CalendarEventActivity.this, "Keine App auf Ihrem Handy unterstützt dieses Feature",
                     Toast.LENGTH_SHORT).show();
         }
@@ -183,9 +181,9 @@ public class CalendarEventActivity extends AppCompatActivity {
         builder.appendPath("time");
         ContentUris.appendId(builder, timeInMilliSec);
         Intent viewEvent = new Intent(Intent.ACTION_VIEW).setData(builder.build());
-        if (viewEvent.resolveActivity(getPackageManager()) != null) {
+        try {
             startActivity(viewEvent);
-        } else {
+        } catch (ActivityNotFoundException e) {
             Toast.makeText(CalendarEventActivity.this, "Keine App auf Ihrem Handy unterstützt dieses Feature",
                     Toast.LENGTH_SHORT).show();
         }
@@ -213,33 +211,20 @@ public class CalendarEventActivity extends AppCompatActivity {
                 startActivity(switchToMain);
                 return true;
 
-            case R.id.itemAddIntakesOutgoes:
+            case R.id.subitemAddIntakes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Category> categories = mySQLite.getAllCategory();
-                Intent switchToAddEntry = new Intent(this, AddEntryActivity.class);
-                switchToAddEntry.putExtra("list",categories);
+                Intent switchToAddIntake = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(switchToAddEntry,REQUESTCODE_ADD);
+                switchToAddIntake.putExtra("Selected","Einnahme");
+                startActivity(switchToAddIntake);
                 return true;
 
-            case R.id.subitemIntakes:
+            case R.id.subitemAddOutgoes:
                 mySQLite = new MySQLite(this);
-                ArrayList<Intake> intakes = mySQLite.getMonthIntakes(day,month,year);
-                Intent getIntakes = new Intent(this, ShowEntriesActivity.class);
-                getIntakes.putExtra("list",(Serializable) intakes);
-                getIntakes.putExtra("entry","Intake");
+                Intent switchToAddOutgo = new Intent(this, AddEntryActivity.class);
                 mySQLite.close();
-                startActivityForResult(getIntakes, REQUESTCODE_SHOW);
-                return true;
-
-            case R.id.subitemOutgoes:
-                mySQLite = new MySQLite(this);
-                ArrayList<Outgo> outgoes = mySQLite.getMonthOutgos(day, month, year);
-                Intent getOutgoes = new Intent(this, ShowEntriesActivity.class);
-                getOutgoes.putExtra("list",(Serializable) outgoes);
-                getOutgoes.putExtra("entry","Outgo");
-                mySQLite.close();
-                startActivityForResult(getOutgoes, REQUESTCODE_SHOW);
+                switchToAddOutgo.putExtra("Selected","Ausgabe");
+                startActivity(switchToAddOutgo);
                 return true;
 
             case R.id.itemBudgetLimit:
@@ -267,6 +252,9 @@ public class CalendarEventActivity extends AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
+                int day = 0;  //Yvette
+                int month = 0;  //Yvette
+                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank
@@ -289,11 +277,10 @@ public class CalendarEventActivity extends AppCompatActivity {
             case R.id.itemAddCategory:
                 mySQLite = new MySQLite(this);
                 Intent switchToAddCategory = new Intent(this, AddCategoryActivity.class);
-                ArrayList<Category> categories1 = mySQLite.getAllCategory();
-                switchToAddCategory.putExtra("list",(Serializable) categories1);
                 mySQLite.close();
-                startActivityForResult(switchToAddCategory, REQUESTCODE_ADD_CATEGORY);
+                startActivity(switchToAddCategory);
                 return true;
+
 
             case R.id.itemDeleteCategory:
                 mySQLite = new MySQLite(this);
