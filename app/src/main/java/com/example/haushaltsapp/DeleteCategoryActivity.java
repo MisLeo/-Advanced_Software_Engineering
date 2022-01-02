@@ -83,11 +83,13 @@ public class DeleteCategoryActivity extends AppCompatActivity {
 
                 //Sonstiges kann nicht gelöscht werden
                 //Toast mit Meldung
+
                 if (Categorie.equals("Sonstiges"))
                 {
                     Toast toast = Toast.makeText(getApplicationContext(),"Sonstiges kann nicht gelöscht werden",Toast.LENGTH_SHORT);
                     toast.show();
                 }
+
                 //Kategorie löschen
                 //Melung bringen um zu bestätigen, das gelöscht werden soll
                 else
@@ -185,9 +187,6 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
-                int day = 0;  //Yvette
-                int month = 0;  //Yvette
-                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank

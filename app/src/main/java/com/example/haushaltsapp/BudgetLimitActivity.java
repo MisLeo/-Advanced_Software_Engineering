@@ -16,6 +16,7 @@ import com.example.haushaltsapp.database.Intake;
 import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import android.view.View;
 import android.widget.CheckBox;
@@ -24,6 +25,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.util.Calendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class BudgetLimitActivity extends AppCompatActivity {
@@ -48,6 +51,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
     /*
     1: Wert von Gesamtlimit liegt nicht zwischen 0 und 100
     2: Gesamtbudget einer Kategorie wird überschritten
+    4: Eingabe bezüglich des Wertes ist Fehlerhaft (3 Nachkommastellen)
      */
     private int errorValue; //bei entsprechendem Fehler wird ein Dialog geöffnet, um den Benutzer darauf hinzuweisen
 
@@ -101,7 +105,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
     private void getDate() {
         java.util.Calendar calender = java.util.Calendar.getInstance();
         year = calender.get(Calendar.YEAR);
-        month = calender.get(Calendar.MONTH);
+        month = calender.get(Calendar.MONTH)+1;//Fängt bei mit 0 an
         day = calender.get(Calendar.DAY_OF_MONTH);
     }
 
@@ -118,7 +122,9 @@ public class BudgetLimitActivity extends AppCompatActivity {
         textView.setText(str);
 
         EditText editText = view.findViewById(R.id.limit);
-        editText.setText(String.valueOf((int) value));
+        // Wenn value keine zwei Nachkommastellen hat - welche einfügen
+        DecimalFormat df = new DecimalFormat("0.00");
+        editText.setText(df.format(value));
 
         if(str.equals("Gesamtbudget")){
             TextView prozent = view.findViewById(R.id.prozent);
@@ -174,8 +180,9 @@ public class BudgetLimitActivity extends AppCompatActivity {
             //Zurück zur Main
             Intent switchToMainActivity= new Intent(this, MainActivity.class);
             startActivity(switchToMainActivity);
+        }else {
+            informUser();
         }
-        informUser();
     }
 
     //Prüfe ob die Eingaben Sinn machen. Setzt ggf errorValue
@@ -186,7 +193,15 @@ public class BudgetLimitActivity extends AppCompatActivity {
         for (int i = 0; i < childCount; i++) {
             View v = linearLayout.getChildAt(i);
             EditText valueLimit = v.findViewById(R.id.limit);
-            double valueInt = Double.valueOf(valueLimit.getText().toString());
+            double valueInt = 0.0;
+            Pattern p = Pattern.compile("^\\d+([\\.,]\\d{2})?$");
+            Matcher m = p.matcher(valueLimit.getText().toString());
+            if(m.find()){ //Eintrag ist valide
+                valueInt = Double.parseDouble(valueLimit.getText().toString().replace(",",".")); //Eingabe mit Komma abfangen
+            }else{ //Eingabe gibt keinen Sinn (3 Nachkommastellen ect.)
+                errorValue = 4;
+                return false;
+            }
 
             if(i > 0) { //Erster Eintrag ist Gesamtbudget
                 summe = summe + valueInt;
@@ -215,6 +230,8 @@ public class BudgetLimitActivity extends AppCompatActivity {
             builder1.setMessage("Das Eintrag bezüglich Gesamtbudget liegt nicht zwischen 0% und 100%.");
         }else if(errorValue == 2){
             builder1.setMessage("Mit den gewählten Grenzen wird das Gesamtbudget überschritten");
+        }else{ // errorValue 4
+            builder1.setMessage("Ihre Eingabe bezüglich des Werts ist nicht valide.");
         }
 
         builder1.setCancelable(true);
@@ -280,7 +297,7 @@ public class BudgetLimitActivity extends AppCompatActivity {
         return true;
     }
 
-   @Override
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()){
@@ -330,9 +347,6 @@ public class BudgetLimitActivity extends AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
-                int day = 0;  //Yvette
-                int month = 0;  //Yvette
-                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank

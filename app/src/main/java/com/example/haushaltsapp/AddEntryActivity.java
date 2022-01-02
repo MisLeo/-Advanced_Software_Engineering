@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AddEntryActivity extends AppCompatActivity {
 
@@ -56,13 +58,13 @@ public class AddEntryActivity extends AppCompatActivity {
     private String category;
 
     //Aktuelles Datum. Notwendig um Budget-Eintrag anzupassen
-    private int monthCurrent;
-    private int yearCurrent;
+    private int dayCurrent, monthCurrent, yearCurrent;
 
     /*
     1: gewähltes Datum liegt in der Zukunft
     2: der Titel wurde nicht gesetzt
     3: es wurde kein Wert gesetzt
+    4: der gesetzte Wert ist keine Valide eingabe (z.B. 3 Nachkommastellen)
      */
     private int errorValue; //bei entsprechendem Fehler wird ein Dialog geöffnet, um den Benutzer darauf hinzuweisen
 
@@ -120,12 +122,12 @@ public class AddEntryActivity extends AppCompatActivity {
                         year = selectedYear;
 
                         String dayString = String.valueOf(day);
-                        String monthString = String.valueOf(month+1);
+                        String monthString = String.valueOf(month+1); //Monat beginnt bei index 0
 
                         if(day < 10){
                             dayString = "0"+dayString;
                         }
-                        if(month < 9){
+                        if(month < 9){ //Monat beginnt bei index 0
                             monthString = "0"+monthString;
                         }
                         editTextDate.setText(dayString+"."+monthString+"."+year);
@@ -165,7 +167,7 @@ public class AddEntryActivity extends AppCompatActivity {
 
 
     /*
-    Eingabe soll eine Einnahme sein
+    Eingabe Anlegen
      */
     public void onClickOk(View view){
         boolean valide = getValues();
@@ -196,7 +198,7 @@ public class AddEntryActivity extends AppCompatActivity {
     }
 
     /*
-    Ausgabe soll eine Ausgabe sein
+    Abbrechne
     */
     public void onClickCancel(View view){
         Intent switchToMainActivity= new Intent(this, MainActivity.class);
@@ -217,17 +219,23 @@ public class AddEntryActivity extends AppCompatActivity {
         month = Integer.parseInt(dates.substring(3,5));
         year = Integer.parseInt(dates.substring(6,10));
 
-        if((month > monthCurrent && year >= yearCurrent) || (year > yearCurrent)){ //Eintrag liegt in der Zukunft
+        if((month > monthCurrent && year >= yearCurrent) || (year > yearCurrent) ||(day > dayCurrent && month == monthCurrent && year == yearCurrent)){ //Eintrag liegt in der Zukunft
             errorValue = 1;
             retValue = false;
         }
 
         //Wert anzeigen lassen:
         EditText editTextValue = (EditText) findViewById(R.id.editTextNumberDecimal);
-        String valueString = editTextValue.getText().toString().replace(',', '.');
-        value = Double.parseDouble(valueString);
-        if(value == 0.0){
-            errorValue = 3;
+        Pattern p = Pattern.compile("^\\d+([\\.,]\\d{2})?$");
+        Matcher m = p.matcher(editTextValue.getText().toString());
+        if(m.find()){ //Eintrag ist valide
+            value = Double.parseDouble(editTextValue.getText().toString().replace(",",".")); //Eingabe mit Komma abfangen
+            if(value == 0.0){ //Prüfen ob ein Wert gesetzt wurde
+                errorValue = 3;
+                retValue = false;
+            }
+        }else{
+            errorValue = 4;
             retValue = false;
         }
 
@@ -261,8 +269,10 @@ public class AddEntryActivity extends AppCompatActivity {
             builder1.setMessage("Das gewählte Datum liegt in der Zukunft.");
         }else if(errorValue == 2){
             builder1.setMessage("Bitte setzen Sie einen Titel.");
-        }else{ // errorValue == 3
+        }else if(errorValue == 3){
             builder1.setMessage("Bitte geben Sie einen Wert an.");
+        }else{ // errorValue 4
+            builder1.setMessage("Ihre Eingabe bezüglich des Werts ist nicht valide.");
         }
 
         builder1.setCancelable(true);
@@ -276,6 +286,7 @@ public class AddEntryActivity extends AppCompatActivity {
         alert11.show();
 
         errorValue = 0; //danach zurücksetzen
+        month--; //damit im Kalender der aktuelle Monat angezeigt wird.
     }
 
     // Setzt die Variablen monthCurrent und yearCurrent mit dem aktuellen datum
@@ -283,6 +294,7 @@ public class AddEntryActivity extends AppCompatActivity {
         java.util.Calendar calender = java.util.Calendar.getInstance();
         SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
         String dates = datumsformat.format(calender.getTime());
+        dayCurrent = Integer.parseInt(dates.substring(0, 2));
         monthCurrent= Integer.parseInt(dates.substring(3,5));
         yearCurrent = Integer.parseInt(dates.substring(6,10));
     }
@@ -407,9 +419,6 @@ public class AddEntryActivity extends AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
-                int day = 0;  //Yvette
-                int month = 0;  //Yvette
-                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank

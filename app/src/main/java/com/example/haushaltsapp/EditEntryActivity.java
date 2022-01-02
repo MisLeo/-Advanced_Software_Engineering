@@ -25,10 +25,13 @@ import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
 
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
 Activity um eine Einnahme oder Ausgabe zu ändern oder zu löschen
@@ -56,8 +59,7 @@ public class EditEntryActivity extends AppCompatActivity {
         private String category = " ";
 
         //Aktuelles Datum. Notwendig um Budget-Eintrag anzupassen
-        private int monthCurrent;
-        private int yearCurrent;
+        private int dayCurrent, monthCurrent, yearCurrent;
 
         /*
     1: gewähltes Datum liegt in der Zukunft
@@ -69,73 +71,75 @@ public class EditEntryActivity extends AppCompatActivity {
 
 
     @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_edit_entry);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_entry);
 
-            mySQLite = new MySQLite(this); //Datenbank
+        mySQLite = new MySQLite(this); //Datenbank
 
-            getDate(); //setze monthCurrent und yearCurrent mit dem aktuellen Datum
+        getDate(); //setze monthCurrent und yearCurrent mit dem aktuellen Datum
 
-            //Darstellung der Oberfläche
+        //Werte aus der ermitteln, des zu ändernden Eintrags
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            return;
+        }
 
-            Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                return;
-            }
+        entry = extras.getString("entry");
+        id = extras.getInt("id");
 
-            entry = extras.getString("entry");
-            id = extras.getInt("id");
+        //die Werte name bis category setzen
+        if (entry.equals("Intake")) {
+            Intake intake = mySQLite.getIntakeById(id);
+            name = intake.getName();
+            value = intake.getValue();
+            day = intake.getDay();
+            month = intake.getMonth();
+            year = intake.getYear();
+            cyclus = intake.getCycle();
+        } else { //Outgo Ausgabe
+            Outgo outgo = mySQLite.getOutgoById(id);
+            name = outgo.getName();
+            value = outgo.getValue();
+            day = outgo.getDay();
+            month = outgo.getMonth();
+            year = outgo.getYear();
+            cyclus = outgo.getCycle();
+            category = outgo.getCategory();
+        }
 
-            //die Werte name bis category setzen
-            if (entry.equals("Intake")) {
-                Intake intake = mySQLite.getIntakeById(id);
-                name = intake.getName();
-                value = intake.getValue();
-                day = intake.getDay();
-                month = intake.getMonth();
-                year = intake.getYear();
-                cyclus = intake.getCycle();
-            } else { //Outgo Ausgabe
-                Outgo outgo = mySQLite.getOutgoById(id);
-                name = outgo.getName();
-                value = outgo.getValue();
-                day = outgo.getDay();
-                month = outgo.getMonth();
-                year = outgo.getYear();
-                cyclus = outgo.getCycle();
-                category = outgo.getCategory();
-            }
+        setValue(); //Werte in der Oberfläche setzen
 
-            setValue(); //Werte in der Oberfläche setzen
-
-            //Aktuelles Datum anzeigen
-            //Auf deutsche Kalenderanzeige umstellen
-            Locale locale = new Locale("de");
-            Locale.setDefault(locale);
-            Resources res = this.getResources();
-            Configuration config = new Configuration(res.getConfiguration());
-            config.locale = locale;
-            res.updateConfiguration(config, res.getDisplayMetrics());
-
+        //Aktuelles Datum anzeigen
+        //Auf deutsche Kalenderanzeige umstellen
+        Locale locale = new Locale("de");
+        Locale.setDefault(locale);
+        Resources res = this.getResources();
+        Configuration config = new Configuration(res.getConfiguration());
+        config.locale = locale;
+        res.updateConfiguration(config, res.getDisplayMetrics());
         //Kalender
         calenderView = findViewById(R.id.calenderView);
+        month = month - 1; // Januar ist 0, demnach monat um 1 minimieren
         //Setzen von Listener auf dem Kalender Symbol
         calenderView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View dateView) {
-                DatePickerDialog dateDialog = new DatePickerDialog(EditEntryActivity.this, new DatePickerDialog.OnDateSetListener() {
+                DatePickerDialog dateDialog = new DatePickerDialog(EditEntryActivity.this,R.style.datePickerStyle, new DatePickerDialog.OnDateSetListener() {
+
                     @Override
                     public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
-                        day = selectedDay;
-                        month = selectedMonth;
-                        year = selectedYear;
+                        int day = selectedDay;
+                        int month = selectedMonth;
+                        int year = selectedYear;
+
                         String dayString = String.valueOf(day);
-                        String monthString = String.valueOf(month);
+                        String monthString = String.valueOf(month+1); //Monat beginnt bei index 0
+
                         if(day < 10){
                             dayString = "0"+dayString;
                         }
-                        if(month < 9){
+                        if(month < 9){ //Monat beginnt bei index 0
                             monthString = "0"+monthString;
                         }
                         editTextDate.setText(dayString+"."+monthString+"."+year);
@@ -144,13 +148,14 @@ public class EditEntryActivity extends AppCompatActivity {
                 dateDialog.show();
             }
         });
-        }
+    }
 
         // Setzt die Variablen monthCurrent und yearCurrent mit dem aktuellen datum
         private void getDate() {
             java.util.Calendar calender = java.util.Calendar.getInstance();
             SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
             String dates = datumsformat.format(calender.getTime());
+            dayCurrent = Integer.parseInt(dates.substring(0, 2));
             monthCurrent = Integer.parseInt(dates.substring(3, 5));
             yearCurrent = Integer.parseInt(dates.substring(6, 10));
         }
@@ -205,7 +210,8 @@ public class EditEntryActivity extends AppCompatActivity {
 
             //value setzen
             editTextValue = (EditText) findViewById(R.id.editTextNumberDecimal);
-            editTextValue.setText(String.valueOf(value));
+            DecimalFormat df = new DecimalFormat("0.00");
+            editTextValue.setText(df.format(value));
 
             //Datum setzen
             editTextDate = (TextView) findViewById(R.id.editTextDate);
@@ -275,17 +281,23 @@ public class EditEntryActivity extends AppCompatActivity {
             month = Integer.parseInt(dates.substring(3, 5));
             year = Integer.parseInt(dates.substring(6, 10));
 
-            if ((month > monthCurrent && year >= yearCurrent) || (year > yearCurrent)) { //Eintrag liegt in der Zukunft
+            if((month > monthCurrent && year >= yearCurrent) || (year > yearCurrent) ||(day > dayCurrent && month == monthCurrent && year == yearCurrent)){ //Eintrag liegt in der Zukunft
                 errorValue = 1;
                 retValue = false;
             }
 
             //Wert anzeigen lassen:
             EditText editTextValue = (EditText) findViewById(R.id.editTextNumberDecimal);
-            String valueString = editTextValue.getText().toString().replace(',', '.');
-            value = Double.parseDouble(valueString);
-            if (value == 0.0) {
-                errorValue = 3;
+            Pattern p = Pattern.compile("^\\d+([\\.,]\\d{2})?$");
+            Matcher m = p.matcher(editTextValue.getText().toString());
+            if(m.find()){ //Eintrag ist valide
+                value = Double.parseDouble(editTextValue.getText().toString().replace(",",".")); //Eingabe mit Komma abfangen
+                if(value == 0.0){ //Prüfen ob ein Wert gesetzt wurde
+                    errorValue = 3;
+                    retValue = false;
+                }
+            }else{
+                errorValue = 4;
                 retValue = false;
             }
 
@@ -304,6 +316,13 @@ public class EditEntryActivity extends AppCompatActivity {
             return retValue;
         }
 
+    /*
+Abbrechen
+*/
+    public void onClickCancel(View view){
+        Intent switchToMainActivity= new Intent(this, MainActivity.class);
+        startActivity(switchToMainActivity);
+    }
 
     //Methode öffnet ein Fenster um den Benutzer auf unterschiedliche Fehler hinzuweisen.
     private void informUser(){
@@ -314,7 +333,8 @@ public class EditEntryActivity extends AppCompatActivity {
             builder1.setMessage("Das gewählte Datum liegt in der Zukunft.");
         }else if(errorValue == 3){
             builder1.setMessage("Bitte geben Sie einen Wert an.");
-        }else{
+        }else{ // errorValue 4
+            builder1.setMessage("Ihre Eingabe bezüglich des Werts ist nicht valide.");
         }
 
         builder1.setCancelable(true);
@@ -328,6 +348,7 @@ public class EditEntryActivity extends AppCompatActivity {
         alert11.show();
 
         errorValue = 0; //danach zurücksetzen
+        month--; //damit im Kalender der aktuelle Monat angezeigt wird.
     }
 
     /*

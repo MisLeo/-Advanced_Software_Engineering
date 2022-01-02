@@ -49,4 +49,7 @@
     <color name="PaleGreen">#D9ED92</color>
     <color name="MudGreen">#5B8E7D</color>
 
+    <!-- Farben Yvette -->
+    <color name="defaultCategory">#9caaa9</color>
+
 </resources>

@@ -40,6 +40,7 @@ public class AddCategoryActivity extends AppCompatActivity {
     private String name; // Name der Kategorie
     private double border; //Limit der Kategorie
 
+    private int day, month, year;
 
     /*
     1: der Titel wurde nicht gesetzt
@@ -60,7 +61,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         mColorPreview = findViewById(R.id.preview_selected_color); //Kasten der später die Farbe anzeigt
 
         //default-Werte setzen
-        mDefaultColor = Color.parseColor("#6b6b75" );
+        mDefaultColor = R.color.defaultCategory;
         mColorPreview.setBackgroundColor(mDefaultColor);
         errorValue = 0;
     }
@@ -87,6 +88,7 @@ public class AddCategoryActivity extends AppCompatActivity {
                             }
                         });
     }
+
 
     public void onClickOk(View view){
         ArrayList<Category> categories = mySQLite.getAllCategory();
@@ -152,7 +154,6 @@ public class AddCategoryActivity extends AppCompatActivity {
     private void informUser(){
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setTitle("Hinweis");
-
         if(errorValue == 1){
             builder1.setMessage("Bitte setzen Sie einen Titel.");
         }else if(errorValue == 2){
@@ -237,9 +238,6 @@ public class AddCategoryActivity extends AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
-                int day = 0;  //Yvette
-                int month = 0;  //Yvette
-                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank

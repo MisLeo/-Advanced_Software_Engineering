@@ -2,6 +2,8 @@ package com.example.haushaltsapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.os.Bundle;
 
 import android.content.Intent;
@@ -98,17 +100,17 @@ public class MainActivity extends AppCompatActivity {
     private void setCategories(){
         ArrayList<Category> categories = mySQLite.getAllCategory();
         if(categories.size() == 0){ //falls es noch keine Kategorien gibt, diese hier anlegen
-            Category category = new Category("Verkehrsmittel", Color.parseColor("#EF5350"), 0.0);
+            Category category = new Category("Verkehrsmittel", getResources().getColor(R.color.Verkehrsmittel), 0.0);
             mySQLite.addCategory(category);
-            category = new Category("Wohnen", Color.parseColor("#F3722D"), 0.0);
+            category = new Category("Wohnen",  getResources().getColor(R.color.Wohnen), 0.0);
             mySQLite.addCategory(category);
-            category = new Category("Lebensmittel", Color.parseColor("#90BE6D"), 0.0);
+            category = new Category("Lebensmittel", getResources().getColor(R.color.Lebensmittel), 0.0);
             mySQLite.addCategory(category);
-            category = new Category("Gesundheit",Color.parseColor("#4D908E"), 0.0);
+            category = new Category("Gesundheit",getResources().getColor(R.color.Gesundheit), 0.0);
             mySQLite.addCategory(category);
-            category = new Category("Freizeit", Color.parseColor("#F9C74F"), 0.0);
+            category = new Category("Freizeit", getResources().getColor(R.color.Freizeit), 0.0);
             mySQLite.addCategory(category);
-            category = new Category("Sonstiges", Color.parseColor("#277DA1"), 0.0);
+            category = new Category("Sonstiges", getResources().getColor(R.color.Sonstiges), 0.0);
             mySQLite.addCategory(category);
         }
     }
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             if (month > 1) {
                 value = mySQLite.getValueIntakesMonth(31, month - 1, year) - mySQLite.getValueOutgosMonth(31, month - 1, year);
             } else {
-                value = mySQLite.getValueIntakesMonth(31, 1, year - 1) - mySQLite.getValueOutgosMonth(31, 1, year - 1);
+                value = mySQLite.getValueIntakesMonth(31, 12, year - 1) - mySQLite.getValueOutgosMonth(31, 12, year - 1);
             }
             if (value >= 0) { //Einnahme
                 Intake intake = new Intake(titel, value, 1, month, year, "einmalig");

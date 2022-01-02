@@ -1,7 +1,12 @@
 package com.example.haushaltsapp;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.content.Intent;
 import android.view.Menu;
@@ -10,10 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -41,6 +52,7 @@ public class ChartViewActivity extends  AppCompatActivity {
 
 
     private Spinner spinner;
+    private TextView editTextDate; //Datumsanzeige
 
     private ArrayList<Outgo> Outgolist;
     private ArrayList<Intake> Intakelist;
@@ -51,12 +63,19 @@ public class ChartViewActivity extends  AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_view);
         mySQLite = new MySQLite(this);
         Outgolist = mySQLite.getAllOutgo();
         Intakelist = mySQLite.getAllIntakes();
+
+        //Aktuelles Datum anzeigen
+        editTextDate = (TextView) findViewById(R.id.editTextDate);
+        java.util.Calendar calender = Calendar.getInstance();
+        SimpleDateFormat datumsformat = new SimpleDateFormat("dd.MM.yyyy");
+        editTextDate.setText(datumsformat.format(calender.getTime()));
 
         //Spinner zu auswahl von Einnahmen oder Ausgaben
         spinner = findViewById(R.id.SpinnerInOut);
@@ -117,7 +136,6 @@ public class ChartViewActivity extends  AppCompatActivity {
         listenerIn = new RecyclerAdapterIn.RecyclerViewClickListenerIn() {
             @Override
             public void onClick(View v, int position) {
-                String entry="";
                 //Activity Edit entry aufrufen
                 Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
                 int Id =Intakelist.get(position).getId_PK();
@@ -132,16 +150,135 @@ public class ChartViewActivity extends  AppCompatActivity {
         listener = new RecyclerAdapter.RecyclerViewClickListener() {
             @Override
             public void onClick(View v, int position) {
-                String entry="";
-                //Activity Edit entry aufrufen
-                Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
-                int Id =Outgolist.get(position).getId_PK();
-                intenttoedit.putExtra("id", Id);
-                intenttoedit.putExtra("entry", InOutSpinner);
-                setResult(RESULT_OK, intenttoedit);
-                startActivity(intenttoedit);
+
+                String name =Outgolist.get(position).getName();
+                char[] checkÜbertrag = name.toCharArray();
+                char[] check = new char[12];
+
+                if (checkÜbertrag.length>12)
+                {
+                    int charnum= 12;
+                    int i=0;
+                    while (i <charnum)
+                    {
+                        char letter = checkÜbertrag[i];
+                        check[i] = letter;
+                        i++;
+                    }
+                    String Übertrag = new String(check);
+
+                    if (Übertrag.equals("Übertrag vom"))
+                    {
+                        //Toast toast = Toast.makeText(getApplicationContext(),"Überträge könne nicht bearbeitet oder gelöscht werden",Toast.LENGTH_SHORT);
+                       // toast.show();
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
+                        builder.setTitle("Eintrag bearbeiten");
+                        builder.setMessage("Überträge vom Vormonat können nicht bearbeitet werden");
+                        builder.setNeutralButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                }
+
+                else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
+                    builder.setTitle("Eintrag bearbeiten");
+                    builder.setMessage("Möchten du den Eintrag bearbeiten?");
+                    builder.setPositiveButton("Ja",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    //Activity Edit entry aufrufen
+                                    Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                    int Id =Outgolist.get(position).getId_PK();
+                                    intenttoedit.putExtra("id", Id);
+                                    intenttoedit.putExtra("entry", InOutSpinner);
+                                    setResult(RESULT_OK, intenttoedit);
+                                    startActivity(intenttoedit);
+                                }
+                            });
+                    builder.setNegativeButton("Nein",
+                                new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
             }
         };
+    }
+
+    //Button zum aktualisieren des Monats und laden der Tabelle
+    public void changeMonth(View view)
+    {
+        if (InOutSpinner.equals("Outgo"))
+        {
+            Outgolist = mySQLite.getMonthOutgos(31,month,year);
+            setAddapertOut();
+        }
+        else if( InOutSpinner.equals("Intake"))
+        {
+            Intakelist= mySQLite.getMonthIntakes(31,month,year);
+            setAddapertIn();
+        }
+    }
+
+    //Kalender zu auswahl des Monats, der angezeigt werden soll
+    public  void openCalender(View dateview) {
+        java.util.Calendar calender = java.util.Calendar.getInstance();
+        year = calender.get(Calendar.YEAR);
+        month = calender.get(Calendar.MONTH);
+        day = calender.get(Calendar.DAY_OF_MONTH);
+
+        //Kalender auf Deutsch umstellen
+        Locale locale = new Locale("de");
+        Locale.setDefault(locale);
+        Resources res = this.getResources();
+        Configuration config = new Configuration(res.getConfiguration());
+        config.locale = locale;
+        res.updateConfiguration(config, res.getDisplayMetrics());
+
+        DatePickerDialog dateDialog = new DatePickerDialog(com.example.haushaltsapp.ChartViewActivity.this,R.style.datePickerStyle, new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDay) {
+
+                day = selectedDay;
+                month = selectedMonth+1;
+                year = selectedYear;
+
+                if (day<10)
+                {
+                    if(month<10)
+                    {
+                        editTextDate.setText("0"+ selectedDay+".0"+month+"."+selectedYear);
+                    }
+                    else {
+                        editTextDate.setText("0" + selectedDay + "." + month + "." + selectedYear);
+                    }
+                }
+                else {
+                    if(month<10)
+                    {
+                        editTextDate.setText(selectedDay+".0"+month+"."+selectedYear);
+                    }
+                    else {
+                        editTextDate.setText(selectedDay + "." + month + "." + selectedYear);
+                    }
+                }
+            }
+        }, year, month, day);
+        dateDialog.show();
     }
 
 
@@ -206,9 +343,6 @@ public class ChartViewActivity extends  AppCompatActivity {
                 ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
                 switchToChartView.putExtra("dataOut",AlloutgoT);
                 //Ausgaben von aktuellem Monat
-                int day = 0;  //Yvette
-                int month = 0;  //Yvette
-                int year = 0;  //Yvette
                 ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
                 switchToChartView.putExtra("monthlist",outgoesT);
                 //Alle Einnahmen in Datenbank
