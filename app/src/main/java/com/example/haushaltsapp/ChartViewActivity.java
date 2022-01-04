@@ -223,12 +223,12 @@ public class ChartViewActivity extends  AppCompatActivity {
     {
         if (InOutSpinner.equals("Outgo"))
         {
-            Outgolist = mySQLite.getMonthOutgos(31,month,year);
+            Outgolist = mySQLite.getMonthOutgos(day,month,year);
             setAddapertOut();
         }
         else if( InOutSpinner.equals("Intake"))
         {
-            Intakelist= mySQLite.getMonthIntakes(31,month,year);
+            Intakelist= mySQLite.getMonthIntakes(day,month,year);
             setAddapertIn();
         }
     }
