@@ -178,6 +178,34 @@ public class ChartViewActivity extends  AppCompatActivity {
                         AlertDialog dialog = builder.create();
                         dialog.show();
                     }
+                    else {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
+                        builder.setTitle("Eintrag bearbeiten");
+                        builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
+                        builder.setPositiveButton("Ja",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        //Activity Edit entry aufrufen
+                                        Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                        int Id =Outgolist.get(position).getId_PK();
+                                        intenttoedit.putExtra("id", Id);
+                                        intenttoedit.putExtra("entry", InOutSpinner);
+                                        setResult(RESULT_OK, intenttoedit);
+                                        startActivity(intenttoedit);
+                                    }
+                                });
+                        builder.setNegativeButton("Nein",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 }
 
                 else {

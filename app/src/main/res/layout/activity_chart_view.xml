@@ -55,6 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Anzeige Monat"
+                    android:layout_marginStart="5dp"
                     android:textSize="25dp"
                     android:textStyle="bold"
                     android:textColor="@color/Textcolorbright1"/>
@@ -170,6 +171,9 @@
 
                 </LinearLayout>
 
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/chartRecyclerView"
@@ -180,6 +184,7 @@
                     android:layout_marginBottom="20dp"
                     android:nestedScrollingEnabled="true"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                </HorizontalScrollView>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
