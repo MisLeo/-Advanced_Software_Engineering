@@ -302,13 +302,7 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
     }
 
     //Button zum setzen der Daten zu aktualisierung des Monats
-    public void changeMonth1(View view)
-    {
-        setData();
-    }
-
-    //Button zum setzen der Daten zu aktualisierung des Monats
-    public void changeMonth2(View view)
+    public void changeMonth(View view)
     {
         setData();
     }
@@ -318,10 +312,6 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.navigation_menu, menu);
-        //MenuItem item2 = menu.findItem(R.id.itemPdfCreator);
-        //item2.setEnabled(false);
-        //MenuItem item3 = menu.findItem(R.id.itemBudgetLimit);
-        //item3.setEnabled(false);
         return true;
     }
 

@@ -82,32 +82,40 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                 String Categorie = CategorieList.get(position).getName_PK();
 
                 //Sonstiges kann nicht gelöscht werden
-                //Toast mit Meldung
-
+                //Melung bringen über AlertDiagog
                 if (Categorie.equals("Sonstiges"))
                 {
-                    Toast toast = Toast.makeText(getApplicationContext(),"Sonstiges kann nicht gelöscht werden",Toast.LENGTH_SHORT);
-                    toast.show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(DeleteCategoryActivity.this );
+                    builder.setTitle("Kategorie löschen");
+                    builder.setMessage("Sonstiges kann nicht gelöscht werden");
+                    builder.setNeutralButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
 
                 //Kategorie löschen
-                //Melung bringen um zu bestätigen, das gelöscht werden soll
+                //Melung bringen über AlertDiagog
                 else
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(DeleteCategoryActivity.this );
-                    builder.setTitle("Kategorie Löschen");
-                    builder.setMessage("Möchten Sie diese Kategorie löschen?");
+                    builder.setTitle("Kategorie löschen");
+                    builder.setMessage("Möchtest du die Kategorie " +Categorie+ " löschen?");
                     builder.setPositiveButton("Ja",
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    //suchen nach allen einträgen mit Categorie änderen der Categorie zu sonstiges
+                                    //suchen nach allen Einträgen mit Categorie und änderen der Categorie zu Sonstiges
                                     mySQLite.ChangeCategorietoSonstiges(Categorie);
                                     //Löschen der Kategorie
                                     mySQLite.deleteCategoryByName(Categorie);
                                     deleteAdapter.deleteCategorie(position);
-                                    Toast toast = Toast.makeText(getApplicationContext(),Categorie+" wurde gelöscht",Toast.LENGTH_SHORT);
+                                    Toast toast = Toast.makeText(getApplicationContext(),Categorie+" wird gelöscht",Toast.LENGTH_SHORT);
                                     toast.show();
                                 }
                             });
@@ -115,7 +123,7 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Toast toast = Toast.makeText(getApplicationContext(),Categorie+" Wird nicht gelöscht",Toast.LENGTH_SHORT);
+                                    Toast toast = Toast.makeText(getApplicationContext(),Categorie+" wird nicht gelöscht",Toast.LENGTH_SHORT);
                                     toast.show();
                                 }
                             });

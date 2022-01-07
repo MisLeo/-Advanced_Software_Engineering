@@ -49,10 +49,8 @@ public class ChartViewActivity extends  AppCompatActivity {
     private int month;
     private int year;
     ///////////////////////////////
-
-
     private Spinner spinner;
-    private TextView editTextDate; //Datumsanzeige
+    private TextView editTextDate;
 
     private ArrayList<Outgo> Outgolist;
     private ArrayList<Intake> Intakelist;
@@ -103,7 +101,6 @@ public class ChartViewActivity extends  AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-
         recyclerView = findViewById((R.id.chartRecyclerView));
     }
 
@@ -169,12 +166,9 @@ public class ChartViewActivity extends  AppCompatActivity {
 
                     if (Übertrag.equals("Übertrag vom"))
                     {
-                        //Toast toast = Toast.makeText(getApplicationContext(),"Überträge könne nicht bearbeitet oder gelöscht werden",Toast.LENGTH_SHORT);
-                       // toast.show();
-
                         AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
                         builder.setTitle("Eintrag bearbeiten");
-                        builder.setMessage("Überträge vom Vormonat können nicht bearbeitet werden");
+                        builder.setMessage("Überträge vom Vormonat können nicht bearbeitet werden!");
                         builder.setNeutralButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
@@ -190,7 +184,7 @@ public class ChartViewActivity extends  AppCompatActivity {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
                     builder.setTitle("Eintrag bearbeiten");
-                    builder.setMessage("Möchten du den Eintrag bearbeiten?");
+                    builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
                     builder.setPositiveButton("Ja",
                             new DialogInterface.OnClickListener() {
                                 @Override

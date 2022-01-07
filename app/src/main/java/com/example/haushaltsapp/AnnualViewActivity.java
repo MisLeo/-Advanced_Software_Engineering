@@ -141,7 +141,7 @@ public class AnnualViewActivity extends AppCompatActivity {
     //Balkendiagramm mit Einnahmen und Ausgaben der letzten 12 Monate
     public void BarGraphMonthInOut() {
 
-        int m=1; //für Textausgabe
+        int mtextout=1; //für Textausgabe
         int mo = 1; //monate hochzählen
         int monthr=month;
 
@@ -194,7 +194,7 @@ public class AnnualViewActivity extends AppCompatActivity {
             //Balkendiagramm füllen mit Einnahmen des Monats
             float IntakeMonthX = roundf(mySQLite.getValueIntakesMonth(31,monthr,preYear),2);
             BarChartInOut.addBar(new BarModel(
-                    "     "+monthname,
+                    "     "+monthname+"."+ year,
                     IntakeMonthX,
                     Color.parseColor("#90BE6D")));
             //Balkendiagramm füllen mit Ausgaben des Monats
@@ -205,7 +205,7 @@ public class AnnualViewActivity extends AppCompatActivity {
                     Color.parseColor("#F94144")));
 
             //Anzeige von Werten in Text unter Diagramm
-            switch (m) {
+            switch (mtextout) {
                 case 1:
                     tvM1out.setText(Float.toString(OutgosMonthX)+" €");
                     tvM1o.setText(monthname+"."+preYear);
@@ -285,7 +285,7 @@ public class AnnualViewActivity extends AppCompatActivity {
                     tvM13i.setText(monthname+"."+preYear);
                     break;
             }
-            m++;
+            mtextout++;
             monthr++;
         }
 
@@ -333,7 +333,7 @@ public class AnnualViewActivity extends AppCompatActivity {
             //Balkendiagramm füllen mit Einnahmen des Monats
             float IntakeMonthX = roundf( mySQLite.getValueIntakesMonth(31,mo,year),2);
             BarChartInOut.addBar(new BarModel(
-                    "     "+ monthname,
+                    "     "+ monthname +"."+ year,
                     IntakeMonthX,
                     Color.parseColor("#90BE6D")));
             //Balkendiagramm füllen mit Ausgaben des Monats
@@ -344,7 +344,7 @@ public class AnnualViewActivity extends AppCompatActivity {
                     Color.parseColor("#F94144")));
 
             //Anzeige von Werten in Text unter Diagramm
-            switch (m) {
+            switch (mtextout) {
                 case 1:
                     tvM1out.setText(Float.toString(OutgoMonthX)+" €");
                     tvM1o.setText(monthname+"."+year);
@@ -425,7 +425,7 @@ public class AnnualViewActivity extends AppCompatActivity {
                     tvM13i.setText(monthname+"."+year);
                     break;
             }
-            m++;
+            mtextout++;
             mo++;
         }
         //Darstellungsoptionen
@@ -498,10 +498,6 @@ public class AnnualViewActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.navigation_menu, menu);
-        //MenuItem item2 = menu.findItem(R.id.itemPdfCreator);
-        //item2.setEnabled(false);
-        //MenuItem item3 = menu.findItem(R.id.itemBudgetLimit);
-        //item3.setEnabled(false);
         return true;
     }
 
