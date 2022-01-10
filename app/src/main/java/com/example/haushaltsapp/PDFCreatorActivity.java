@@ -61,6 +61,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -105,21 +106,21 @@ public class PDFCreatorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pdfcreator);
-        createPdfButton    = findViewById(R.id.createPdfButton);
-        viewPdfButton    = findViewById(R.id.viewPdfButton);
+        createPdfButton   = findViewById(R.id.createPdfButton);
+        viewPdfButton   = findViewById(R.id.viewPdfButton);
         dateSelect = findViewById(R.id.selectView);
         calenderView = findViewById(R.id.calenderView);
-
         db = new MySQLite(this);
-        // db.openDatabase(); // nicht mehr notwendig // Auskommentiert von Yvette Groner
 
+        //aktuelles Datum auslesen und an Textview übergeben
         Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateForm = new SimpleDateFormat("dd.MM.yyyy");
+        dateSelect.setText(dateForm.format(calendar.getTime()));
+
+        //Daten zur Übergaben an DatepickerDialog,übergeben. Ansonsten Start im Jahr 1970
         calendarYear  = calendar.get(Calendar.YEAR);
         calendarMonth = calendar.get(Calendar.MONTH);
         calendarDay   = calendar.get(Calendar.DAY_OF_MONTH);
-
-        dateSelect.setText(calendarDay + "/" + (calendarMonth+1) + "/" + calendarYear);
-
         calendar.set(calendarYear,(calendarMonth+1),calendarDay,0,0,0);
         compareTime = calendar.getTimeInMillis();
 
@@ -141,11 +142,29 @@ public class PDFCreatorActivity extends AppCompatActivity {
                         calendarYear = setYear;
                         calendarMonth = setMonth;
                         calendarDay = setDay;
+
+                        if (calendarDay<10)
+                        {
+                            if(calendarMonth<9)
+                            {
+                                dateSelect.setText("0"+ calendarDay+".0"+(calendarMonth + 1) +"."+calendarYear);
+                            }
+                            else {
+                                dateSelect.setText("0" + calendarDay + "." + (calendarMonth + 1)  + "." + calendarYear);
+                            }
+                        }
+                        else {
+                            if(calendarMonth<9)
+                            {
+                                dateSelect.setText(calendarDay+".0"+(calendarMonth + 1) +"."+calendarYear);
+                            }
+                            else {
+                                dateSelect.setText(calendarDay + "." + (calendarMonth + 1) + "." + calendarYear);
+                            }
+                        }
+
                         calendar.set(calendarYear,(calendarMonth+1),calendarDay,0,0,0);
                         compareTime = calendar.getTimeInMillis();
-
-                        //Addition bei Monat von 1, Index beginnend bei 0
-                        dateSelect.setText(setDay + "/" + (setMonth+1) + "/" + setYear);
                     }
                 }, calendarYear, calendarMonth, calendarDay);
                 dateDialog.show();
@@ -163,8 +182,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
                 {
                     try {
                         printPDF();
-                        Toast.makeText(getApplicationContext(), "PDF generiert",
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "PDF erstellt!",Toast.LENGTH_SHORT).show();
 
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -183,7 +201,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
 
     public void printPDF()throws FileNotFoundException {
 
-        File file=new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Haushaltsapp.pdf");
+        File file=new File( Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),"Haushaltplaner.pdf");
         PdfWriter pdfWriter = new PdfWriter(file);
         PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         Document document = new Document(pdfDocument,PageSize.A4,false );
@@ -203,6 +221,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         tableOutgoes.addHeaderCell(new Cell().add(new Paragraph("Zyklus").setWidth(65).setFontSize(14).setBorder(Border.NO_BORDER)));
         tableOutgoes.addHeaderCell(new Cell().add(new Paragraph("Kategorie").setWidth(90).setFontSize(14).setBorder(Border.NO_BORDER)));
 
+        //Ausgaben aus Datenbank lesen
         Cursor curOutgo = db.getWritableDatabase().rawQuery("SELECT * FROM outgo ORDER BY year,month,day", null);
         int countOutgo = curOutgo.getCount();
         curOutgo.moveToFirst();
@@ -217,11 +236,12 @@ public class PDFCreatorActivity extends AppCompatActivity {
             cycle =  curOutgo.getString(6);
             category =  curOutgo.getString(7);
 
-            dateString = day+"."+month+"."+year;
-
             outgoeCalendar.set(year,month,day,0,0,0);
             outgoeTime = outgoeCalendar.getTimeInMillis() + 999;
 
+            dateString = day+"."+month+"."+year;
+
+            //Vergleich mit ausgewähltem Startdatum
             if(outgoeTime>=compareTime){
 
                 tableOutgoes.addCell(new Cell().add(new Paragraph(name + "").setWidth(170).setFontSize(12)));
@@ -244,8 +264,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         tableIntakes.addHeaderCell(new Cell().add(new Paragraph("Zyklus").setWidth(65).setFontSize(14).setBorder(Border.NO_BORDER)));
         tableIntakes.addHeaderCell(new Cell().add(new Paragraph("Kategorie").setWidth(90).setFontSize(14).setBorder(Border.NO_BORDER)));
 
-        //Informationen aus Datenbank lesen
-
+        //Einnahmen aus Datenbank lesen
         Cursor curIntake = db.getWritableDatabase().rawQuery("SELECT * FROM intake ORDER BY year,month,day", null);
         int countIntake = curIntake.getCount();
         curIntake.moveToFirst();
@@ -266,6 +285,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
 
             dateString = day+"."+month+"."+year;
 
+            //Vergleich mit ausgewähltem Startdatum aus
             if(intakeTime>=compareTime){
 
                 tableIntakes.addCell(new Cell().add(new Paragraph(name + "").setWidth(170).setFontSize(12)));
@@ -295,8 +315,8 @@ public class PDFCreatorActivity extends AppCompatActivity {
 
     private void viewPdf(){
 
-            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Haushaltsapp.pdf");
-            Uri uri =          FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()),
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Haushaltplaner.pdf");
+            Uri uri = FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()),
                     BuildConfig.APPLICATION_ID + ".provider", file);
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -305,7 +325,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "Keine App auf Ihrem Handy unterstützt dieses Feature",
+            Toast.makeText(this, "Keine App auf Ihrem Handy unterstützt dieses Feature!",
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -355,31 +375,12 @@ public class PDFCreatorActivity extends AppCompatActivity {
                 return true;
 
             case R.id.itemDiagramView:
-                mySQLite = new MySQLite(this);
                 Intent switchToDiagramView = new Intent(this, DiagramViewActivity.class);
-                //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoD =mySQLite.getAllOutgo();
-                switchToDiagramView.putExtra("dataOut",AlloutgoD);
-                //Alle Einnahmen in Datenbank
-                ArrayList<Intake> AllIntakeD =mySQLite.getAllIntakes();
-                switchToDiagramView.putExtra("dataIn",AllIntakeD);
-                mySQLite.close();
                 startActivity(switchToDiagramView);
                 return true;
 
             case R.id.itemTableView:
-                mySQLite = new MySQLite(this);
                 Intent switchToChartView = new Intent(this, ChartViewActivity.class);
-                //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataOut",AlloutgoT);
-                //Ausgaben von aktuellem Monat
-                ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
-                switchToChartView.putExtra("monthlist",outgoesT);
-                //Alle Einnahmen in Datenbank
-                ArrayList<Outgo> AllintakeT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataIn",AllintakeT);
-                mySQLite.close();
                 startActivity(switchToChartView);
                 return true;
 

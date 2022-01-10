@@ -59,15 +59,13 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         setContentView(R.layout.activity_to_do_list);
         mySQLite = new MySQLite(this);
 
-        Intent intent = getIntent();
         ArrayList<Category> list = mySQLite.getAllCategory();
         spinner = findViewById(R.id.ToDoListSpinner);
-        ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(getApplicationContext(),  android.R.layout.simple_spinner_dropdown_item, list);
+        ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item, list);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        // db.openDatabase(); // nicht mehr notwendig // Auskommentiert von Yvette Groner
         tasksRecyclerView = findViewById(R.id.tasksRecyclerView);
         tasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         tasksAdapter = new ToDoAdapter(mySQLite,this,this);
@@ -77,7 +75,6 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         fabAddTask = findViewById(R.id.fab);
 
         taskList = mySQLite.getTaskByType(type);
-        //Collections.reverse(taskList);
         tasksAdapter.setTasks(taskList);
         tasksAdapter.notifyDataSetChanged();
 
@@ -94,7 +91,6 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.navigation_menu, menu);
-
         //Die aktuelle Activity im Menü ausblenden
         MenuItem item = menu.findItem(R.id.itemToDoListe);
         item.setEnabled(false);
@@ -134,31 +130,12 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
                 return true;
 
             case R.id.itemDiagramView:
-                mySQLite = new MySQLite(this);
                 Intent switchToDiagramView = new Intent(this, DiagramViewActivity.class);
-                //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoD =mySQLite.getAllOutgo();
-                switchToDiagramView.putExtra("dataOut",AlloutgoD);
-                //Alle Einnahmen in Datenbank
-                ArrayList<Intake> AllIntakeD =mySQLite.getAllIntakes();
-                switchToDiagramView.putExtra("dataIn",AllIntakeD);
-                mySQLite.close();
                 startActivity(switchToDiagramView);
                 return true;
 
             case R.id.itemTableView:
-                mySQLite = new MySQLite(this);
                 Intent switchToChartView = new Intent(this, ChartViewActivity.class);
-                //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataOut",AlloutgoT);
-                //Ausgaben von aktuellem Monat
-                ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
-                switchToChartView.putExtra("monthlist",outgoesT);
-                //Alle Einnahmen in Datenbank
-                ArrayList<Outgo> AllintakeT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataIn",AllintakeT);
-                mySQLite.close();
                 startActivity(switchToChartView);
                 return true;
 
@@ -237,6 +214,4 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
-
 }

@@ -3,13 +3,38 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/User/AppData/Local/Android/Sdk/platforms/android-31/data/res/drawable/sym_def_app_icon.xml" value="0.3828125" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/drawable-anydpi-v24/ic_house.xml" value="0.3828125" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/drawable/buttony.xml" value="0.3828125" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/drawable/ic_baseline_add.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/drawable/ic_launcher_background.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_adapter_list_view.xml" value="0.29438405797101447" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_add_category.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_add_entry.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_annual_view.xml" value="0.29438405797101447" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_budget_limit.xml" value="0.17831813576494426" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_calendar_event.xml" value="0.20520833333333333" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_calender.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_chart_view.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_delete_categorie.xml" value="0.29438405797101447" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_diagram_view.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_edit_entry.xml" value="0.29438405797101447" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_main.xml" value="0.17831813576494426" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_monthcomparison_view.xml" value="0.29438405797101447" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_pdfcreator.xml" value="0.25" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/activity_to_do_list.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/category_limit.xml" value="0.29438405797101447" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/chart_item.xml" value="0.29438405797101447" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/delete_category.xml" value="0.29438405797101447" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/layout/task_layout.xml" value="0.20520833333333333" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/mipmap-anydpi-v26/ic_app_symbol.xml" value="0.3828125" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/mipmap-anydpi-v26/ic_appsymbol.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/mipmap-anydpi-v26/ic_appsymbol_round.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/mipmap-anydpi-v26/ic_symbol.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/mipmap-anydpi-v26/ic_symbol_Haushaltsplaner.xml" value="0.22135416666666666" />
+        <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/mipmap-anydpi-v26/ic_symbol_round.xml" value="0.22135416666666666" />
         <entry key="..\:/Users/User/Desktop/Haushaltsapp/-Advanced_Software_Engineering/app/src/main/res/xml/provider_paths.xml" value="0.29438405797101447" />
         <entry key="..\:/Users/misse/AppData/Local/platforms/android-31/data/res/layout/simple_spinner_dropdown_item.xml" value="0.1" />
         <entry key="..\:/Users/misse/AppData/Local/platforms/android-31/data/res/layout/simple_spinner_item.xml" value="0.1296875" />

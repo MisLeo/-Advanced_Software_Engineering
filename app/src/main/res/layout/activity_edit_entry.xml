@@ -148,7 +148,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginStart="10dp"
-                        app:srcCompat="@android:drawable/ic_menu_day" />
+                        app:srcCompat="@drawable/ic_baseline_event" />
 
                 </LinearLayout>
 

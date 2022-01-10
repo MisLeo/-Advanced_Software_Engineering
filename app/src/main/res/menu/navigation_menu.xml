@@ -7,7 +7,7 @@
         app:showAsAction="never"/>
 
     <item android:id="@+id/itemEdit"
-        android:title="Einnahmen/Ausnahmen anlegen"
+        android:title="Einnahmen/Ausgaben anlegen"
         app:showAsAction="never">
         <menu>
             <item android:id="@+id/subitemAddIntakes"

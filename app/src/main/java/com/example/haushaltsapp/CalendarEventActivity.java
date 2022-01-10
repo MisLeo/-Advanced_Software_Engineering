@@ -36,13 +36,12 @@ import com.example.haushaltsapp.database.MySQLite;
 import com.example.haushaltsapp.database.Outgo;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class CalendarEventActivity extends AppCompatActivity {
-
-
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
@@ -57,7 +56,6 @@ public class CalendarEventActivity extends AppCompatActivity {
     private Button addEvent;
     private Switch dailySwitch;
 
-    private String titleValue;
     private  int year;
     private  int month;
     private  int day;
@@ -84,16 +82,20 @@ public class CalendarEventActivity extends AppCompatActivity {
             descriptionSelect.setText(savedInstanceState.getString("descriptionText") );
         }
 
+        //aktuelles Datum auslesen und an Textview übergeben
         Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateForm = new SimpleDateFormat("dd.MM.yyyy");
+        dateSelect.setText(dateForm.format(calendar.getTime()));
+
+        //Daten zur Übergaben an DatepickerDialog,übergeben. Ansonsten Start im Jahr 1970
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH);
         day = calendar.get(Calendar.DAY_OF_MONTH);
-        dateSelect.setText(year + "/" + (month + 1) + "/" + day);
 
         //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit)
-        calendar.set(year,month+1,day,8,0,0);
+        calendar.set(year,month,day,8,0,0);
         startDateInMilliSec = calendar.getTimeInMillis();
-        calendar.set(year,month+1,day,9,0,0);
+        calendar.set(year,month,day,9,0,0);
         endDateInMilliSec =calendar.getTimeInMillis();
 
         //Auf deutsche Kalenderanzeige umstellen
@@ -104,7 +106,6 @@ public class CalendarEventActivity extends AppCompatActivity {
         config.locale = locale;
         res.updateConfiguration(config, res.getDisplayMetrics());
 
-        //Setzen von Listener auf dem Kalender Symbol
         calenderView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View dateView) {
@@ -116,8 +117,25 @@ public class CalendarEventActivity extends AppCompatActivity {
                         month = selectedMonth;
                         year = selectedYear;
 
-                        //Addition bei Monat von 1, Index beginnend bei 0
-                        dateSelect.setText(selectedYear + "/" + (selectedMonth + 1) + "/" + selectedDay);
+                        if (day<10)
+                        {
+                            if(month<9)
+                            {
+                                dateSelect.setText("0"+ selectedDay+".0"+(month + 1) +"."+selectedYear);
+                            }
+                            else {
+                                dateSelect.setText("0" + selectedDay + "." + (month + 1)  + "." + selectedYear);
+                            }
+                        }
+                        else {
+                            if(month<9)
+                            {
+                                dateSelect.setText(selectedDay+".0"+(month + 1) +"."+selectedYear);
+                            }
+                            else {
+                                dateSelect.setText(selectedDay + "." + (month + 1) + "." + selectedYear);
+                            }
+                        }
 
                         //Übergabe der Daten an Kalender-Objekt und Setzen von Start und Endzeit)
                         calendar.set(year,month,day,8,0,0);
@@ -136,10 +154,6 @@ public class CalendarEventActivity extends AppCompatActivity {
             public void onClick(View insertButtonView) {
 
                 if(!titleSelect.getText().toString().isEmpty()){
-                    if (ContextCompat.checkSelfPermission(CalendarEventActivity.this, Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-                    }else{
-                        requestWritePermission();
-                    }
                     insertEvent(titleSelect.getText().toString(), locationSelect.getText().toString(),descriptionSelect.getText().toString(), dailySwitch.isChecked(), startDateInMilliSec, endDateInMilliSec);
                 }else{
                     Toast.makeText(CalendarEventActivity.this, "Bitte wählen Sie einen Titel",
@@ -159,8 +173,6 @@ public class CalendarEventActivity extends AppCompatActivity {
                 .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime)
                 .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime)
                 .putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, isAllDay);
-
-
         try {
             startActivity(insertEvent);
         } catch (ActivityNotFoundException e) {
@@ -171,15 +183,9 @@ public class CalendarEventActivity extends AppCompatActivity {
 
     //Intent zur Ansicht einer Kalender Applikation
     public void viewEvent(View eventView) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-        }else{
-            requestReadPermission();
-        }
-        //
-        long timeInMilliSec = System.currentTimeMillis();
         Uri.Builder builder = CalendarContract.CONTENT_URI.buildUpon();
         builder.appendPath("time");
-        ContentUris.appendId(builder, timeInMilliSec);
+        ContentUris.appendId(builder, startDateInMilliSec);
         Intent viewEvent = new Intent(Intent.ACTION_VIEW).setData(builder.build());
         try {
             startActivity(viewEvent);
@@ -197,10 +203,8 @@ public class CalendarEventActivity extends AppCompatActivity {
         //Die aktuelle Activity im Menü ausblenden
         MenuItem item = menu.findItem(R.id.itemCalendar);
         item.setEnabled(false);
-
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -233,31 +237,12 @@ public class CalendarEventActivity extends AppCompatActivity {
                 return true;
 
             case R.id.itemDiagramView:
-                mySQLite = new MySQLite(this);
                 Intent switchToDiagramView = new Intent(this, DiagramViewActivity.class);
-                //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoD =mySQLite.getAllOutgo();
-                switchToDiagramView.putExtra("dataOut",AlloutgoD);
-                //Alle Einnahmen in Datenbank
-                ArrayList<Intake> AllIntakeD =mySQLite.getAllIntakes();
-                switchToDiagramView.putExtra("dataIn",AllIntakeD);
-                mySQLite.close();
                 startActivity(switchToDiagramView);
                 return true;
 
             case R.id.itemTableView:
-                mySQLite = new MySQLite(this);
                 Intent switchToChartView = new Intent(this, ChartViewActivity.class);
-                //Alle Ausgaben in Datenbank
-                ArrayList<Outgo> AlloutgoT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataOut",AlloutgoT);
-                //Ausgaben von aktuellem Monat
-                ArrayList<Outgo> outgoesT = mySQLite.getMonthOutgos(day,month,year);
-                switchToChartView.putExtra("monthlist",outgoesT);
-                //Alle Einnahmen in Datenbank
-                ArrayList<Outgo> AllintakeT =mySQLite.getAllOutgo();
-                switchToChartView.putExtra("dataIn",AllintakeT);
-                mySQLite.close();
                 startActivity(switchToChartView);
                 return true;
 
@@ -295,64 +280,6 @@ public class CalendarEventActivity extends AppCompatActivity {
         }
     }
 
-
-    public void requestWritePermission(){
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.WRITE_CALENDAR)){
-            new AlertDialog.Builder(this)
-                    .setTitle("Erlaubnis wird benötigt!")
-                    .setMessage("Bestätigen Sie diese Erlaubnis um Einträge Ihrem Kalender hinzuzufügen")
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(CalendarEventActivity.this, new String[]{Manifest.permission.WRITE_CALENDAR},Storage_Permission_Code);
-                        }
-                    })
-                    .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_CALENDAR},Storage_Permission_Code);
-        }
-    }
-
-    public void requestReadPermission(){
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_CALENDAR)){
-            new AlertDialog.Builder(this)
-                    .setTitle("Erlaubnis benötigt!")
-                    .setMessage("Bestätigen Sie diese Erlaubnis Ihrem Kalender anzusehen")
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(CalendarEventActivity.this, new String[]{Manifest.permission.READ_CALENDAR},Storage_Permission_Code);
-                        }
-                    })
-                    .setNegativeButton("Abbrechen", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_CALENDAR},Storage_Permission_Code);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == Storage_Permission_Code) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //Toast.makeText(this, "Erlaubnis erteilt!", Toast.LENGTH_SHORT).show();
-            } else {
-                //Toast.makeText(this, "Erlaubnis verweigert!", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
     @Override
     public void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);

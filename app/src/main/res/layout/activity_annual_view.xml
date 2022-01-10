@@ -81,11 +81,11 @@
                         android:onClick="openCalender"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.818"
+                        app:layout_constraintHorizontal_bias="0.85"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.101"
-                        app:srcCompat="@android:drawable/ic_menu_day" />
+                        app:layout_constraintVertical_bias="0.151"
+                        app:srcCompat="@drawable/ic_baseline_event" />
 
                     <Button
                         android:id="@+id/changelastMonth"
