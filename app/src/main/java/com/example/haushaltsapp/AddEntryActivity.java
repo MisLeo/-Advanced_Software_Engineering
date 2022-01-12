@@ -479,10 +479,12 @@ public class AddEntryActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
             }
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_house)
-                .setContentTitle("Überschreitung des definierten Budget Limits:")
+                .setContentTitle("Überschreitung des Budgets:")
                 .setContentText("Betroffene Kategorie: "+category)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("Sie haben das von Ihnen definierte Budget überschritten! Betroffene Kategorie: \n"+category))
                 .setAutoCancel(true);
 
         //Intent, welcher aufgerufen wird, wenn Notifikation in der Statuszeile angeklickt wird
@@ -508,8 +510,10 @@ public class AddEntryActivity extends AppCompatActivity {
         }
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_house)
-                .setContentTitle("Überschreitung des definierten Budget Limits:")
-                .setContentText("Sie haben das von Ihnen gesetzte Budget überschritten!")
+                .setContentTitle("Überschreitung des Budgets:")
+                .setContentText("Betroffenes Budget: Gesamtbudget")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText("Sie haben das von Ihnen definierte Gesamtbudget überschritten!"))
                 .setAutoCancel(true);
 
         //Intent, welcher aufgerufen wird, wenn Notifikation in der Statuszeile angeklickt wird

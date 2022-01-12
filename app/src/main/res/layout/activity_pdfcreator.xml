@@ -89,7 +89,7 @@
                         android:layout_height="70dp"
                         android:text="PDF anzeigen"
                         android:layout_marginTop="20dp"
-                        android:layout_marginBottom="100dp"
+                        android:layout_marginBottom="120dp"
                         android:backgroundTint="@color/Button"
                         android:textColor="@color/Textcolorbright1"
                         android:layout_gravity="center"/>
