@@ -123,7 +123,7 @@
 
                         <org.eazegraph.lib.charts.BarChart
                             android:id="@+id/barchart"
-                            android:layout_width="450dp"
+                            android:layout_width="500dp"
                             android:layout_height="300dp"
                             android:layout_marginStart="45dp"
                             android:layout_marginTop="15dp"

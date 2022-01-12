@@ -251,8 +251,8 @@ public class EditEntryActivity extends AppCompatActivity {
                 if ((month < monthCurrent) || (year < yearCurrent)) {//Wenn der Eintrag in der Vergangenheit liegt muss das Budget angepasst werden
                     setBudgetEntry(month, year);
                 }
-                Intent switchToMainActivity= new Intent(this, MainActivity.class);
-                startActivity(switchToMainActivity);
+                Intent switchToChartActivity= new Intent(this, ChartViewActivity.class);
+                startActivity(switchToChartActivity);
             }else{
                 informUser();
             }
@@ -268,8 +268,8 @@ public class EditEntryActivity extends AppCompatActivity {
             if ((month < monthCurrent) || (year < yearCurrent)) {//Wenn der Eintrag in der Vergangenheit liegt muss das Budget angepasst werden
                 setBudgetEntry(month, year);
             }
-            Intent switchToMainActivity= new Intent(this, MainActivity.class);
-            startActivity(switchToMainActivity);
+            Intent switchToChartActivity= new Intent(this, ChartViewActivity.class);
+            startActivity(switchToChartActivity);
         }
 
         private boolean getValues() {
@@ -320,8 +320,8 @@ public class EditEntryActivity extends AppCompatActivity {
 Abbrechen
 */
     public void onClickCancel(View view){
-        Intent switchToMainActivity= new Intent(this, MainActivity.class);
-        startActivity(switchToMainActivity);
+        Intent switchToChartActivity= new Intent(this, ChartViewActivity.class);
+        startActivity(switchToChartActivity);
     }
 
     //Methode öffnet ein Fenster um den Benutzer auf unterschiedliche Fehler hinzuweisen.

@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                 Color.parseColor("#F94144")));
         //Darstellungsoptionen
         mBarChart.startAnimation();
-        mBarChart.setShowValues(true);  //werte auf Balken
+        mBarChart.setShowValues(false);  //werte auf Balken
         mBarChart.setActivated(false);
 
     }

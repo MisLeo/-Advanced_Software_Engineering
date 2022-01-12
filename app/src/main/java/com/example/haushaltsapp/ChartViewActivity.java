@@ -134,12 +134,105 @@ public class ChartViewActivity extends  AppCompatActivity {
             @Override
             public void onClick(View v, int position) {
                 //Activity Edit entry aufrufen
-                Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+              /*  Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
                 int Id =Intakelist.get(position).getId_PK();
                 intenttoedit.putExtra("id", Id);
                 intenttoedit.putExtra("entry", InOutSpinner);
                 setResult(RESULT_OK, intenttoedit);
                 startActivity(intenttoedit);
+*/
+
+
+                String name =Intakelist.get(position).getName();
+                char[] checkÜbertrag = name.toCharArray();
+                char[] check = new char[12];
+
+                if (checkÜbertrag.length>12)
+                {
+                    int charnum= 12;
+                    int i=0;
+                    while (i <charnum)
+                    {
+                        char letter = checkÜbertrag[i];
+                        check[i] = letter;
+                        i++;
+                    }
+                    String Übertrag = new String(check);
+
+                    if (Übertrag.equals("Übertrag vom"))
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
+                        builder.setTitle("Eintrag bearbeiten");
+                        builder.setMessage("Überträge vom Vormonat können nicht bearbeitet werden!");
+                        builder.setNeutralButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                    else {
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
+                        builder.setTitle("Eintrag bearbeiten");
+                        builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
+                        builder.setPositiveButton("Ja",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        //Activity Edit entry aufrufen
+                                        Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                        int Id =Intakelist.get(position).getId_PK();
+                                        intenttoedit.putExtra("id", Id);
+                                        intenttoedit.putExtra("entry", InOutSpinner);
+                                        setResult(RESULT_OK, intenttoedit);
+                                        startActivity(intenttoedit);
+                                    }
+                                });
+                        builder.setNegativeButton("Nein",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                }
+
+                else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
+                    builder.setTitle("Eintrag bearbeiten");
+                    builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
+                    builder.setPositiveButton("Ja",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    //Activity Edit entry aufrufen
+                                    Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                    int Id =Intakelist.get(position).getId_PK();
+                                    intenttoedit.putExtra("id", Id);
+                                    intenttoedit.putExtra("entry", InOutSpinner);
+                                    setResult(RESULT_OK, intenttoedit);
+                                    startActivity(intenttoedit);
+                                }
+                            });
+                    builder.setNegativeButton("Nein",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+
+
             }
         };
 
