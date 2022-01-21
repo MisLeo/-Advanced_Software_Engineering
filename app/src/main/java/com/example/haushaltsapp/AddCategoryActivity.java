@@ -159,7 +159,7 @@ public class AddCategoryActivity extends AppCompatActivity {
         }else if(errorValue == 2){
             builder1.setMessage("Diese Kategorie gibt es bereits.");
         }else{ // errorValue == 3
-            builder1.setMessage("Es können lieder keine weiteren Kategorien angelegt werden.");
+            builder1.setMessage("Es können leider keine weiteren Kategorien angelegt werden.");
         }
 
         builder1.setCancelable(true);

@@ -104,7 +104,7 @@ public class DeleteCategoryActivity extends AppCompatActivity {
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(DeleteCategoryActivity.this );
                     builder.setTitle("Kategorie löschen");
-                    builder.setMessage("Möchtest du die Kategorie " +Categorie+ " löschen?");
+                    builder.setMessage("Möchten Sie die Kategorie " +Categorie+ " löschen?");
                     builder.setPositiveButton("Ja",
                             new DialogInterface.OnClickListener() {
                                 @Override

@@ -134,15 +134,6 @@ public class ChartViewActivity extends  AppCompatActivity {
             @Override
             public void onClick(View v, int position) {
                 //Activity Edit entry aufrufen
-              /*  Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
-                int Id =Intakelist.get(position).getId_PK();
-                intenttoedit.putExtra("id", Id);
-                intenttoedit.putExtra("entry", InOutSpinner);
-                setResult(RESULT_OK, intenttoedit);
-                startActivity(intenttoedit);
-*/
-
-
                 String name =Intakelist.get(position).getName();
                 char[] checkÜbertrag = name.toCharArray();
                 char[] check = new char[12];
@@ -177,7 +168,7 @@ public class ChartViewActivity extends  AppCompatActivity {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
                         builder.setTitle("Eintrag bearbeiten");
-                        builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
+                        builder.setMessage("Möchten Sie den Eintrag " +name+ " bearbeiten?");
                         builder.setPositiveButton("Ja",
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -207,7 +198,7 @@ public class ChartViewActivity extends  AppCompatActivity {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
                     builder.setTitle("Eintrag bearbeiten");
-                    builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
+                    builder.setMessage("Möchten Sie den Eintrag " +name+ " bearbeiten?");
                     builder.setPositiveButton("Ja",
                             new DialogInterface.OnClickListener() {
                                 @Override
@@ -275,7 +266,7 @@ public class ChartViewActivity extends  AppCompatActivity {
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
                         builder.setTitle("Eintrag bearbeiten");
-                        builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
+                        builder.setMessage("Möchten Sie den Eintrag " +name+ " bearbeiten?");
                         builder.setPositiveButton("Ja",
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -305,7 +296,7 @@ public class ChartViewActivity extends  AppCompatActivity {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(ChartViewActivity.this );
                     builder.setTitle("Eintrag bearbeiten");
-                    builder.setMessage("Möchtest du den Eintrag " +name+ " bearbeiten?");
+                    builder.setMessage("Möchten Sie den Eintrag " +name+ " bearbeiten?");
                     builder.setPositiveButton("Ja",
                             new DialogInterface.OnClickListener() {
                                 @Override

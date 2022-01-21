@@ -70,7 +70,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="20dp"
                             android:ems="10"
-                            android:text="Titel"
+                            android:hint="Titel"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:layout_editor_absoluteX="16dp"
                             android:textColor="@color/Textcolorbright0"/>
@@ -103,7 +103,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="92dp"
                             android:ems="3"
-                            android:text="00,00"
+                            android:hint="00,00"
                             android:inputType="numberDecimal"
                             app:layout_constraintStart_toEndOf="@+id/textView3"
                             tools:layout_editor_absoluteY="85dp"

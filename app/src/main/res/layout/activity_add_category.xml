@@ -59,7 +59,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
                     android:ems="10"
-                    android:text="Titel"
+                    android:hint="Titel"
                     android:textColor="@color/Textcolorbright0"
                     android:textSize="20sp"
                     android:textStyle="bold"/>

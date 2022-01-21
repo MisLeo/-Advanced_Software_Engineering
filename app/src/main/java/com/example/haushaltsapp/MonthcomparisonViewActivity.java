@@ -293,10 +293,10 @@ public class MonthcomparisonViewActivity extends AppCompatActivity {
         tvM1in.setText(Float.toString(round)+" €");
         tvM1i.setText(monthtext1+"."+year1);
 
-        round= roundf(mySQLite.getValueOutgosMonth(31,month1,year2),2);
+        round= roundf(mySQLite.getValueOutgosMonth(31,month2,year2),2);
         tvM2out.setText(Float.toString(round)+" €");
         tvM2o.setText(monthtext2+"."+year2);
-        round= roundf(mySQLite.getValueIntakesMonth(31,month1,year1),2);
+        round= roundf(mySQLite.getValueIntakesMonth(31,month2,year2),2);
         tvM2in.setText(Float.toString(round)+" €");
         tvM2i.setText(monthtext2+"."+year2);
     }
