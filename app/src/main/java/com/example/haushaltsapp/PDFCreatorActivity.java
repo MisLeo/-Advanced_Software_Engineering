@@ -56,7 +56,6 @@ public class PDFCreatorActivity extends AppCompatActivity {
     private MySQLite mySQLite;
     ///////////////////////////////
 
-    private MySQLite db;
     private Button createPdfButton;
     private Button viewPdfButton;
     private TextView dateSelect;
@@ -91,7 +90,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         viewPdfButton   = findViewById(R.id.viewPdfButton);
         dateSelect = findViewById(R.id.selectView);
         calenderView = findViewById(R.id.calenderView);
-        db = new MySQLite(this);
+        mySQLite = new MySQLite(this);
 
         //aktuelles Datum auslesen und an Textview übergeben
         Calendar calendar = Calendar.getInstance();
@@ -203,7 +202,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         tableOutgoes.addHeaderCell(new Cell().add(new Paragraph("Kategorie").setWidth(90).setFontSize(14).setBorder(Border.NO_BORDER)));
 
         //Ausgaben aus Datenbank lesen
-        Cursor curOutgo = db.getWritableDatabase().rawQuery("SELECT * FROM outgo ORDER BY year,month,day", null);
+        Cursor curOutgo = mySQLite.getWritableDatabase().rawQuery("SELECT * FROM outgo ORDER BY year,month,day", null);
         int countOutgo = curOutgo.getCount();
         curOutgo.moveToFirst();
         for (int j = 0; j < countOutgo; j++){
@@ -235,7 +234,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         }
 
         curOutgo.close();
-        db.close();
+        mySQLite.close();
 
         Table tableIntakes = new Table(UnitValue.createPercentArray(5)).useAllAvailableWidth();
         tableIntakes.addHeaderCell(new Cell(1, 5).add(new Paragraph("Einnahmen").setFontSize(16)).setFontColor(ColorConstants.DARK_GRAY).setRelativePosition(220,0,250,0));
@@ -246,7 +245,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         tableIntakes.addHeaderCell(new Cell().add(new Paragraph("Kategorie").setWidth(90).setFontSize(14).setBorder(Border.NO_BORDER)));
 
         //Einnahmen aus Datenbank lesen
-        Cursor curIntake = db.getWritableDatabase().rawQuery("SELECT * FROM intake ORDER BY year,month,day", null);
+        Cursor curIntake = mySQLite.getWritableDatabase().rawQuery("SELECT * FROM intake ORDER BY year,month,day", null);
         int countIntake = curIntake.getCount();
         curIntake.moveToFirst();
 
@@ -279,7 +278,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
         }
 
         curIntake.close();
-        db.close();
+        mySQLite.close();
 
         document.add(tableOutgoes);
         document.add(new AreaBreak());
@@ -287,7 +286,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
 
         numberOfPages = pdfDocument.getNumberOfPages();
         for (int i = 1; i <= numberOfPages; i++) {
-            // Write aligned text to the specified by parameters point
+            // Seitenzahl einfügen
             document.showTextAligned(new Paragraph(String.format("Seite %s von %s", i, numberOfPages)),
                     560, 15, i, TextAlignment.RIGHT, VerticalAlignment.BOTTOM, 0);
         }
@@ -380,15 +379,11 @@ public class PDFCreatorActivity extends AppCompatActivity {
                 return true;
 
             case R.id.itemAddCategory:
-                mySQLite = new MySQLite(this);
                 Intent switchToAddCategory = new Intent(this, AddCategoryActivity.class);
-                mySQLite.close();
                 startActivity(switchToAddCategory);
                 return true;
 
-
             case R.id.itemDeleteCategory:
-                mySQLite = new MySQLite(this);
                 Intent switchToDeleteCategory = new Intent(this, DeleteCategoryActivity.class);
                 startActivity(switchToDeleteCategory);
                 return true;
