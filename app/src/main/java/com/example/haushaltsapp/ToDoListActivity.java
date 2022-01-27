@@ -23,22 +23,19 @@ import com.example.haushaltsapp.ToDoListPackage.ToDoInterface;
 import com.example.haushaltsapp.ToDoListPackage.SwipeHandler;
 import com.example.haushaltsapp.ToDoListPackage.ToDoAdapter;
 import com.example.haushaltsapp.ToDoListPackage.TaskModel;
-import com.example.haushaltsapp.database.Category;
-import com.example.haushaltsapp.database.MySQLite;
+import com.example.haushaltsapp.Database.Category;
+import com.example.haushaltsapp.Database.MySQLite;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import androidx.appcompat.app.AlertDialog;
+
 public class ToDoListActivity extends AppCompatActivity implements ToDoInterface, AdapterView.OnItemSelectedListener {
 
     ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
-
-    private int day;
-    private int month;
-    private int year;
     ///////////////////////////////
 
     private RecyclerView tasksRecyclerView;
@@ -90,7 +87,6 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         //Die aktuelle Activity im Menü ausblenden
         MenuItem item = menu.findItem(R.id.itemToDoListe);
         item.setEnabled(false);
-
         return true;
     }
 
@@ -204,6 +200,5 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
-
     }
 }

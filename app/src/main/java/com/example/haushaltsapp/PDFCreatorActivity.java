@@ -1,15 +1,12 @@
 package com.example.haushaltsapp;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -25,8 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
-
-import com.example.haushaltsapp.database.MySQLite;
+import com.example.haushaltsapp.Database.MySQLite;
 
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.PageSize;
@@ -61,26 +57,25 @@ public class PDFCreatorActivity extends AppCompatActivity {
     private TextView dateSelect;
     private ImageView calenderView;
 
-    String name;
-    String cycle;
-    String category;
-    String dateString;
+    private String name;
+    private String cycle;
+    private String category;
+    private String dateString;
 
-    double value;
-    int day;
-    int month;
-    int year;
-    int calendarDay;
-    int calendarMonth;
-    int calendarYear;
-    int numberOfPages;
-    private int Storage_Permission_Code = 1;
-    long compareTime;
+    private double value;
+    private int day;
+    private int month;
+    private int year;
+    private int calendarDay;
+    private int calendarMonth;
+    private int calendarYear;
+    private int numberOfPages;
+    private long compareTime;
+    private long intakeTime;
+    private long outgoeTime;
 
-    long intakeTime;
-    long outgoeTime;
-    Calendar intakeCalendar = Calendar.getInstance();
-    Calendar outgoeCalendar = Calendar.getInstance();
+    private Calendar intakeCalendar = Calendar.getInstance();
+    private Calendar outgoCalendar = Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,13 +148,6 @@ public class PDFCreatorActivity extends AppCompatActivity {
 
         createPdfButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-                {
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Storage_Permission_Code);
-                }
-                else
-                {
                     try {
                         printPDF();
                         Toast.makeText(getApplicationContext(), "PDF erstellt!",Toast.LENGTH_SHORT).show();
@@ -168,7 +156,7 @@ public class PDFCreatorActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-            }
+
         });
 
         viewPdfButton.setOnClickListener(new View.OnClickListener() {
@@ -207,7 +195,6 @@ public class PDFCreatorActivity extends AppCompatActivity {
         curOutgo.moveToFirst();
         for (int j = 0; j < countOutgo; j++){
 
-            //ID = Integer.parseInt(cursor.getString(0));
             name = curOutgo.getString(1);
             value = Double.parseDouble(curOutgo.getString(2));
             day = Integer.parseInt(curOutgo.getString(3));
@@ -216,8 +203,8 @@ public class PDFCreatorActivity extends AppCompatActivity {
             cycle =  curOutgo.getString(6);
             category =  curOutgo.getString(7);
 
-            outgoeCalendar.set(year,month,day,0,0,0);
-            outgoeTime = outgoeCalendar.getTimeInMillis() + 999;
+            outgoCalendar.set(year,month,day,0,0,0);
+            outgoeTime = outgoCalendar.getTimeInMillis() + 999;
 
             dateString = day+"."+month+"."+year;
 
@@ -250,8 +237,6 @@ public class PDFCreatorActivity extends AppCompatActivity {
         curIntake.moveToFirst();
 
         for (int l = 0; l < countIntake; l++){
-
-            //ID = Integer.parseInt(cursor.getString(0));
             name = curIntake.getString(1);
             value = Double.parseDouble(curIntake.getString(2));
             day = Integer.parseInt(curIntake.getString(3));
@@ -397,5 +382,4 @@ public class PDFCreatorActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
 }

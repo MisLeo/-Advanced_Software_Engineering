@@ -145,7 +145,6 @@
                         app:srcCompat="@drawable/ic_baseline_event" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
             </LinearLayout>
      </androidx.cardview.widget.CardView>
     </ScrollView>

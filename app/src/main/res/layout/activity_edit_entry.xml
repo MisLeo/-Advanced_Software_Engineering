@@ -252,9 +252,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-
         </androidx.cardview.widget.CardView>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

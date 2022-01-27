@@ -37,13 +37,6 @@
                     app:layout_constraintTop_toTopOf="parent"
                     android:textColor="@color/Textcolorbright0"/>
 
-              <!--  <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
-                    android:background="@color/color_two"/>
-    -->
 
                 <TextView
                 android:id="@+id/ChartValue"
@@ -59,13 +52,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                     />
 
-                <!--<View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
-                    android:background="@color/color_two"/>
-    -->
                 <TextView
                 android:id="@+id/ChartDate"
                 android:layout_width="80dp"
@@ -79,13 +65,6 @@
                 app:layout_constraintStart_toEndOf="@+id/ChartValue"
                 app:layout_constraintTop_toTopOf="parent" />
 
-                <!--<View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
-                    android:background="@color/color_two"/>
-    -->
                 <TextView
                 android:id="@+id/ChartCategorie"
                 android:layout_width="130dp"

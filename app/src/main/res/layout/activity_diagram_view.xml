@@ -794,10 +794,7 @@
                     android:textColor="@color/Textcolorbright1"
 
                     />
-
             </LinearLayout>
-
-
         </androidx.cardview.widget.CardView>
     </ScrollView>
 </RelativeLayout>

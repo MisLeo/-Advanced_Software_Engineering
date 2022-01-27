@@ -1,12 +1,8 @@
-package com.example.haushaltsapp.database;
+package com.example.haushaltsapp.Database;
 
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
-public class EntryFinance implements Serializable {
+public abstract class EntryFinance implements Serializable {
     int id_PK;
     String name;
     double value;

@@ -276,10 +276,7 @@
                             android:textStyle="bold" />
 
                     </RelativeLayout>
-
                 </LinearLayout>
-
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </ScrollView>

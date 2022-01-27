@@ -12,6 +12,7 @@
     <color name="Einnahmen">#90BE6D</color>
     <color name="Ausgaben">#F94144</color>
     <color name="Restbudget">#F9C74F</color>
+
     <!--hier sind die Kategorien den Farben zugeordnet -->
     <color name="Wohnen">#F3722D</color>
     <color name="Lebensmittel">#90BE6D</color>
@@ -19,8 +20,10 @@
     <color name="Gesundheit">#4DC74F</color>
     <color name="Freizeit">#F9C74F</color>
     <color name="Sonstiges">#277DA1</color>
+
     <!-- Farben für neue Kategorie -->
     <color name="defaultCategory">#9caaa9</color>
+
     <!--Farben für Layout -->
     <color name="Hintergrund">#F8F9FA</color><!--Farbe für Fläche -->
     <color name="Hintergrunddunkel">#6C757D</color><!--Farbe für Rahmen-->
