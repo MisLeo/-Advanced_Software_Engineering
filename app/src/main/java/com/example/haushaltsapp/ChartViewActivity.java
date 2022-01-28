@@ -46,7 +46,7 @@ public class ChartViewActivity extends  AppCompatActivity {
     private ArrayList<Outgo> outgoList;
     private ArrayList<Intake> intakeList;
     private RecyclerView recyclerView;
-    private RecyclerAdapterOut.RecyclerViewClickListener listenerOut;
+    private RecyclerAdapterOut.RecyclerViewClickListenerOut listenerOut;
     private RecyclerAdapterIn.RecyclerViewClickListenerIn listenerIn;
     private String inOutSpinner;
 
@@ -56,12 +56,12 @@ public class ChartViewActivity extends  AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_view);
         mySQLite = new MySQLite(this);
-        outgoList = mySQLite.getAllOutgo();
+        outgoList = mySQLite.getAllOutgoes();
         intakeList = mySQLite.getAllIntakes();
 
         //Aktuelles Datum anzeigen
         editTextDate = (TextView) findViewById(R.id.editTextDate);
-        java.util.Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         editTextDate.setText(dateFormat.format(calendar.getTime()));
 
@@ -148,12 +148,12 @@ public class ChartViewActivity extends  AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {
 
                                         //Activity Edit entry aufrufen
-                                        Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                        Intent intentToEdit = new Intent(getApplicationContext(), EditEntryActivity.class);
                                         int id = intakeList.get(position).getId_PK();
-                                        intenttoedit.putExtra("id", id);
-                                        intenttoedit.putExtra("entry", inOutSpinner);
-                                        setResult(RESULT_OK, intenttoedit);
-                                        startActivity(intenttoedit);
+                                        intentToEdit.putExtra("id", id);
+                                        intentToEdit.putExtra("entry", inOutSpinner);
+                                        setResult(RESULT_OK, intentToEdit);
+                                        startActivity(intentToEdit);
                                     }
                                 });
                         builder.setNegativeButton("Nein",
@@ -176,12 +176,12 @@ public class ChartViewActivity extends  AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
 
                                     //Activity Edit entry aufrufen
-                                    Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                    Intent intentToEdit = new Intent(getApplicationContext(), EditEntryActivity.class);
                                     int id = intakeList.get(position).getId_PK();
-                                    intenttoedit.putExtra("id", id);
-                                    intenttoedit.putExtra("entry", inOutSpinner);
-                                    setResult(RESULT_OK, intenttoedit);
-                                    startActivity(intenttoedit);
+                                    intentToEdit.putExtra("id", id);
+                                    intentToEdit.putExtra("entry", inOutSpinner);
+                                    setResult(RESULT_OK, intentToEdit);
+                                    startActivity(intentToEdit);
                                 }
                             });
                     builder.setNegativeButton("Nein",
@@ -197,14 +197,14 @@ public class ChartViewActivity extends  AppCompatActivity {
         };
 
         //Ausgaben
-        listenerOut = new RecyclerAdapterOut.RecyclerViewClickListener() {
+        listenerOut = new RecyclerAdapterOut.RecyclerViewClickListenerOut() {
             @Override
             public void onClick(View v, int position) {
 
                 String name = outgoList.get(position).getName();
-                char[] checkÜbertrag = name.toCharArray();
+                char[] checkTransfer = name.toCharArray();
 
-                if (checkÜbertrag.length>12)
+                if (checkTransfer.length>12)
                 {
                     String str= name.substring(0,12);
                     if (str.equals("Übertrag vom")) {
@@ -230,12 +230,12 @@ public class ChartViewActivity extends  AppCompatActivity {
                                     public void onClick(DialogInterface dialog, int which) {
 
                                         //Activity Edit entry aufrufen
-                                        Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                        Intent intentToEdit = new Intent(getApplicationContext(), EditEntryActivity.class);
                                         int id = outgoList.get(position).getId_PK();
-                                        intenttoedit.putExtra("id", id);
-                                        intenttoedit.putExtra("entry", inOutSpinner);
-                                        setResult(RESULT_OK, intenttoedit);
-                                        startActivity(intenttoedit);
+                                        intentToEdit.putExtra("id", id);
+                                        intentToEdit.putExtra("entry", inOutSpinner);
+                                        setResult(RESULT_OK, intentToEdit);
+                                        startActivity(intentToEdit);
                                     }
                                 });
                         builder.setNegativeButton("Nein",
@@ -257,12 +257,12 @@ public class ChartViewActivity extends  AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
 
                                     //Activity Edit entry aufrufen
-                                    Intent intenttoedit = new Intent(getApplicationContext(), EditEntryActivity.class);
+                                    Intent intentToEdit = new Intent(getApplicationContext(), EditEntryActivity.class);
                                     int Id = outgoList.get(position).getId_PK();
-                                    intenttoedit.putExtra("id", Id);
-                                    intenttoedit.putExtra("entry", inOutSpinner);
-                                    setResult(RESULT_OK, intenttoedit);
-                                    startActivity(intenttoedit);
+                                    intentToEdit.putExtra("id", Id);
+                                    intentToEdit.putExtra("entry", inOutSpinner);
+                                    setResult(RESULT_OK, intentToEdit);
+                                    startActivity(intentToEdit);
                                 }
                             });
                     builder.setNegativeButton("Nein",
@@ -282,7 +282,7 @@ public class ChartViewActivity extends  AppCompatActivity {
     public void changeMonth(View view)
     {
         if (inOutSpinner.equals("Outgo")) {
-            outgoList = mySQLite.getMonthOutgos(day,month,year);
+            outgoList = mySQLite.getMonthOutgoes(day,month,year);
             setAdapterOut();
         } else if( inOutSpinner.equals("Intake")) {
             intakeList = mySQLite.getMonthIntakes(day,month,year);
@@ -292,7 +292,7 @@ public class ChartViewActivity extends  AppCompatActivity {
 
     //Kalender zur Auswahl des Monats, der angezeigt werden soll
     public  void openCalender(View dateview) {
-        java.util.Calendar calender = java.util.Calendar.getInstance();
+        Calendar calender = Calendar.getInstance();
         year = calender.get(Calendar.YEAR);
         month = calender.get(Calendar.MONTH);
         day = calender.get(Calendar.DAY_OF_MONTH);
