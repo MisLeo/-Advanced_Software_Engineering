@@ -34,9 +34,8 @@ import androidx.appcompat.app.AlertDialog;
 
 public class ToDoListActivity extends AppCompatActivity implements ToDoInterface, AdapterView.OnItemSelectedListener {
 
-    ///////////////////////////////
+
     private MySQLite mySQLite;
-    ///////////////////////////////
 
     private RecyclerView tasksRecyclerView;
     private ToDoAdapter tasksAdapter;
@@ -50,8 +49,9 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_to_do_list);
-        mySQLite = new MySQLite(this);
 
+        //Datenbank-Objekt und Auslesen der Kategorien
+        mySQLite = new MySQLite(this);
         ArrayList<Category> list = mySQLite.getAllCategories();
         spinner = findViewById(R.id.ToDoListSpinner);
         ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item, list);
@@ -59,6 +59,7 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
+        //Aufruf RecyclerView
         tasksRecyclerView = findViewById(R.id.tasksRecyclerView);
         tasksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         tasksAdapter = new ToDoAdapter(mySQLite,this,this);
@@ -67,6 +68,7 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         itemTouchHelper.attachToRecyclerView(tasksRecyclerView);
         fabAddTask = findViewById(R.id.fab);
 
+        //Auslesen der Tasks nach Spinnger-Type (Kategorie)
         taskList = mySQLite.getTaskByType(type);
         tasksAdapter.setTasks(taskList);
         tasksAdapter.notifyDataSetChanged();
@@ -80,6 +82,50 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
 
     }
 
+    //Auffrischen der Aufgaben bei DialogClose
+    @Override
+    public void handleDialogClose(DialogInterface dialog){
+        taskList = mySQLite.getTaskByType(type);
+        Collections.reverse(taskList);
+        tasksAdapter.setTasks(taskList);
+        tasksAdapter.notifyDataSetChanged();
+    }
+
+    //Meldung bei Anklicken der Checkbox einer Task
+    public void onTaskClick(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(tasksAdapter.getContext());
+        builder.setMessage("Haben Sie diese Aufgabe erledigt?");
+        builder.setPositiveButton("Ja",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getBaseContext(), "Glückwunsch! Mach weiter so!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        builder.setNegativeButton("Abbruch", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                tasksAdapter.notifyItemChanged(position);
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        type = String.valueOf(spinner.getSelectedItem());
+        AddNewTask.setNewType(type);
+        taskList = mySQLite.getTaskByType(type);
+        tasksAdapter.setTasks(taskList);
+        tasksAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    //Menüaufruf
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -90,7 +136,7 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         return true;
     }
 
-
+    //Menüauswahl
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
@@ -161,44 +207,4 @@ public class ToDoListActivity extends AppCompatActivity implements ToDoInterface
         }
     }
 
-    @Override
-    public void handleDialogClose(DialogInterface dialog){
-        taskList = mySQLite.getTaskByType(type);
-        Collections.reverse(taskList);
-        tasksAdapter.setTasks(taskList);
-        tasksAdapter.notifyDataSetChanged();
-    }
-
-    public void onTaskClick(int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(tasksAdapter.getContext());
-        builder.setMessage("Haben Sie diese Aufgabe erledigt?");
-        builder.setPositiveButton("Ja",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getBaseContext(), "Glückwunsch! Mach weiter so!", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        builder.setNegativeButton("Abbruch", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                tasksAdapter.notifyItemChanged(position);
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        type = String.valueOf(spinner.getSelectedItem());
-        AddNewTask.setNewType(type);
-        taskList = mySQLite.getTaskByType(type);
-        tasksAdapter.setTasks(taskList);
-        tasksAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
 }

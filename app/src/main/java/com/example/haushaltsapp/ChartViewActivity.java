@@ -33,13 +33,12 @@ import com.example.haushaltsapp.Database.Outgo;
 
 public class ChartViewActivity extends  AppCompatActivity {
 
-    ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
 
     private int day;
     private int month;
     private int year;
-    ///////////////////////////////
+
     private Spinner spinner;
     private TextView editTextDate;
 
@@ -55,15 +54,22 @@ public class ChartViewActivity extends  AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chart_view);
+
+        //Erstellung Datenbank-Objekt und Auslesen der Daten
         mySQLite = new MySQLite(this);
         outgoList = mySQLite.getAllOutgoes();
         intakeList = mySQLite.getAllIntakes();
 
-        //Aktuelles Datum anzeigen
+        //Aktuelles Datum auslesen und anzeigen
         editTextDate = (TextView) findViewById(R.id.editTextDate);
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         editTextDate.setText(dateFormat.format(calendar.getTime()));
+
+        Calendar calender = Calendar.getInstance();
+        year = calender.get(Calendar.YEAR);
+        month = calender.get(Calendar.MONTH)+1; //month hier eins weniger, deshalb +1
+        day = calender.get(Calendar.DAY_OF_MONTH);
 
         //Spinner zur Auswahl von Einnahmen oder Ausgaben
         spinner = findViewById(R.id.SpinnerInOut);
@@ -72,7 +78,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            //ausgelesen, welcher Spinner gesetzt ist
+            //Abfrage, welcher Spinner gesetzt ist
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i==0) {
@@ -113,7 +119,7 @@ public class ChartViewActivity extends  AppCompatActivity {
     }
 
 
-    //Auswahl eines Eintrags in der Tabelle um zu bearbeiten
+    //Auswahl eines Eintrags in der Tabelle, um zu bearbeiten
     private void setOnClickListener() {
         //Einnahmen
         listenerIn = new RecyclerAdapterIn.RecyclerViewClickListenerIn() {
@@ -278,7 +284,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         };
     }
 
-    //Button zum aktualisieren des Monats und laden der Tabelle
+    //Button zum Aktualisieren des Monats und Laden der Tabelle
     public void changeMonth(View view)
     {
         if (inOutSpinner.equals("Outgo")) {
@@ -290,14 +296,15 @@ public class ChartViewActivity extends  AppCompatActivity {
         }
     }
 
-    //Kalender zur Auswahl des Monats, der angezeigt werden soll
-    public  void openCalender(View dateview) {
+        //Kalender zur Auswahl des Monats, der angezeigt werden soll
+        public  void openCalender(View dateView) {
         Calendar calender = Calendar.getInstance();
         year = calender.get(Calendar.YEAR);
         month = calender.get(Calendar.MONTH);
         day = calender.get(Calendar.DAY_OF_MONTH);
+          //  calender.set(year,(month+1),day);
 
-        //Kalender auf Deutsch umstellen
+        //Kalenderanzeige auf Deutsch umstellen
         Locale locale = new Locale("de");
         Locale.setDefault(locale);
         Resources res = this.getResources();
@@ -338,7 +345,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         dateDialog.show();
     }
 
-
+    //Menüaufruf
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -349,7 +356,7 @@ public class ChartViewActivity extends  AppCompatActivity {
         return true;
     }
 
-
+    //Menüauswahl
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 

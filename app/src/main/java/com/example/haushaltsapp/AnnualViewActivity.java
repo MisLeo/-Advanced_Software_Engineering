@@ -24,11 +24,9 @@ import java.util.Locale;
 
 public class AnnualViewActivity extends AppCompatActivity {
 
-    ////Variabeln zur Menünavigation
     private MySQLite mySQLite;
     ///////////////////////////////
 
-    //private ValueLineChart LineChartyear;
     private BarChart barChartInOut;
 
     private TextView tvM1o, tvM2o, tvM3o, tvM4o,tvM5o,tvM6o,tvM7o,tvM8o,tvM9o,tvM10o,tvM11o,tvM12o,tvM13o;
@@ -36,7 +34,6 @@ public class AnnualViewActivity extends AppCompatActivity {
     private TextView tvM1i, tvM2i, tvM3i, tvM4i,tvM5i,tvM6i,tvM7i,tvM8i,tvM9i,tvM10i,tvM11i,tvM12i,tvM13i;
     private  TextView tvM1in, tvM2in,tvM3in,tvM4in,tvM5in,tvM6in,tvM7in,tvM8in,tvM9in,tvM10in,tvM11in,tvM12in,tvM13in;
 
-    //aktuelles Datum
     private int day;
     private int month;
     private int year;
@@ -52,9 +49,9 @@ public class AnnualViewActivity extends AppCompatActivity {
 
         mySQLite = new MySQLite(this);
 
-        //Aktuelles Datum anzeigen
+        //Aktuelles Datum auslesen und anzeigen
         editTextDate = (TextView) findViewById(R.id.editTextDate);
-        java.util.Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
         editTextDate.setText(dateFormat.format(calendar.getTime()));
 
@@ -62,13 +59,13 @@ public class AnnualViewActivity extends AppCompatActivity {
     }
 
     private void setData() {
-        //Datum von Textfeld auslesen
+        //Datum vom Textfeld auslesen
         date = editTextDate.getText().toString();
         day = Integer.parseInt(date.substring(0,2));
         month = Integer.parseInt(date.substring(3,5));
         year = Integer.parseInt(date.substring(6,10));
 
-        barChartInOut = findViewById(R.id.barchartinout);
+        barChartInOut = findViewById(R.id.barChartInOut);
 
         //Anzeige Monat Ausgaben
         tvM1o = findViewById(R.id.tvMonth1);
@@ -135,15 +132,12 @@ public class AnnualViewActivity extends AppCompatActivity {
     //Balkendiagramm mit Einnahmen und Ausgaben der letzten 12 Monate
     public void barGraphMonthInOut() {
 
-        int mtextout = 1; //für Textausgabe
+        int mTextOut = 1; //für Textausgabe
         int monthThisYear = 1; //monate hochzählen
         int monthPreYear = month;
         int preYear = year-1; //Vorjahr
 
-        //erster Monat wird in Balkendiagramm nicht beschriftet, wenn Fensterbreite zu klein ist
-        //Fensterbreite angepasst
-
-        //vorjahresanzeige
+        //Vorjahresanzeige
         while (monthPreYear <= 12) {
             String monthname = "leer";
 
@@ -200,7 +194,7 @@ public class AnnualViewActivity extends AppCompatActivity {
                     Color.parseColor("#F94144")));
 
             //Anzeige von Werten in Text unter Diagramm
-            switch (mtextout) {
+            switch (mTextOut) {
                 case 1:
                     tvM1out.setText(Float.toString(outgosMonthX)+" €");
                     tvM1o.setText(monthname+"."+preYear);
@@ -280,11 +274,11 @@ public class AnnualViewActivity extends AppCompatActivity {
                     tvM13i.setText(monthname+"."+preYear);
                     break;
             }
-            mtextout++;
+            mTextOut++;
             monthPreYear++;
         }
 
-        //aktuelles Jahr anzeigen
+        //Aktuelles Jahr anzeigen
         while (monthThisYear <= (month)) {
             String monthname = "leer";
             switch (monthThisYear) {
@@ -340,7 +334,7 @@ public class AnnualViewActivity extends AppCompatActivity {
                     Color.parseColor("#F94144")));
 
             //Anzeige von Werten in Text unter Diagramm
-            switch (mtextout) {
+            switch (mTextOut) {
                 case 1:
                     tvM1out.setText(Float.toString(outgoMonthX)+" €");
                     tvM1o.setText(monthname+"."+year);
@@ -420,7 +414,7 @@ public class AnnualViewActivity extends AppCompatActivity {
                     tvM13i.setText(monthname+"."+year);
                     break;
             }
-            mtextout++;
+            mTextOut++;
             monthThisYear++;
         }
         //Darstellungsoptionen
@@ -429,7 +423,7 @@ public class AnnualViewActivity extends AppCompatActivity {
         barChartInOut.setActivated(false);
     }
 
-    //runden auf zwei Nachkommazahlen
+    //Rundung eines Wertes auf zwei Nachkommazahlen
     public float roundF(float number, int positions) {
         return (float) ((int)number + (Math.round(Math.pow(10,positions)*(number-(int)number)))/(Math.pow(10,positions)));
     }
@@ -446,7 +440,7 @@ public class AnnualViewActivity extends AppCompatActivity {
         month = calender.get(Calendar.MONTH);
         day = calender.get(Calendar.DAY_OF_MONTH);
 
-        //Kalender auf Deutsch umstellen
+        //Kalenderanzeige auf Deutsch umstellen
         Locale locale = new Locale("de");
         Locale.setDefault(locale);
         Resources res = this.getResources();
@@ -487,7 +481,7 @@ public class AnnualViewActivity extends AppCompatActivity {
         dateDialog.show();
     }
 
-
+    //Aufruf Menü
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -495,7 +489,7 @@ public class AnnualViewActivity extends AppCompatActivity {
         return true;
     }
 
-
+    //Menüauswahl
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
